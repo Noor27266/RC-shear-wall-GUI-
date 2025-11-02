@@ -282,25 +282,32 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 
 
-
 st.markdown("""
 <style>
+/* Reduce the length of the Predicted Damage Index box */
+div[class*="stMarkdown"] {
+  max-width: 250px !important;  /* Control the length of the box */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
 /* Adjust the Download as CSV button to be closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left: -10px !important;  /* Bring it slightly to the left */
+  margin-left: -12px !important;  /* Bring it slightly more to the left */
 }
 
-/* Ensure button stays compact */
+/* Make the download button compact */
 div[data-testid="stDownloadButton"] button {
-  white-space: nowrap !important;
-  padding: 6px 12px !important;  /* Maintain compact padding */
-  font-size: 12px !important;  /* Smaller font size */
-  height: auto !important;  /* Adjust height according to content */
-  line-height: 1.1 !important;  /* Adjust line height */
+  font-size: 12px !important;
+  padding: 6px 10px !important;  /* Keep padding compact */
+  line-height: 1.1 !important;
+  height: auto !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -886,6 +893,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
