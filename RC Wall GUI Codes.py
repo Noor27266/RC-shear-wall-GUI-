@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 DOC_NOTES = """
@@ -42,7 +41,9 @@ def pfind(candidates):
     `candidates` may be names or relative paths. We search:
       - BASE_DIR
       - CWD
-      - any subdir under BASE_DIR (one level deep) 
+      - /mnt/data (if present)
+      - any subdir under BASE_DIR (one level deep)
+      - glob fallbacks
     """
     # exact paths first
     for c in candidates:
@@ -50,8 +51,9 @@ def pfind(candidates):
         if p.exists():
             return p
 
-    # next to script & cwd
-    roots = [BASE_DIR, Path.cwd()]
+    # next to script, cwd, and /mnt/data
+    extra = Path("/mnt/data")
+    roots = [BASE_DIR, Path.cwd()] + ([extra] if extra.exists() else [])
     for root in roots:
         for c in candidates:
             p = root / c
@@ -71,6 +73,8 @@ def pfind(candidates):
     for c in candidates:
         pats.append(str(BASE_DIR / "**" / c))
         pats.append(str(Path.cwd() / "**" / c))
+        if extra.exists():
+            pats.append(str(extra / "**" / c))
     for pat in pats:
         matches = glob(pat, recursive=True)
         if matches:
@@ -203,7 +207,7 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* EXISTING experimental rule (kept): may or may not match across Streamlit versions */
+  /* EXISTING experimental rule (kept) */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -211,7 +215,7 @@ css(f"""
       padding:16px !important;
   }}
 
-  /* ### FIX: hard wrapper for the inputs panel (100% reliable) */
+  /* hard wrapper for the inputs panel (works everywhere) */
   .left-panel {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -458,7 +462,7 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 2], gap="large")
 
 with left:
-    ### FIX: hard wrapper so the background is definitely gray
+    ### hard wrapper so the background is definitely gray
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
 
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -485,7 +489,7 @@ with left:
 
     css("</div>")   # close #compact-form
     css("</div>")   # close #leftwrap
-    st.markdown("</div>", unsafe_allow_html=True)  # ### FIX: close .left-panel
+    st.markdown("</div>", unsafe_allow_html=True)  # close .left-panel
 
 # =============================================================================
 # Step #6: Right panel (unchanged)
@@ -748,4 +752,3 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
-
