@@ -140,16 +140,17 @@ LEFT_BG      = "#e0e4ec"   # <- GREY panel color
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0.5rem; }}
+  /* Ensure header has room and is visible */
+  .block-container {{ padding-top: 1.0rem; }}
 
   /* Top title and logo in ONE line */
   .page-header {{
     display:flex; align-items:center; justify-content:space-between;
-    gap: 16px; margin: 0 0 8px 0; padding: 0;
+    gap: 16px; margin: 0 0 6px 0; padding: 0;
   }}
   .page-header__title {{
     font-size:{FS_TITLE}px; font-weight:800; margin:0;
-    line-height:1.25;
+    line-height:1.25; color:#111;
   }}
   .page-header__right img {{
     height:40px; width:auto; display:block;
@@ -256,7 +257,7 @@ css(f"""
 """)
 
 # =============================================================================
-# Header (title + logo) — simple and stable
+# Header (title + logo) — always visible
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
