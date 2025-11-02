@@ -958,7 +958,7 @@ div[data-testid="stDownloadButton"] {
   align-items: center !important;
   justify-content: center !important;
   width: auto !important;
-  margin-right: 50px !important;  /* Add gap between the two elements */
+  margin-right: 20px !important;  /* Add gap between the two elements */
   white-space: nowrap !important;
 }
 
@@ -983,6 +983,7 @@ div[data-testid="stDownloadButton"] {
   margin-right: 10px !important; /* Ensure a reasonable gap */
 }
 </style>
+
 
 
 
