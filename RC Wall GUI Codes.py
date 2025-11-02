@@ -964,15 +964,18 @@ st.markdown("""
 
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left: 16px !important; /* Add space between the two elements */
+  margin-left: 10px !important;  /* Adjust space to prevent the button from touching */
 }
 
 div[data-testid="stDownloadButton"] > button {
   padding: 6px 12px !important;  /* Give the button comfortable padding */
   white-space: nowrap !important; /* Ensure text stays on one line */
+  width: auto !important; /* Prevent stretching of the button */
+  max-width: 220px !important; /* Set a max width to limit button length */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
