@@ -459,7 +459,7 @@ GEOM = [
     (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
     (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
     (rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness"),
-    (rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width"),
+    (rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length"),
     (rf("$d_b{U('mm')}$")),"db",400.0,1.0,None,"Boundary element length"),
     (r"$AR$","AR",2.0,0.01,None,"Aspect ratio"),
     (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
@@ -469,8 +469,9 @@ MATS = [
     (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
     (rf"$f_{{ysh}}{U('MPa')}$",   "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
-    (rf("$f_{{yl}}{U('MPa')}$")),"fyl",  400.0, 1.0, None, "Vertical web yield strength"),
-    (rf("$f_{{ybl}}{U('MPa')}$")),"fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
+    (rf"$f_{{yl}}{U('MPa')}$","fyl",  400.0, 1.0, None, "Vertical web yield strength"),
+    (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
+
 ]
 
 REINF = [
@@ -822,3 +823,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
