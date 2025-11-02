@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # =============================================================================
-# Imports
+# Imports (unchanged)
 # =============================================================================
 import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
@@ -23,16 +23,17 @@ css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 
 # =============================================================================
-# Page config
+# Page config (unchanged)
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # =============================================================================
-# GLOBAL STYLES (kept clean & responsive)
+# GLOBAL STYLES — responsive & stable across screens + grey left panel
 # =============================================================================
 css("""
 <style>
   :root{
+    /* Responsive font scales */
     --fs-title: clamp(26px, 3.2vw, 42px);
     --fs-section: clamp(18px, 2.1vw, 28px);
     --fs-label: clamp(14px, 1.6vw, 22px);
@@ -50,22 +51,9 @@ css("""
     display:flex; align-items:center; gap:16px; margin:0 0 .25rem 0;
   }
   .page-header__title { font-size: var(--fs-title); font-weight:800; margin:0; }
-  .page-header__logo { height: clamp(36px, 5vw, 70px); width:auto; display:block; }
+  .page-header__logo  { height: clamp(36px, 5vw, 70px); width:auto; display:block; }
 
-  /* Left inputs panel background (light grey) */
-  .left-panel {
-    background: #e0e4ec;               /* <-- same grey as your original */
-    border-radius: 12px;
-    padding: 14px 16px 10px 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.1);
-  }
-
-  .form-banner{
-    text-align:center; background: linear-gradient(90deg, #0E9F6E, #84CC16); color:#fff;
-    padding:.45rem .75rem; border-radius:10px; font-weight:800;
-    font-size: calc(var(--fs-section) + 2px); margin:.35rem 0 .6rem 0 !important;
-  }
-
+  /* Section headers */
   .section-header{
     font-size: var(--fs-section) !important; font-weight: 700; margin:.35rem 0;
   }
@@ -85,6 +73,10 @@ css("""
     box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
   }
 
+  /* Selectbox value/options */
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: var(--fs-select) !important; }
+  div[data-testid="stSelectbox"] div[role="listbox"] div[role="option"] { font-size: var(--fs-select) !important; }
+
   /* Buttons */
   div.stButton > button{
     font-size: var(--fs-button) !important; height: clamp(36px, 4.2vw, 46px) !important;
@@ -94,21 +86,36 @@ css("""
   button[key="reset_btn"]{ background:#2196F3 !important; }
   button[key="clear_btn"]{ background:#f44336 !important; }
 
+  /* Banner */
+  .form-banner{
+    text-align:center; background: linear-gradient(90deg, #0E9F6E, #84CC16); color:#fff;
+    padding:.45rem .75rem; border-radius:10px; font-weight:800;
+    font-size: calc(var(--fs-section) + 2px); margin:.35rem 0 .6rem 0 !important;
+  }
+
   .prediction-result{
     font-size: var(--fs-badge) !important; font-weight:700; color:#2e86ab;
     background:#f1f3f4; padding:.5rem .65rem; border-radius:6px; text-align:center; margin-top:.35rem;
     white-space:nowrap; display:inline-block;
   }
 
+  /* Remove Streamlit top header spacing */
   header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
   header[data-testid="stHeader"] *{ display:none !important; }
 
+  /* Grey left panel like your original */
+  #left-panel{
+    background:#e0e4ec; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1);
+    padding:16px;
+  }
+
+  /* Make Altair fill container width */
   .altair-chart-wrap{ width:100%; }
 </style>
 """)
 
 # =============================================================================
-# Title + Logo
+# Title + Logos (kept, responsive)
 # =============================================================================
 try:
     _logo_path = Path(__file__).resolve().parent / "TJU logo.png"
@@ -126,8 +133,20 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Optional: tiny tweaks in sidebar (off by default)
+with st.sidebar.expander("Header options (optional)", expanded=False):
+    title_x = st.number_input("Title X offset (px)", -200, 200, 0, 2)
+    title_y = st.number_input("Title Y offset (px)", -120, 120, 0, 2)
+    logo_h  = st.number_input("Logo height (px)", 20, 200, 80, 2)
+    css(f"""
+    <style>
+      .page-header__title{{ transform: translate({int(title_x)}px,{int(title_y)}px); }}
+      .page-header__logo{{ height:{int(logo_h)}px; }}
+    </style>
+    """)
+
 # =============================================================================
-# Model loading (same logic)
+# Model loading (unchanged)
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -216,7 +235,7 @@ if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
-# Ranges & Inputs
+# Ranges & Inputs (unchanged values)
 # =============================================================================
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
@@ -265,29 +284,32 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-# =============================================================================
-# LAYOUT (Left gray inputs + Right column exactly like your screenshot #2)
-# =============================================================================
+# Layout columns: left form (grey panel) + right visual
 left, right = st.columns([1.4, 1.6], gap="large")
 
 with left:
-    st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
+    # grey wrapper like your original app
+    st.markdown("<div id='left-panel'>", unsafe_allow_html=True)
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
     c1, c2 = st.columns(2, gap="large")
+
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
+
     with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
-        rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fyl, fybl = [num(*row) for row in MATS[3:]]
-    st.markdown("</div>", unsafe_allow_html=True)  # close .left-panel
+        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
+    st.markdown("</div>", unsafe_allow_html=True)  # close #left-panel
+
+# ===== RIGHT COLUMN — EXACTLY LIKE YOUR REFERENCE =====
 with right:
-    # 1) Big schematic image on top
+    # 1) Big schematic on top
     try:
         img_b64 = b64(Path("logo2-01.png"))
         st.markdown(
@@ -302,8 +324,9 @@ with right:
     except Exception:
         pass
 
-    # 2) Model Selection + 3 buttons on the SAME row
+    # 2) Model Selection + three buttons on same row
     sel_col, calc_col, reset_col, clear_col = st.columns([1.25, 0.85, 0.85, 0.95], gap="small")
+
     with sel_col:
         st.markdown("**Model Selection**")
         available = set(model_registry.keys())
@@ -313,6 +336,7 @@ with right:
         _label_to_key = {"RF": "Random Forest"}
         model_choice_label = st.selectbox(" ", display_labels, key="model_select_compact", label_visibility="collapsed")
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
+
     with calc_col:
         st.markdown("&nbsp;", unsafe_allow_html=True)
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
@@ -326,7 +350,7 @@ with right:
             st.session_state.results_df = pd.DataFrame()
             st.success("All predictions cleared.")
 
-    # 3) DI badge + CSV row
+    # 3) DI badge + CSV on same row
     badge_col, dl_col, _sp = st.columns([1.55, 0.95, 0.5], gap="small")
     with badge_col:
         pred_banner = st.empty()
@@ -347,7 +371,7 @@ with right:
     chart_slot = st.container()
 
 # =============================================================================
-# Prediction + Curve + Chart
+# Prediction + Curve (unchanged math; chart fills width)
 # =============================================================================
 _TRAIN_NAME_MAP = {
     'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
@@ -423,19 +447,15 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame, theta_max:
 
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0).encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                    scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
+            x=alt.X("θ:Q", title="Drift Ratio (θ)", scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
                     axis=alt.Axis(values=list(x_ticks))),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                    scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)", scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
                     axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5])),
         ).properties(width="container", height=420)
     )
 
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(point=True).encode(
-        x="θ:Q", y="Predicted_DI:Q"
-    ).properties(width="container", height=420)
+    line_layer = alt.Chart(curve).mark_line(point=True).encode(x="θ:Q", y="Predicted_DI:Q").properties(width="container", height=420)
 
     chart = (alt.layer(axes_layer, line_layer)
              .configure_view(strokeWidth=0)
@@ -445,47 +465,36 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame, theta_max:
     st.altair_chart(chart, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# decide selected model / default
+# Run prediction / render
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
+
 label_from_state = (st.session_state.get("model_select_compact") or st.session_state.get("model_select"))
 model_choice = _label_to_key.get(label_from_state, label_from_state) if label_from_state else next((m for m in _order if m in model_registry), None)
 
-# prediction + badge + csv + chart
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
-    if 'submit' in locals() and submit:
+    if submit:
         xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
         try:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(
-                f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>",
-                unsafe_allow_html=True
-            )
+            pred_banner.markdown(f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
             csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button(
-                "📥 Download All Results as CSV",
-                data=csv,
-                file_name="di_predictions.csv",
-                mime="text/csv",
-                use_container_width=True,
-                key="dl_csv_after_submit"
-            )
+            dl_slot.download_button("📥 Download All Results as CSV", data=csv, file_name="di_predictions.csv",
+                                    mime="text/csv", use_container_width=True, key="dl_csv_after_submit")
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-    _base_xdf = _make_input_df(
-        lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta
-    )
+    _base_xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
     _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
 
 with right:
     render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5)
 
-# Optional: recent predictions
+# Optional recent predictions (collapsed)
 with st.sidebar.expander("Recent Predictions", expanded=False):
     if not st.session_state.results_df.empty:
         for i, row in st.session_state.results_df.tail(5).reset_index(drop=True).iterrows():
