@@ -885,33 +885,14 @@ if _rules:
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# --- FINAL tiny override: keep DI badge inline and same line as Download button ---
+st.markdown("""
+<style>
+.prediction-result{
+  display:inline-flex !important;      /* sit inline, not block */
+  align-items:center !important;
+  white-space:nowrap !important;        /* no wrapping to two lines */
+  width:auto !important;                /* don't stretch full width */
+}
+</style>
+""", unsafe_allow_html=True)
