@@ -277,7 +277,7 @@ css("""
 """)
 
 with st.sidebar:
-    right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=50, step=2)
+    right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
 
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
@@ -842,3 +842,4 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
