@@ -44,7 +44,7 @@ def pfind(candidates):
       1) exact paths
       2) alongside this script (BASE_DIR)
       3) current working directory
-      4) **/mnt/data** (where uploaded files live)
+      4) /mnt/data (where uploaded files live)
       5) one-level subdirs under BASE_DIR and /mnt/data
       6) recursive glob fallback
     """
@@ -108,7 +108,7 @@ SECONDARY = "#f9f9f9"
 
 INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
-LEFT_BG      = "#e0e4ec"   # your gray
+LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
 # Step #2.1: Global UI CSS (layout, fonts, inputs, theme)
@@ -327,7 +327,6 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
-# ----- PS (ANN) -----
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
@@ -339,7 +338,6 @@ try:
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
-# ----- MLP (ANN) -----
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
@@ -351,7 +349,7 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# ----- Random Forest (load with joblib EVEN if filename ends with .json; else try SKOPS) -----
+# ----- Random Forest (joblib FIRST even for .json; fall back to SKOPS) -----
 rf_model = None
 try:
     rf_path = pfind([
@@ -359,13 +357,10 @@ try:
         "rf_model.pkl", "RF_model.pkl",
         "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
     ])
-
-    # Try joblib FIRST regardless of extension (your .json is a joblib pickle)
     try:
-        rf_model = joblib.load(rf_path)
+        rf_model = joblib.load(rf_path)  # your .json is a joblib pickle
         record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
     except Exception as e_joblib:
-        # If it truly is a SKOPS JSON, fall back to skops
         try:
             import skops.io as sio
             rf_model = sio.load(rf_path, trusted=True)
@@ -375,7 +370,6 @@ try:
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
-# ----- XGBoost -----
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
@@ -384,7 +378,6 @@ try:
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
-# ----- CatBoost -----
 cat_model = None
 try:
     cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
@@ -393,7 +386,6 @@ try:
 except Exception as e:
     record_health("CatBoost", False, str(e))
 
-# ----- LightGBM (Booster file or sklearn wrapper) -----
 def load_lightgbm_flex():
     try:
         p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
@@ -411,7 +403,6 @@ try:
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
-# ----- Register models for the dropdown -----
 model_registry = {}
 for name, ok, *_ in health:
     if not ok: continue
@@ -605,7 +596,12 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
 def predict_di(choice, _unused_array, input_df):
+    # keep training order
     df_trees = _df_in_train_order(input_df)
+
+    # --- FIX: ensure finite values for tree models (avoid NaN/inf from reindex) ---
+    df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
@@ -643,7 +639,7 @@ def predict_di(choice, _unused_array, input_df):
     return prediction
 
 def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
-    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M_Vlw','θ']
+    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
     x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
     return pd.DataFrame(x, columns=cols)
 
