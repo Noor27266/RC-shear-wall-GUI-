@@ -337,6 +337,39 @@ div[data-testid="stDownloadButton"] button > *{
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* Make both widgets the same fixed width and align them inline */
+.prediction-result{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:220px !important;           /* <<< match width */
+  padding:6px 10px !important;
+  white-space:nowrap !important;     /* keep text on one line */
+}
+
+/* Download button: same width and inline alignment */
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important;
+  margin-left:16px !important;       /* <<< gap so they don't touch */
+}
+div[data-testid="stDownloadButton"] button{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:220px !important;            /* <<< match width */
+  white-space:nowrap !important;
+  height:auto !important;
+  line-height:1.1 !important;
+}
+
+/* Ensure the column that contains the badge leaves some breathing room */
+div[data-testid="column"]:has(.prediction-result){
+  padding-right:12px !important;     /* extra safety gap between the two columns */
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 # =============================================================================
@@ -929,4 +962,5 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
