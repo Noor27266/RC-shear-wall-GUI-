@@ -99,7 +99,7 @@ def pfind(candidates):
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
-SCALE_UI = 0.40  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
 
 s = lambda v: int(round(v * SCALE_UI))
 
@@ -201,7 +201,7 @@ css(f"""
   button[key="reset_btn"] {{ background:#2196F3 !important; }}
   button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-   {{
+  .form-banner {{
     text-align:center;
     background: linear-gradient(90deg, #0E9F6E, #84CC16);
     color: #fff;
@@ -822,5 +822,3 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
