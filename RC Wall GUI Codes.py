@@ -279,6 +279,8 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 # =============================================================================
 st.markdown("""
 <style>
+st.markdown("""
+<style>
 /* Increase gap between the DI badge and the download button */
 .prediction-result{
   display: inline-flex !important;   /* keeps it on one line */
@@ -286,15 +288,16 @@ st.markdown("""
   padding: 2px 12px !important;       # top/bottom | left/right
   line-height: 1.05 !important;       # tighter line height
   border-radius: 10px !important;     # keep your rounded look
-  margin-right: 20px !important;      /* Increase gap between DI badge and CSV button */
+  margin-right: 30px !important;      /* Further increase gap between DI badge and CSV button */
 }
 
 div[data-testid="stDownloadButton"]{
   display:inline-block !important;
-  margin-left: 16px !important; /* Ensure the CSV button is slightly separated */
+  margin-left: 30px !important; /* Increase gap to separate it further from the DI badge */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -985,6 +988,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
