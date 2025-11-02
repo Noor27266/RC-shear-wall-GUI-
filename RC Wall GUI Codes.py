@@ -29,7 +29,7 @@ try:
 except Exception:
     _tf_load_model = None
 try:
-    from keras.models import load_model as _k3_load_model   # works when keras==3 is present
+    from keras.models import load_model as _k3_load_model
 except Exception:
     _k3_load_model = None
 
@@ -48,7 +48,7 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
-# --- session defaults (prevents AttributeError on first run) ---
+# --- session defaults ---
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
@@ -61,12 +61,10 @@ def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi
 # ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
-    # exact paths first
     for c in candidates:
         p = Path(c)
         if p.exists():
             return p
-
     roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
     for root in roots:
         if not root.exists():
@@ -75,8 +73,6 @@ def pfind(candidates):
             p = root / c
             if p.exists():
                 return p
-
-    # one-level subdirs
     for root in [BASE_DIR, Path("/mnt/data")]:
         if not root.exists():
             continue
@@ -86,8 +82,6 @@ def pfind(candidates):
                     p = sub / c
                     if p.exists():
                         return p
-
-    # glob fallback
     pats = []
     for c in candidates:
         for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
@@ -97,15 +91,14 @@ def pfind(candidates):
         matches = glob(pat, recursive=True)
         if matches:
             return Path(matches[0])
-
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
-# Step #2: Page config + fixed, compact visual scale
+# Step #2: Page config + compact visual scale
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# Compact, readable sizes (smaller than before so everything fits at 100% zoom)
+# Compact sizes so everything fits at 100% zoom
 FS_TITLE   = 34
 FS_SECTION = 26
 FS_LABEL   = 22
@@ -118,59 +111,53 @@ FS_RECENT  = 16
 INPUT_H    = max(38, int(FS_INPUT * 2.0))
 
 PRIMARY   = "#8E44AD"
-LEFT_BG   = "#eef1f6"
-INPUT_BG     = "#ffffff"
-INPUT_BORDER = "#e6e9f2"
+LEFT_BG   = "#eef1f6"      # grey panel background
+INPUT_BG  = "#f3f4f6"      # <— light GREY inputs as requested
+INPUT_BORDER = "#dfe3ec"
 
 # =============================================================================
-# Global CSS: max page width, header on one line, grey left panel, no transforms
+# Global CSS (only styling; no logic changed)
 # =============================================================================
 logo_path = BASE_DIR / "TJU logo.png"
 logo_b64 = b64(logo_path) if logo_path.exists() else ""
 
 css(f"""
 <style>
-/* keep the main content centered and fitting on most screens */
 .block-container {{
   max-width: 1400px !important;
-  padding-top: 0.5rem;
+  padding-top: .5rem;
 }}
 
-/* header: one line, fully visible */
+/* Header on one line (smaller title) */
 .app-header {{
   display:flex; align-items:center; justify-content:space-between;
-  gap: 16px; margin: 4px 0 8px 0;
+  gap:16px; margin:4px 0 8px 0;
 }}
-.app-title {{
-  font-size:{FS_TITLE}px; font-weight:800; line-height:1.15; margin:0;
-}}
-.app-logo {{ height:64px; width:auto; display:block; }}
+.app-title {{ font-size:{FS_TITLE}px; font-weight:800; line-height:1.15; margin:0; }}
+.app-logo  {{ height:64px; width:auto; display:block; }}
 
-/* grey left panel */
+/* Grey left panel kept */
 .left-panel {{
   background:{LEFT_BG};
   border-radius:12px;
   padding:16px;
 }}
 
-/* section titles */
+/* Section titles */
 .section-header {{
-  font-size:{FS_SECTION}px !important;
-  font-weight:700; margin:.3rem 0 .2rem 0;
+  font-size:{FS_SECTION}px !important; font-weight:700; margin:.3rem 0 .25rem 0;
 }}
 
-/* labels + units (KaTeX) */
+/* Labels + units */
 .stNumberInput label, .stSelectbox label {{
   font-size:{FS_LABEL}px !important; font-weight:700;
 }}
 .stNumberInput label .katex, .stSelectbox label .katex {{
   font-size:{FS_LABEL}px !important; line-height:1.2 !important;
 }}
-.stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm {{
-  font-size:{FS_UNITS}px !important;
-}}
+.stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
-/* inputs wider and comfy */
+/* Wider inputs with GREY background */
 div[data-testid="stNumberInput"] input[type="number"],
 div[data-testid="stNumberInput"] input[type="text"] {{
   font-size:{FS_INPUT}px !important;
@@ -186,43 +173,40 @@ div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
   box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
 }}
 
-/* select + buttons aligned in one row */
-#action-row {{
-  display:flex; align-items:center; gap:16px; margin: 10px 0 8px 0;
-}}
+/* ACTION ROW: select + 3 buttons SAME GREEN on ONE LINE */
+#action-row {{ display:flex; align-items:center; gap:16px; margin:10px 0 8px 0; }}
 div[data-testid="stSelectbox"] > div > div {{
   height:44px !important; display:flex; align-items:center;
 }}
 div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{
   font-size:{FS_SELECT}px !important;
 }}
+
 div.stButton > button {{
   font-size:{FS_BUTTON}px !important;
   height:44px !important;
   color:#fff !important; font-weight:700; border:none !important; border-radius:8px !important;
-  background:#4CAF50 !important;
+  background:#4CAF50 !important;   /* <— ALL GREEN */
 }}
 div.stButton > button:hover {{ filter:brightness(0.95); }}
-/* specific colors */
-button[key="reset_btn"] {{ background:#2196F3 !important; }}
-button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-/* Inputs block layout: 2 columns that breathe */
+/* Two balanced columns in left inputs */
 #compact-form [data-testid="stHorizontalBlock"]{{ gap:20px; flex-wrap:nowrap; }}
 #compact-form [data-testid="column"]{{ width:100%; max-width:100%; }}
 
+/* Chart responsive */
+.stAltairChart, .vega-embed, .vega-embed .chart-wrapper {{ max-width:100% !important; }}
+
+/* Result badge */
 .prediction-result {{
   font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
   background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.4rem;
 }}
-
-/* chart responsive (no translate hacks) */
-.stAltairChart, .vega-embed, .vega-embed .chart-wrapper {{ max-width:100% !important; }}
 </style>
 """)
 
 # =============================================================================
-# Header (single line, no sliders/offsets)
+# Header (title + logo in one line)
 # =============================================================================
 st.markdown(
     f"""
@@ -275,7 +259,6 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# Random Forest
 rf_model = None
 try:
     rf_path = pfind([
@@ -296,7 +279,6 @@ try:
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
-# XGBoost
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
@@ -305,7 +287,6 @@ try:
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
-# CatBoost
 cat_model = None
 try:
     cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
@@ -314,7 +295,6 @@ try:
 except Exception as e:
     record_health("CatBoost", False, str(e))
 
-# LightGBM
 def load_lightgbm_flex():
     try:
         p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
@@ -332,7 +312,6 @@ try:
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
-# Registry
 model_registry = {}
 for name, ok, *_ in health:
     if not ok: continue
@@ -395,7 +374,6 @@ left, right = st.columns([1.45, 1.0], gap="large")
 
 with left:
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
-    # banner
     st.markdown(
         "<div style=\"background:linear-gradient(90deg,#0E9F6E,#84CC16);color:#fff;"
         "padding:.55rem .9rem;font-weight:800;border-radius:10px;"
@@ -422,15 +400,13 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)  # left-panel
 
 # =============================================================================
-# Step #6: Right panel — logo, model select + aligned buttons, chart
+# Step #6: Right panel — drawing, action row, chart
 # =============================================================================
 with right:
-    # Logo/drawing on top
     drawing = BASE_DIR / "logo2-01.png"
     if drawing.exists():
         st.image(str(drawing), width=520)
 
-    # Model selection + buttons on same row
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
     col_sel, col_calc, col_reset, col_clear = st.columns([1.3, 0.8, 0.8, 0.9], gap="medium")
     with col_sel:
@@ -452,7 +428,6 @@ with right:
             st.success("All predictions cleared.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # result badge placeholder + CSV
     pred_banner = st.empty()
     dl_slot = st.empty()
     if not st.session_state.results_df.empty:
@@ -478,8 +453,7 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
 def predict_di(choice, _unused_array, input_df):
-    df_trees = _df_in_train_order(input_df)
-    df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    df_trees = _df_in_train_order(input_df).replace([np.inf, -np.inf], np.nan).fillna(0.0)
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
