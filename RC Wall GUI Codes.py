@@ -306,7 +306,7 @@ right_offset = 60
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
-LOGO_LEFT  = 250
+LOGO_LEFT  = 100
 LOGO_TOP   = 60
 LOGO_SIZE  = DEFAULT_LOGO_H
 _show_recent = False
@@ -861,6 +861,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
