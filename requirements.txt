@@ -6,10 +6,13 @@ scikit-learn
 xgboost
 lightgbm
 catboost
-tensorflow-cpu
-keras
 joblib
 openpyxl
 pyarrow
 plotly
 
+# ML framework (CPU build) + matching TFP
+tensorflow-cpu==2.15.0.post1
+tensorflow-probability==0.23.0
+
+# DO NOT list "keras" separately
