@@ -281,13 +281,15 @@ st.markdown("""
 <style>
 st.markdown("""
 <style>
+st.markdown("""
+<style>
 /* Increase gap between the DI badge and the download button */
 .prediction-result{
   display: inline-flex !important;   /* keeps it on one line */
   align-items: center !important;     /* vertically center the text */
-  padding: 2px 12px !important;       # top/bottom | left/right
-  line-height: 1.05 !important;       # tighter line height
-  border-radius: 10px !important;     # keep your rounded look
+  padding: 2px 12px !important;       /* top/bottom | left/right */
+  line-height: 1.05 !important;       /* tighter line height */
+  border-radius: 10px !important;     /* keep your rounded look */
   margin-right: 30px !important;      /* Further increase gap between DI badge and CSV button */
 }
 
@@ -297,6 +299,7 @@ div[data-testid="stDownloadButton"]{
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -988,6 +991,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
