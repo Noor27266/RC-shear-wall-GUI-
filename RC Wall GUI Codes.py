@@ -291,7 +291,7 @@ st.markdown(f"""
 st.markdown("""
 <style>
 html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !重要; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
 div.stApp{ margin-top:-4rem !important; }
 section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
@@ -309,7 +309,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# Step #4: Model loading (explicit filenames + RF .json via SKOPS)
+# Step #4: Model loading (robust; tolerates different names/paths)
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -351,20 +351,29 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# ----- Random Forest (joblib/pkl first; fallback to SKOPS .json like Best_RF_Model.json) -----
+# ----- Random Forest (load with joblib EVEN if filename ends with .json; else try SKOPS) -----
 rf_model = None
 try:
-    rf_path = pfind(["random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl"])
-    rf_model = joblib.load(rf_path)
-    record_health("Random Forest", True, f"loaded from {rf_path}")
-except Exception as e_joblib:
+    rf_path = pfind([
+        "random_forest_model.pkl", "random_forest_model.joblib",
+        "rf_model.pkl", "RF_model.pkl",
+        "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
+    ])
+
+    # Try joblib FIRST regardless of extension (your .json is a joblib pickle)
     try:
-        rf_json = pfind(["Best_RF_Model.json","best_rf_model.json","RF_model.json"])
-        import skops.io as sio
-        rf_model = sio.load(rf_json, trusted=True)
-        record_health("Random Forest", True, f"loaded via skops from {rf_json}")
-    except Exception as e_skops:
-        record_health("Random Forest", False, f"RF load failed (joblib:{e_joblib}) (skops:{e_skops})")
+        rf_model = joblib.load(rf_path)
+        record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
+    except Exception as e_joblib:
+        # If it truly is a SKOPS JSON, fall back to skops
+        try:
+            import skops.io as sio
+            rf_model = sio.load(rf_path, trusted=True)
+            record_health("Random Forest", True, f"loaded via skops from {rf_path}")
+        except Exception as e_skops:
+            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})")
+except Exception as e:
+    record_health("Random Forest", False, str(e))
 
 # ----- XGBoost -----
 xgb_model = None
@@ -421,7 +430,8 @@ with st.sidebar:
         try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
         except Exception: pass
 
-# (rest of your script unchanged)
+if "results_df" not in st.session_state:
+    st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
 # Step #5: Ranges, inputs, layout
@@ -633,7 +643,7 @@ def predict_di(choice, _unused_array, input_df):
     return prediction
 
 def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
-    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
+    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M_Vlw','θ']
     x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
     return pd.DataFrame(x, columns=cols)
 
