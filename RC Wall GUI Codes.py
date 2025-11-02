@@ -497,23 +497,26 @@ with left:
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
-    c1, _gap, c2 = st.columns([1, 0.08, 1], gap="large")
+
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
+    c1, c2, c3 = st.columns([1, 1, 1], gap="large")
 
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
 
     with c2:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fyl, fybl = [num(*row) for row in MATS[3:]]
-        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
+    with c3:
+        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
+        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
+        fyl, fybl = [num(*row) for row in MATS[3:]]
+
     css("</div>")
     css("</div>")
+
 
 # =============================================================================
 # Step #6: Right panel
@@ -837,6 +840,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
