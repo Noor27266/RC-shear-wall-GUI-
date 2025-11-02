@@ -288,17 +288,17 @@ st.markdown("""
 /* Increase the width of the Predicted Damage Index (DI) box */
 .prediction-result {
   width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 250px !important;  /* Slightly increase the width */
+  max-width: 300px !important;  /* Slightly increase the width */
   padding: 4px 12px !important;  /* Maintain compact padding */
   font-size: 0.9em !important;  /* Smaller text inside DI box */
   white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+  margin-right: 10px !important;  /* Adjust margin to bring it closer to the button */
 }
 
-/* Move the Download CSV button closer to the DI box */
+/* Move the Download CSV button even closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left: 5px !important;  /* Move it slightly to the left */
+  margin-left: 0px !important;  /* Bring it closer to the DI box */
 }
 
 div[data-testid="stDownloadButton"] button {
@@ -310,6 +310,7 @@ div[data-testid="stDownloadButton"] button {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -893,6 +894,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
