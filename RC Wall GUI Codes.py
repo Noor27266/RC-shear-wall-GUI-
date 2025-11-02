@@ -126,7 +126,7 @@ css(f"""
   .stNumberInput label .katex,
   .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
   .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
+  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !Important; }}
 
   .stNumberInput label .katex .mathrm,
   .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
@@ -346,19 +346,26 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
+# --- Random Forest (now supports joblib/pkl and SKOPS .json) ---
 rf_model = None
 try:
     # preferred persisted formats
     rf_path = pfind(["random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl"])
     rf_model = joblib.load(rf_path)
     record_health("Random Forest", True, f"loaded from {rf_path}")
-except Exception as e:
-    # if only JSON exists, explain why it can't be used
+except Exception as e_joblib:
+    # try SKOPS JSON fallback (e.g., Best_RF_Model.json)
     try:
         rf_json = pfind(["Best_RF_Model.json","best_rf_model.json","RF_model.json"])
-        record_health("Random Forest", False, f"Found {rf_json.name} but RandomForest can't be restored from plain JSON. Save as .pkl/.joblib instead.")
+        try:
+            import skops.io as sio  # lazy import so it's only needed if JSON exists
+            rf_model = sio.load(rf_json, trusted=True)
+            record_health("Random Forest", True, f"loaded via skops from {rf_json}")
+        except Exception as e_skops:
+            record_health("Random Forest", False, f"Found {rf_json.name} but failed to load with skops: {e_skops}")
     except Exception:
-        record_health("Random Forest", False, str(e))
+        # nothing RF-like was found anywhere
+        record_health("Random Forest", False, str(e_joblib))
 
 xgb_model = None
 try:
