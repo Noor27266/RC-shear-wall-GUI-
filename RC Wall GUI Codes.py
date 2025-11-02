@@ -106,10 +106,10 @@ s = lambda v: int(round(v * SCALE_UI))
 FS_TITLE   = s(50)  # page title
 FS_SECTION = s(35)  # section headers
 FS_LABEL   = s(22)  # input & select labels (katex included)
-FS_UNITS   = s(14)  # math units in labels
-FS_INPUT   = s(16)  # number input value
-FS_SELECT  = s(16)  # dropdown value/options
-FS_BUTTON  = s(18)  # Calculate / Reset / Clear All
+FS_UNITS   = s(20)  # math units in labels
+FS_INPUT   = s(20)  # number input value
+FS_SELECT  = s(20)  # dropdown value/options
+FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
 FS_BADGE   = s(16)  # predicted badge
 FS_RECENT  = s(12)  # small chips
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
@@ -822,4 +822,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
