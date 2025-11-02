@@ -269,6 +269,85 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 </style>
 """, unsafe_allow_html=True)
 
+
+
+
+
+
+
+# --- FINAL, NON-DESTRUCTIVE UI FIXES (append-only) ---
+css("""
+<style id="final-ui-fixes">
+
+/* 1) Kill the duplicate grey wrappers at the very top */
+.left-panel,
+.block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner){
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* 2) Restore default Streamlit/BaseWeb Select styles and make text readable */
+label[for="model_select_compact"]{
+  font-size: 18px !important;           /* label size */
+  font-weight: 700 !important;
+}
+
+/* visible value inside the closed select */
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child{
+  font-size: 20px !important;           /* “CatBoost” size */
+  line-height: 24px !important;
+}
+
+/* select container look */
+div[data-testid="stSelectbox"] [data-baseweb="select"]{
+  background: #fff !important;
+  border: 1px solid #e6e9f2 !important;
+  border-radius: 12px !important;
+  min-height: 42px !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* dropdown menu / popover look (back to normal, no translucent sheet) */
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+div[data-testid="stSelectbox"] div[role="listbox"]{
+  background: #fff !important;
+  border: 1px solid #e6e9f2 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12) !important;
+}
+
+/* options inside the menu */
+div[data-testid="stSelectbox"] div[role="listbox"] div[role="option"]{
+  font-size: 18px !important;
+  color: #111 !important;
+}
+
+/* 3) Prevent button text from wrapping & use compact size */
+div.stButton > button{
+  white-space: nowrap !important;
+  font-size: 18px !important;           /* button text size */
+  height: 42px !important;
+  line-height: 40px !important;
+  padding: 0 14px !important;
+}
+
+/* 4) Stop the title area from being clipped by negative margins */
+div.stApp{ margin-top: 0 !important; }
+header[data-testid="stHeader"]{ display: none !important; } /* still hide default Streamlit header */
+
+/* 5) Header logo default height (tweak if you want) */
+.page-header__logo{ height: 56px !important; }  /* change 56 to what you like */
+
+</style>
+""")
+
+
+
+
+
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
@@ -829,3 +908,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
