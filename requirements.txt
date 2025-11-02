@@ -9,13 +9,11 @@ joblib
 pyarrow
 plotly
 
-# Needed for ANN scalers (joblib) and optional SKOPS JSON load
+# For RF/joblib pickles and optional skops fallback
 scikit-learn==1.3.2
 skops==0.9.0
 
-# TensorFlow ONLY (do NOT pin 'keras' separately)
+# TensorFlow ONLY (do NOT pin "keras" separately)
 tensorflow-cpu==2.15.0.post1
 tensorflow-probability==0.23.0
 h5py
-
-keras>=3.0.0
