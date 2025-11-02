@@ -262,12 +262,6 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -282,15 +276,6 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 
 
-st.markdown("""
-<style>
-/* Reduce the length of the Predicted Damage Index box */
-div[class*="stMarkdown"] {
-  max-width: 250px !important;  /* Control the length of the box */
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
 
 st.markdown("""
 <style>
@@ -319,9 +304,6 @@ div[data-testid="stDownloadButton"] button {
 }
 </style>
 """, unsafe_allow_html=True)
-
-
-
 
 
 
@@ -905,14 +887,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
-
-
-
-
-
-
 
 
 
