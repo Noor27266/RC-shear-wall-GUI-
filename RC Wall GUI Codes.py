@@ -120,8 +120,8 @@ st.markdown("""
 <style>
 /* Design reference for "full" layout (adjust if you want). */
 :root{
-  --design-w: 1600;    /* width in px of your intended one-screen layout */
-  --design-h: 500;     /* height in px of your intended one-screen layout */
+  --design-w: 1000;    /* width in px of your intended one-screen layout */
+  --design-h: 100;     /* height in px of your intended one-screen layout */
   --scale: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
 }
 
@@ -154,13 +154,13 @@ html body [data-testid="stAppViewContainer"]{
 # === END fit-to-screen insertion ===
 
 FS_TITLE   = 20
-FS_SECTION = 35
-FS_LABEL   = 30
+FS_SECTION = 20
+FS_LABEL   = 20
 FS_UNITS   = 18
 FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
-FS_BADGE   = 25
+FS_SELECT  = 20
+FS_BUTTON  = 20
+FS_BADGE   = 20
 FS_RECENT  = 16
 INPUT_H    = max(32, int(FS_INPUT * 2.1))
 
@@ -885,5 +885,6 @@ if show_recent and not st.session_state.results_df.empty:
 
 # === close fit-to-screen wrapper (added) ===
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
