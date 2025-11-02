@@ -23,7 +23,7 @@ import joblib
 import catboost
 import lightgbm as lgb
 
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model as tfk_load_model
 
 # --- session defaults (prevents AttributeError on first run) ---
 st.session_state.setdefault("results_df", pd.DataFrame())
@@ -48,33 +48,30 @@ def pfind(candidates):
       5) one-level subdirs under BASE_DIR and /mnt/data
       6) recursive glob fallback
     """
-    # exact paths first
-    for c in candidates:
+    for c in candidates:  # exact paths first
         p = Path(c)
         if p.exists():
             return p
 
     roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
     for root in roots:
-        if not root.exists():
-            continue
+        if not root.exists(): continue
         for c in candidates:
             p = root / c
             if p.exists():
                 return p
 
-    # one-level subdirs under BASE_DIR and /mnt/data
+    # one-level under BASE_DIR and /mnt/data
     for root in [BASE_DIR, Path("/mnt/data")]:
-        if not root.exists():
-            continue
+        if not root.exists(): continue
         for sub in root.iterdir():
-            if sub.is_dir():
-                for c in candidates:
-                    p = sub / c
-                    if p.exists():
-                        return p
+            if not sub.is_dir(): continue
+            for c in candidates:
+                p = sub / c
+                if p.exists():
+                    return p
 
-    # glob fallbacks
+    # glob fallback
     pats = []
     for c in candidates:
         for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
@@ -118,21 +115,12 @@ css(f"""
   .block-container {{ padding-top: 0rem; }}
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
-  .section-header {{
-    font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
-  }}
+  .section-header {{ font-size:{FS_SECTION}px !important; font-weight:700; margin:.35rem 0; }}
 
-  .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
-  }}
-  .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
-  .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
-
-  .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
+  .stNumberInput label, .stSelectbox label {{ font-size:{FS_LABEL}px !important; font-weight:700; }}
+  .stNumberInput label .katex, .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
+  .stNumberInput label .katex .fontsize-ensurer, .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
+  .stNumberInput label .katex .mathrm, .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
@@ -150,9 +138,7 @@ css(f"""
       box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
       transition:border-color .15s ease, box-shadow .15s ease !important;
   }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{
-      border-color:#d6dced !important;
-  }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
   div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
       border-color:{PRIMARY} !important;
       box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
@@ -164,18 +150,13 @@ css(f"""
       border-radius:10px !important;
       box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
   }}
-  div[data-testid="stNumberInput"] button:hover {{
-      border-color:#cbd3e5 !important;
-  }}
+  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
 
   .stSelectbox [role="combobox"] {{ font-size:{FS_SELECT}px !important; }}
 
   div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:40px !important;
-    color:#fff !important;
-    font-weight:700; border:none !important; border-radius:8px !important;
-    background: #4CAF50 !important;
+    font-size:{FS_BUTTON}px !important; height:40px !important; color:#fff !important; font-weight:700;
+    border:none !important; border-radius:8px !important; background:#4CAF50 !important;
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
@@ -184,47 +165,29 @@ css(f"""
   button[key="clear_btn"] {{ background: #f44336 !important; }}
 
   .form-banner {{
-    text-align:center;
-    background: linear-gradient(90deg, #0E9F6E, #84CC16);
-    color: #fff;
-    padding:.45rem .75rem;
-    border-radius:10px;
-    font-weight:800;
-    font-size:{FS_SECTION + 4}px;
-    margin:.1rem 0 !important;
-    transform: translateY(-10px);
+    text-align:center; background: linear-gradient(90deg, #0E9F6E, #84CC16);
+    color: #fff; padding:.45rem .75rem; border-radius:10px; font-weight:800;
+    font-size:{FS_SECTION + 4}px; margin:.1rem 0 !important; transform: translateY(-10px);
   }}
 
-  .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-  }}
-  .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
-  }}
+  .prediction-result {{ font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
+    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem; }}
+  .recent-box {{ font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
+    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block; }}
 
   #compact-form{{ max-width:900px; margin:0 auto; }}
   #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
   #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
-  #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
+  #compact-form [data-testid="stNumberInput"], #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
+      background:{LEFT_BG} !important; border-radius:12px !important; box-shadow:0 1px 3px rgba(0,0,0,.1) !important; padding:16px !important;
   }}
 
-  .left-panel {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-  }}
+  .left-panel {{ background:{LEFT_BG} !important; border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important; padding:16px !important; }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
@@ -249,7 +212,8 @@ css("""
 .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) [data-testid="stHorizontalBlock"] {
   position: relative !important; top: -60px !important;
 }
-.prediction-result{ white-space: nowrap !important; display: inline-block !important; width: auto !important; line-height: 1.2 !important; margin-top: 0 !important; }
+.prediction-result{ white-space: nowrap !important; display: inline-block !important; width: auto !important;
+  line-height: 1.2 !important; margin-top: 0 !important; }
 </style>
 """)
 
@@ -280,7 +244,7 @@ st.markdown(f"""
   .page-header__title {{ font-size: {FS_TITLE}px; font-weight: 800; margin: 0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
   .page-header__logo {{ height: {int(LOGO_SIZE)}px; width: auto; display: block; transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px); }}
 </style>
-<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
+<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important;">
   <div class="page-header">
     <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
@@ -314,62 +278,95 @@ st.markdown(f"""
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
 
+# ---- NEW: flexible ANN + scaler loaders (no UI changes) ---------------------
+def _load_scaler_flex(*candidates):
+    """Try joblib first; if that fails, try skops (if installed)."""
+    p = pfind(list(candidates))
+    try:
+        return joblib.load(p), f"joblib ({p})"
+    except Exception as e1:
+        try:
+            import skops.io as sio
+            obj = sio.load(p, trusted=True)
+            return obj, f"skops ({p})"
+        except Exception as e2:
+            raise RuntimeError(f"Failed to load scaler {p}: joblib={e1} | skops={e2}")
+
+def _load_ann_flex(*model_candidates):
+    """
+    1) Try tf.keras (works for .h5 and many legacy SavedModels on TF2.15)
+    2) If that fails, try Keras-3 loader (handles .keras v3 format) if `keras` is installed.
+    """
+    p = pfind(list(model_candidates))
+    # try tf.keras first
+    try:
+        m = tfk_load_model(p)
+        return m, f"tf.keras from {p}"
+    except Exception as e_tf:
+        # try Keras 3 fallback (only if package exists)
+        try:
+            import keras as k3  # Keras 3
+            m = k3.saving.load_model(p)
+            return m, f"keras3 from {p}"
+        except Exception as e_k3:
+            raise RuntimeError(f"ANN load failed for {p}: tf.keras={e_tf} | keras3={e_k3}")
+
 class _ScalerShim:
-    def __init__(self, X_scaler, y_scaler):
+    def __init__(self, X_scaler, y_scaler, x_kind="External", y_kind="External"):
         import numpy as _np
         self._np = _np
         self.Xs = X_scaler
         self.Ys = y_scaler
-        self.x_kind = "External joblib"
-        self.y_kind = "External joblib"
+        self.x_kind = x_kind
+        self.y_kind = y_kind
     def transform_X(self, X): return self.Xs.transform(X)
     def inverse_transform_y(self, y):
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
+# -------------------- ANN: PS -------------------------------------------------
 ann_ps_model = None; ann_ps_proc = None
 try:
-    ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = load_model(ps_model_path)
-    sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
-    sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
-    ann_ps_proc = _ScalerShim(sx, sy)
-    record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
+    ann_ps_model, src = _load_ann_flex("ANN_PS_Model.keras", "ANN_PS_Model.h5")
+    sx, sx_kind = _load_scaler_flex("ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib","ANN_PS_Scaler_X.skops")
+    sy, sy_kind = _load_scaler_flex("ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib","ANN_PS_Scaler_y.skops")
+    ann_ps_proc = _ScalerShim(sx, sy, x_kind=sx_kind, y_kind=sy_kind)
+    record_health("PS (ANN)", True, f"loaded model via {src}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
+# -------------------- ANN: MLP -----------------------------------------------
 ann_mlp_model = None; ann_mlp_proc = None
 try:
-    mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = load_model(mlp_model_path)
-    sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
-    sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
-    ann_mlp_proc = _ScalerShim(sx, sy)
-    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
+    ann_mlp_model, src = _load_ann_flex("ANN_MLP_Model.keras", "ANN_MLP_Model.h5")
+    sx, sx_kind = _load_scaler_flex("ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib","ANN_MLP_Scaler_X.skops")
+    sy, sy_kind = _load_scaler_flex("ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib","ANN_MLP_Scaler_y.skops")
+    ann_mlp_proc = _ScalerShim(sx, sy, x_kind=sx_kind, y_kind=sy_kind)
+    record_health("MLP (ANN)", True, f"loaded model via {src}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# ----- Random Forest (joblib FIRST even for .json; fall back to SKOPS) -----
+# -------------------- Random Forest (joblib first; skops fallback) -----------
 rf_model = None
 try:
     rf_path = pfind([
-        "random_forest_model.pkl", "random_forest_model.joblib",
-        "rf_model.pkl", "RF_model.pkl",
-        "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
+        "random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl",
+        "Best_RF_Model.json","best_rf_model.json","RF_model.json"
     ])
     try:
-        rf_model = joblib.load(rf_path)  # your .json is a joblib pickle
+        rf_model = joblib.load(rf_path)
         record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
-    except Exception as e_joblib:
+    except Exception as e_job:
         try:
             import skops.io as sio
             rf_model = sio.load(rf_path, trusted=True)
             record_health("Random Forest", True, f"loaded via skops from {rf_path}")
-        except Exception as e_skops:
-            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})")
+        except Exception as e_sk:
+            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_job}) (skops: {e_sk})")
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
+# -------------------- XGBoost / CatBoost / LightGBM --------------------------
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
@@ -398,11 +395,12 @@ def load_lightgbm_flex():
             raise e
 
 try:
-    lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
+    lgb_model, lgb_kind, lgb_path = load_lightGBM_flex = load_lightgbm_flex()
     record_health("LightGBM", True, f"loaded as {lgb_kind} from {lgb_path}")
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
+# -------------------- Registry and Model Health UI ---------------------------
 model_registry = {}
 for name, ok, *_ in health:
     if not ok: continue
@@ -477,11 +475,8 @@ left, right = st.columns([1.5, 2], gap="large")
 
 with left:
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
-
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
-
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
 
@@ -524,20 +519,20 @@ with right:
 
     st.markdown(""" 
     <style>
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {{
         border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
-    }
-    [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-    div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
-    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
-    div[role="option"] { color: black !important; font-size: 16px !important; }
-    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
-    #action-row { display:flex; align-items:center; gap: 1px; }
-    .stAltairChart { transform: translate(100px, 50px) !important; }
+    }}
+    [data-baseweb="popover"], [data-baseweb="popover"] > div {{ background: transparent !important; box-shadow: none !important; border: none !important; }}
+    div[data-testid="stSelectbox"] > div > div {{ height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }}
+    div[data-testid="stSelectbox"] label p {{ font-size: 18px !important; color: black !important; font-weight: bold !important; }}
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: 30px !important; }}
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] {{ font-size: 30px !important; color: black !important; }}
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * {{ color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }}
+    div[data-testid="stButton"] button p {{ font-size: 30px !important; color: black !important; font-weight: normal !important; }}
+    div[role="option"] {{ color: black !important; font-size: 16px !important; }}
+    div.stButton > button {{ height: 50px !important; display:flex; align-items:center; justify-content:center; }}
+    #action-row {{ display:flex; align-items:center; gap: 1px; }}
+    .stAltairChart {{ transform: translate(100px, 50px) !important; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -596,12 +591,8 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
 def predict_di(choice, _unused_array, input_df):
-    # keep training order
     df_trees = _df_in_train_order(input_df)
-
-    # --- FIX: ensure finite values for tree models (avoid NaN/inf from reindex) ---
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
-
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
@@ -705,7 +696,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
     chart_html = chart.to_html()
     chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }</style>')
+        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * {{ font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }}</style>')
     st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
