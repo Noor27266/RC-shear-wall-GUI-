@@ -282,32 +282,35 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 
 
+
 st.markdown("""
 <style>
-/* Adjust the Predicted Damage Index (DI) badge size */
+/* Reduce the width of the Predicted Damage Index (DI) box */
 .prediction-result {
-  font-size: 0.9em !important; /* Make the text inside the DI badge smaller */
-  padding: 4px 8px !important; /* Reduce padding inside the DI badge */
-  margin-right: 20px !important; /* Decrease margin on the right of DI badge */
-  white-space: nowrap !important;
+  width: auto !important;  /* Ensure the width is not stretched */
+  max-width: 220px !important;  /* Limit the width of the DI box */
+  padding: 4px 12px !important;  /* Reduce padding for the DI box */
+  font-size: 0.9em !important;  /* Smaller text inside DI box */
+  white-space: nowrap !important;  /* Prevent wrapping of text */
+  margin-right: 10px !important;  /* Bring it closer to the button */
 }
 
-/* Move the Download CSV button inside a little */
+/* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left: 10px !important;  /* Move the button inside slightly */
-  margin-right: 0 !important;  /* Make sure the right margin is removed */
+  margin-left: 10px !important;  /* Slightly push it to the left */
 }
 
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
-  padding: 6px 12px !important;  /* Adjust padding to make the button more compact */
-  font-size: 12px !important;    /* Smaller font size for the button text */
-  height: auto !important;
-  line-height: 1.1 !important;
+  padding: 6px 12px !important;  /* Make the button smaller */
+  font-size: 12px !important;  /* Smaller font size */
+  height: auto !important;  /* Let the button adjust to the content size */
+  line-height: 1.1 !important;  /* Adjust the line height for better visual alignment */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -889,6 +892,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
