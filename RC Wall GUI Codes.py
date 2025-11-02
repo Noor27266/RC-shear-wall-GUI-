@@ -117,13 +117,13 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 
 # (REMOVED the old fit-to-screen wrapper and overflow-hidden CSS)
 
-FS_TITLE   = 50
-FS_SECTION = 35
-FS_LABEL   = 30
+FS_TITLE   = 25
+FS_SECTION = 25
+FS_LABEL   = 25
 FS_UNITS   = 18
 FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
+FS_SELECT  = 25
+FS_BUTTON  = 25
 FS_BADGE   = 25
 FS_RECENT  = 16
 INPUT_H    = max(32, int(FS_INPUT * 2.1))
@@ -789,3 +789,4 @@ if show_recent and not st.session_state.results_df.empty:
             )
 
 # (REMOVED the old closing tag for the deleted fit-to-screen wrapper)
+
