@@ -118,24 +118,35 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 # === Fit the whole app to one screen without changing your layout/colors ===
 st.markdown("""
 <style>
-/* Reference size of your intended full UI (pic #2 look). Adjust if needed. */
+/* Design reference for "full" layout (adjust if you want). */
 :root{
-  --design-w: 1600;    /* width in px for your full layout */
-  --design-h: 900;     /* height in px for your full layout */
+  --design-w: 1600;    /* width in px of your intended one-screen layout */
+  --design-h: 900;     /* height in px of your intended one-screen layout */
   --scale: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
 }
 
-/* Scale the whole app uniformly */
+/* Anchor the entire app to the viewport and scale it uniformly */
 #fit-to-screen{
+  position: fixed;      /* <-- keeps it at (0,0) regardless of page flow */
+  top: 0;
+  left: 0;
   transform: scale(var(--scale));
   transform-origin: top left;
   width: calc(var(--design-w) * 1px);
   height: calc(var(--design-h) * 1px);
+  z-index: 1;
 }
 
-/* Prevent outer scrolling so everything sits on one screen */
-html, body, [data-testid="stAppViewContainer"]{
+/* Kill outer scrolling so everything stays on one screen */
+html, body{
   overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* CRITICAL: neutralize any left padding that could push the app off-screen */
+html body [data-testid="stAppViewContainer"]{
+  padding-left: 0 !important;
 }
 </style>
 <div id="fit-to-screen">
@@ -354,6 +365,8 @@ with st.sidebar:
 st.markdown(f"""
 <style>
 :root {{ --shift-right: {int(app_x)}px; }}
+/* Original code sets padding-left using --shift-right.
+   The fit-to-screen block above already forces it to 0 so it doesn't push off-screen. */
 [data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right) !important; }}
 </style>
 """, unsafe_allow_html=True)
@@ -429,7 +442,7 @@ class _ScalerShim:
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = _load_keras_model(ps_model_path)                   # << robust loader
+    ann_ps_model = _load_keras_model(ps_model_path)
     sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
@@ -440,7 +453,7 @@ except Exception as e:
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = _load_keras_model(mlp_model_path)                 # << robust loader
+    ann_mlp_model = _load_keras_model(mlp_model_path)
     sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
@@ -698,7 +711,7 @@ def predict_di(choice, _unused_array, input_df):
     # keep training order
     df_trees = _df_in_train_order(input_df)
 
-    # --- ensure finite values for tree models (avoid NaN/inf from reindex) ---
+    # ensure finite values for tree models
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
     X = df_trees.values.astype(np.float32)
