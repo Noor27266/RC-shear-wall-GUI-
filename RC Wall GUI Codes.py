@@ -115,25 +115,23 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# ---------------------------------------------------------------------------
-# AUTO-FIT THE WHOLE APP TO THE SCREEN (no layout/colour changes)
-#   - Uses CSS zoom (best: Chromium/Safari); falls back to transform if needed.
-#   - No wrappers; no element positions changed.
-# ---------------------------------------------------------------------------
-css("""
+# === Sub-Step: Auto-scale the whole UI at 100% zoom (no layout/color changes) ===
+st.markdown("""
 <style>
 :root{
-  --design-w: 1600;   /* your intended full layout width */
-  --design-h: 900;    /* your intended full layout height */
+  /* Choose a realistic unscaled size of your full UI. */
+  --design-w: 1900;   /* was 1600 */
+  --design-h: 1200;   /* was 900  */
   --zoom: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
 }
-/* Preferred: zoom (doesn't reflow layout) */
+
+/* Preferred path (Chromium/Safari): shrink the whole page without reflow */
 body { zoom: var(--zoom); }
-/* Keep page from scrolling while scaled */
+
+/* Prevent vertical/horizontal scroll when zoomed */
 html, body { overflow: hidden; }
 
-/* Fallback for browsers that don't support zoom (e.g., Firefox).
-   We scale only the main block container in place. */
+/* Firefox fallback (no 'zoom' support): scale the main container in place */
 @supports not (zoom: 1) {
   section.main > div.block-container{
     width: calc(var(--design-w) * 1px) !important;
@@ -144,14 +142,12 @@ html, body { overflow: hidden; }
   }
 }
 
-/* Prevent vertical letter-stacking when scaling */
+/* Keep text from breaking into vertical letters when scaled */
 div.stButton > button,
 div[data-testid="stSelectbox"] [role="combobox"],
-div[data-testid="stNumberInput"] input {
-  white-space: nowrap !important;
-}
+div[data-testid="stNumberInput"] input { white-space: nowrap !important; }
 </style>
-""")
+""", unsafe_allow_html=True)
 
 FS_TITLE   = 50
 FS_SECTION = 35
@@ -390,7 +386,6 @@ css("""
   div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
   .stSelectbox [role="combobox"]{ font-size:28px !important; }
   div.stButton > button{ font-size:24px !important; height:42px !important; }
-
   [data-testid="stAppViewContainer"]{ padding-left: 280px !important; }
 }
 
@@ -400,7 +395,7 @@ css("""
   [data-testid="stAppViewContainer"]{ padding-left: 120px !important; }
 }
 
-/* Small widths (<= 1100px) */
+/* Small widths (<= 1100px): allow wrapping and cancel transforms */
 @media (max-width: 1100px){
   [data-testid="stAppViewContainer"]{ padding-left: 16px !important; }
   .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
