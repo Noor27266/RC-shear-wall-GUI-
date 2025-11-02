@@ -950,31 +950,29 @@ if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
-st.markdown("""
 <style>
 /* Ensure both elements are inline-flex, no wrap */
-.prediction-result {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: auto !important;
-  margin-right: 50px !important;   /* Add space between the DI badge and the CSV button */
-  white-space: nowrap !important;
+.prediction-result,
+div[data-testid="stDownloadButton"]{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:auto !important;
+  margin-right:20px !important;   /* Adjusted gap between the two elements */
+  white-space:nowrap !important;
 }
 
-div[data-testid="stDownloadButton"] {
-  display: inline-block !important;
-  margin-left: 10px !important;  /* Adjust space to prevent the button from touching */
+div[data-testid="stDownloadButton"] > button{
+  width:auto !important;        /* Ensuring CSV button does not stretch */
+  padding:6px 12px !important;  /* Giving the button some padding */
 }
 
-div[data-testid="stDownloadButton"] > button {
-  padding: 6px 12px !important;  /* Give the button comfortable padding */
-  white-space: nowrap !important; /* Ensure text stays on one line */
-  width: auto !important; /* Prevent stretching of the button */
-  max-width: 220px !important; /* Set a max width to limit button length */
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important; /* Ensuring the button is inline */
+  margin-left:10px !important; /* Ensuring a gap on the left side of the button */
 }
 </style>
-""", unsafe_allow_html=True)
+
 
 
 
