@@ -330,14 +330,12 @@ class _ScalerShim:
 # --- helper for ANN model loading (tries tf.keras first, then keras-3 if present) ---
 def _load_any_keras_model(candidates):
     p = pfind(list(candidates))
-    # TensorFlow loader
     try:
-        m = load_model(p)
+        m = load_model(p)                # tf.keras (works for .h5/.keras saved with TF2)
         return m, f"tf.keras ({p.name})"
     except Exception as e_tf:
-        # Optional fallback for models saved with keras>=3
         try:
-            import keras as k3
+            import keras as k3          # keras 3 loader for .keras format
             m = k3.saving.load_model(p)
             return m, f"keras3 ({p.name})"
         except Exception as e_k3:
@@ -351,7 +349,7 @@ def _load_scaler_any(*cands):
         return obj, f"joblib ({path.name})"
     except Exception as e_job:
         try:
-            import skops.io as sio  # only if installed
+            import skops.io as sio
             obj = sio.load(path, trusted=True)
             return obj, f"skops ({path.name})"
         except Exception as e_sk:
@@ -390,7 +388,7 @@ try:
         "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
     ])
     try:
-        rf_model = joblib.load(rf_path)  # your .json is a joblib pickle
+        rf_model = joblib.load(rf_path)
         record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
     except Exception as e_joblib:
         try:
