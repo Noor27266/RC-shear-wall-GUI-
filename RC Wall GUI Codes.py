@@ -759,7 +759,7 @@ else:
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
             pred_banner.markdown(f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
             csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download All Results as CSV", data=csv, file_name="di_predictions.csv",
+            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
                                     mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
@@ -861,6 +861,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
