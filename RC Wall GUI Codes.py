@@ -963,4 +963,38 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# === >>> APPENDED CSS FIX (do not change anything above) <<< ===
+st.markdown("""
+<style>
+/* Same width, one line, and spacing so they don't touch */
+.prediction-result{
+  width:260px !important;               /* match widths */
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  margin-right:20px !important;         /* clear gap before CSV button */
+}
 
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important;
+}
+div[data-testid="stDownloadButton"] button{
+  width:260px !important;               /* same width as badge */
+  white-space:nowrap !important;        /* keep 'Download as CSV' on one line */
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+/* Ensure the two sibling columns leave breathing room (no touching) */
+div[data-testid="stHorizontalBlock"] > div:has(.prediction-result){ margin-right:12px !important; }
+div[data-testid="stHorizontalBlock"] > div:has(div[data-testid="stDownloadButton"]){ margin-left:0 !important; }
+
+/* Keep their column boxes from stacking contents */
+div[data-testid="stHorizontalBlock"] > div:has(.prediction-result),
+div[data-testid="stHorizontalBlock"] > div:has(div[data-testid="stDownloadButton"]){
+  display:flex !important;
+  align-items:center !important;
+}
+</style>
+""", unsafe_allow_html=True)
