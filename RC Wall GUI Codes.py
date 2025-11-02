@@ -25,6 +25,9 @@ import lightgbm as lgb
 
 from tensorflow.keras.models import load_model
 
+# --- session defaults (prevents AttributeError on first run) ---
+st.session_state.setdefault("results_df", pd.DataFrame())
+
 # =============================================================================
 # Small helpers
 # =============================================================================
@@ -126,7 +129,7 @@ css(f"""
   .stNumberInput label .katex,
   .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
   .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !Important; }}
+  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
   .stNumberInput label .katex .mathrm,
   .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
@@ -288,7 +291,7 @@ st.markdown(f"""
 st.markdown("""
 <style>
 html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !重要; }
 header[data-testid="stHeader"] *{ display:none !important; }
 div.stApp{ margin-top:-4rem !important; }
 section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
@@ -399,14 +402,16 @@ try:
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
-# ----- Register models for the dropdown (names match your reference style) -----
+# ----- Register models for the dropdown -----
 model_registry = {}
-if xgb_model is not None:            model_registry["XGBoost"] = xgb_model
-if cat_model is not None:            model_registry["CatBoost"] = cat_model
-if lgb_model is not None:            model_registry["LightGBM"] = lgb_model
-if ann_ps_model is not None:         model_registry["PS"] = ann_ps_model
-if ann_mlp_model is not None:        model_registry["MLP"] = ann_mlp_model
-if rf_model is not None:             model_registry["Random Forest"] = rf_model  # will show as "RF" in your UI
+for name, ok, *_ in health:
+    if not ok: continue
+    if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
+    elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
+    elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
+    elif name == "PS (ANN)" and ann_ps_model is not None: model_registry["PS"] = ann_ps_model
+    elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
+    elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
 with st.sidebar:
     st.header("Model Health")
@@ -416,6 +421,7 @@ with st.sidebar:
         try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
         except Exception: pass
 
+# (rest of your script unchanged)
 
 # =============================================================================
 # Step #5: Ranges, inputs, layout
@@ -758,4 +764,3 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
-
