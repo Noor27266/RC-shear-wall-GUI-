@@ -331,6 +331,55 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+# -------------------------  <<< Responsive overrides  -------------------------
+css("""
+<style>
+/* Large desktops (<= 1800px) */
+@media (max-width: 1800px){
+  .page-header__title{ font-size:42px !important; }
+  .stNumberInput label, .stSelectbox label{ font-size:26px !important; }
+  div[data-testid="stNumberInput"] input{ font-size:18px !important; height:44px !important; line-height:40px !important; }
+  .stSelectbox [role="combobox"]{ font-size:32px !important; }
+  div.stButton > button{ font-size:30px !important; height:46px !important; }
+}
+
+/* Laptops (<= 1500px) – fits at 80–100% zoom */
+@media (max-width: 1500px){
+  .page-header__title{ font-size:36px !important; }
+  .form-banner{ font-size:32px !important; }
+  .section-header{ font-size:26px !important; }
+  .stNumberInput label, .stSelectbox label{ font-size:22px !important; }
+  div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
+  .stSelectbox [role="combobox"]{ font-size:28px !important; }
+  div.stButton > button{ font-size:24px !important; height:42px !important; }
+
+  /* reduce right offset so content fits */
+  [data-testid="stAppViewContainer"]{ padding-left: 280px !important; }
+}
+
+/* Narrow laptops (<= 1280px) */
+@media (max-width: 1280px){
+  .page-header__logo{ height:60px !important; }
+  [data-testid="stAppViewContainer"]{ padding-left: 120px !important; }
+}
+
+/* Small widths (<= 1100px): allow wrapping and cancel transforms */
+@media (max-width: 1100px){
+  [data-testid="stAppViewContainer"]{ padding-left: 16px !important; }
+  .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
+  .block-container [data-testid="stHorizontalBlock"] > div{
+    width:100% !important; max-width:100% !important;
+  }
+  .page-header-outer{ transform:none !important; }
+  .stAltairChart{ transform:none !important; }
+}
+
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""")
+# -----------------------  end responsive overrides  --------------------------
+
 # =============================================================================
 # Step #4: Model loading (robust; tolerates different names/paths)
 # =============================================================================
@@ -353,7 +402,7 @@ class _ScalerShim:
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = _load_keras_model(ps_model_path)                   # << only change: robust loader
+    ann_ps_model = _load_keras_model(ps_model_path)                   # << robust loader
     sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
@@ -364,7 +413,7 @@ except Exception as e:
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = _load_keras_model(mlp_model_path)                 # << only change: robust loader
+    ann_mlp_model = _load_keras_model(mlp_model_path)                 # << robust loader
     sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
