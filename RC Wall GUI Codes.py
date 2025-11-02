@@ -277,17 +277,8 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 
 
-st.markdown("""
-<style>
-/* Increase the width of the Predicted Damage Index (DI) box */
-.prediction-result {
-  width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 300px !important;  /* Slightly increase the width */
-  padding: 4px 12px !important;  /* Maintain compact padding */
-  font-size: 0.9em !important;  /* Smaller text inside DI box */
-  white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 10px !important;  /* Adjust margin to bring it closer to the button */
-}
+
+
 
 st.markdown("""
 <style>
@@ -316,6 +307,12 @@ div[data-testid="stDownloadButton"] button {
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
 
 
 
@@ -900,7 +897,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
 
 
 
