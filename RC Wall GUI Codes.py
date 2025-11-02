@@ -525,9 +525,9 @@ with left:
 # =============================================================================
 # Step #6: Right panel (unchanged except: removed chart translate)
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 550
+HERO_X, HERO_Y, HERO_W = 100, 5, 400
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 550
+CHART_W = 400
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -789,4 +789,5 @@ if show_recent and not st.session_state.results_df.empty:
             )
 
 # (REMOVED the old closing tag for the deleted fit-to-screen wrapper)
+
 
