@@ -110,7 +110,7 @@ FS_UNITS   = s(30)  # math units in labels
 FS_INPUT   = s(30)  # number input value
 FS_SELECT  = s(35)  # dropdown value/options
 FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
-FS_BADGE   = s(20)  # predicted badge
+FS_BADGE   = s(30)  # predicted badge
 FS_RECENT  = s(20)  # small chips
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
@@ -302,7 +302,7 @@ except Exception:
         pass
 
 # Defaults (used when sidebar tuning is hidden)
-right_offset = 60
+right_offset = 80
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
@@ -861,6 +861,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
