@@ -115,44 +115,43 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# === Auto-fit entire app to viewer's screen (no scroll; no layout/color changes) ===
-st.markdown("""
+# ---------------------------------------------------------------------------
+# AUTO-FIT THE WHOLE APP TO THE SCREEN (no layout/colour changes)
+#   - Uses CSS zoom (best: Chromium/Safari); falls back to transform if needed.
+#   - No wrappers; no element positions changed.
+# ---------------------------------------------------------------------------
+css("""
 <style>
-/* 1) Your app’s natural (unscaled) size. Adjust once if needed. */
 :root{
-  --content-w: 2100;     /* px: full layout width at 100% */
-  --content-h: 1180;     /* px: full layout height at 100% */
-  --safe: 18px;          /* small margin for browser chrome */
-  /* 2) Compute uniform scale that fits both width & height */
-  --sx: calc( (100dvw - var(--safe)) / var(--content-w) );
-  --sy: calc( (100dvh - var(--safe)) / var(--content-h) );
-  --scale: min(var(--sx), var(--sy));
+  --design-w: 1600;   /* your intended full layout width */
+  --design-h: 900;    /* your intended full layout height */
+  --zoom: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
+}
+/* Preferred: zoom (doesn't reflow layout) */
+body { zoom: var(--zoom); }
+/* Keep page from scrolling while scaled */
+html, body { overflow: hidden; }
+
+/* Fallback for browsers that don't support zoom (e.g., Firefox).
+   We scale only the main block container in place. */
+@supports not (zoom: 1) {
+  section.main > div.block-container{
+    width: calc(var(--design-w) * 1px) !important;
+    height: calc(var(--design-h) * 1px) !important;
+    transform: scale(var(--zoom));
+    transform-origin: top left;
+    overflow: hidden !important;
+  }
 }
 
-/* 3) Disable page scroll (we scale to fit instead) */
-html, body { margin:0 !important; padding:0 !important; overflow:hidden !important; }
-
-/* 4) Hide Streamlit chrome that can add a few pixels */
-#MainMenu, footer, [data-testid="stToolbar"] { display:none !important; }
-
-/* 5) Scale the real Streamlit content without moving anything */
-section.main > div.block-container{
-  width: calc(var(--content-w) * 1px);
-  height: calc(var(--content-h) * 1px);
-  transform: scale(var(--scale));
-  transform-origin: top left;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* 6) Neutralize container side padding that can push content */
-[data-testid="stAppViewContainer"]{
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+/* Prevent vertical letter-stacking when scaling */
+div.stButton > button,
+div[data-testid="stSelectbox"] [role="combobox"],
+div[data-testid="stNumberInput"] input {
+  white-space: nowrap !important;
 }
 </style>
-""", unsafe_allow_html=True)
-# === end auto-fit block ===
+""")
 
 FS_TITLE   = 50
 FS_SECTION = 35
@@ -366,8 +365,6 @@ with st.sidebar:
 st.markdown(f"""
 <style>
 :root {{ --shift-right: {int(app_x)}px; }}
-/* Original code sets padding-left using --shift-right.
-   Auto-fit above forces 0 side padding so content doesn't get pushed. */
 [data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right) !important; }}
 </style>
 """, unsafe_allow_html=True)
@@ -389,12 +386,11 @@ css("""
   .page-header__title{ font-size:36px !important; }
   .form-banner{ font-size:32px !important; }
   .section-header{ font-size:26px !important; }
-  .stNumberInput label, .stSelectbox label{ font size:22px !important; }
+  .stNumberInput label, .stSelectbox label{ font-size:22px !important; }
   div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
   .stSelectbox [role="combobox"]{ font-size:28px !important; }
   div.stButton > button{ font-size:24px !important; height:42px !important; }
 
-  /* reduce right offset so content fits */
   [data-testid="stAppViewContainer"]{ padding-left: 280px !important; }
 }
 
@@ -404,7 +400,7 @@ css("""
   [data-testid="stAppViewContainer"]{ padding-left: 120px !important; }
 }
 
-/* Small widths (<= 1100px): allow wrapping and cancel transforms */
+/* Small widths (<= 1100px) */
 @media (max-width: 1100px){
   [data-testid="stAppViewContainer"]{ padding-left: 16px !important; }
   .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
