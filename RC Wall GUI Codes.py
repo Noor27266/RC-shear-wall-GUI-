@@ -113,13 +113,7 @@ def pfind(candidates):
 # =============================================================================
 # Step #2: Page config + COLORS + font knobs
 # =============================================================================
-
-/* Keep text from breaking into vertical letters when scaled */
-div.stButton > button,
-div[data-testid="stSelectbox"] [role="combobox"],
-div[data-testid="stNumberInput"] input { white-space: nowrap !important; }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 FS_TITLE   = 50
 FS_SECTION = 35
@@ -846,4 +840,3 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
-
