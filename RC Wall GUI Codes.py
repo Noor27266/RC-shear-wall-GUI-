@@ -58,25 +58,13 @@ css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
-# ---------- path helper (so PS/MLP/RF actually load) ----------
+# ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
-    """
-    Return the first existing file path among `candidates`.
-    Search order:
-      1) exact paths
-      2) alongside this script (BASE_DIR)
-      3) current working directory
-      4) /mnt/data (where uploaded files live)
-      5) one-level subdirs under BASE_DIR and /mnt/data
-      6) recursive glob fallback
-    """
-    # exact paths first
     for c in candidates:
         p = Path(c)
         if p.exists():
             return p
-
     roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
     for root in roots:
         if not root.exists():
@@ -85,8 +73,6 @@ def pfind(candidates):
             p = root / c
             if p.exists():
                 return p
-
-    # one-level subdirs under BASE_DIR and /mnt/data
     for root in [BASE_DIR, Path("/mnt/data")]:
         if not root.exists():
             continue
@@ -96,8 +82,6 @@ def pfind(candidates):
                     p = sub / c
                     if p.exists():
                         return p
-
-    # glob fallbacks
     pats = []
     for c in candidates:
         for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
@@ -107,7 +91,6 @@ def pfind(candidates):
         matches = glob(pat, recursive=True)
         if matches:
             return Path(matches[0])
-
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
@@ -115,25 +98,27 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# >>> GLOBAL SCALE (shrink everything uniformly without moving anything) <<<
-SCALE_UI = 0.45  # 85% of current sizes; tweak to 0.80 or 0.90 if you want
+# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
 
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(50)
-FS_SECTION = s(35)
-FS_LABEL   = s(30)
-FS_UNITS   = s(18)
-FS_INPUT   = s(20)
-FS_SELECT  = s(10)
-FS_BUTTON  = s(10)
-FS_BADGE   = s(10)
-FS_RECENT  = s(10)
-INPUT_H    = max(32, int(FS_INPUT * 2.1))  # keep same formula, just uses scaled FS_INPUT
+FS_TITLE   = s(50)  # page title
+FS_SECTION = s(35)  # section headers
+FS_LABEL   = s(22)  # input & select labels (katex included)
+FS_UNITS   = s(14)  # math units in labels
+FS_INPUT   = s(16)  # number input value
+FS_SELECT  = s(16)  # dropdown value/options
+FS_BUTTON  = s(18)  # Calculate / Reset / Clear All
+FS_BADGE   = s(16)  # predicted badge
+FS_RECENT  = s(12)  # small chips
+INPUT_H    = max(32, int(FS_INPUT * 2.0))
+
+# header logo default height (can still be changed by URL param "logo")
+DEFAULT_LOGO_H = 60
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
-
 INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
@@ -178,9 +163,7 @@ css(f"""
       box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
       transition:border-color .15s ease, box-shadow .15s ease !important;
   }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{
-      border-color:#d6dced !important;
-  }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
   div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
       border-color:{PRIMARY} !important;
       box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
@@ -192,24 +175,31 @@ css(f"""
       border-radius:10px !important;
       box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
   }}
-  div[data-testid="stNumberInput"] button:hover {{
-      border-color:#cbd3e5 !important;
+  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
+
+  /* Select font sizes are tied to FS_SELECT */
+  .stSelectbox [role="combobox"],
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
+  div[data-testid="stSelectbox"] div[role="listbox"],
+  div[data-testid="stSelectbox"] div[role="option"] {{
+      font-size:{FS_SELECT}px !important;
   }}
 
-  .stSelectbox [role="combobox"] {{ font-size:{FS_SELECT}px !important; }}
-
+  /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
-    height:40px !important;
+    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+    white-space:nowrap !important;
     color:#fff !important;
     font-weight:700; border:none !important; border-radius:8px !important;
-    background: #4CAF50 !important;
+    background:#4CAF50 !important;
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
-  button[key="calc_btn"] {{ background: #4CAF50 !important; }}
-  button[key="reset_btn"] {{ background: #2196F3 !important; }}
-  button[key="clear_btn"] {{ background: #f44336 !important; }}
+  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
+  button[key="reset_btn"] {{ background:#2196F3 !important; }}
+  button[key="clear_btn"] {{ background:#f44336 !important; }}
 
   .form-banner {{
     text-align:center;
@@ -246,7 +236,6 @@ css(f"""
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
   }}
-
   .left-panel {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -256,18 +245,14 @@ css(f"""
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background: #000 !important; color: #fff !important; border-radius: 8px !important;
-      padding: 6px 10px !important; font-size: 24px !important; font-weight: 500 !important;
+      background:#000 !important; color:#fff !important; border-radius:8px !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
   }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color: #fff !important; }}
+  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
-  label[for="model_select_compact"] {{ font-size: 50px !important; font-weight: bold !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: 40px !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] {{ font-size: 35px !important; }}
-
-  div.stButton > button {{ font-size: 35px !important; font-weight: bold !important; height: 50px !important; }}
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
-  .stSelectbox, .stButton {{ font-size:35px !important; }}
 </style>
 """)
 
@@ -287,13 +272,10 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
-def _is_on(v):
-    return str(v).lower() in {"1","true","yes","on"}
-
+def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
-# Support URL param ?tune=1 for quick access (works on Streamlit >= 1.29 via st.query_params; fallback to experimental)
 try:
-    qp = st.query_params  # modern API
+    qp = st.query_params
     if "tune" in qp:
         SHOW_TUNING = _is_on(qp.get("tune"))
 except Exception:
@@ -311,10 +293,9 @@ TITLE_LEFT = 150
 TITLE_TOP  = 40
 LOGO_LEFT  = 300
 LOGO_TOP   = 60
-LOGO_SIZE  = 30
+LOGO_SIZE  = DEFAULT_LOGO_H
 _show_recent = False
 
-# Optional tuning sidebar (only when enabled)
 if SHOW_TUNING:
     with st.sidebar:
         right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
@@ -339,9 +320,9 @@ except Exception:
 
 st.markdown(f"""
 <style>
-  .page-header {{ display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin: 0; padding: 0; }}
-  .page-header__title {{ font-size: {FS_TITLE}px; font-weight: 800; margin: 0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
-  .page-header__logo {{ height: {int(LOGO_SIZE)}px; width: auto; display: block; transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px); }}
+  .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
+  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
+  .page-header__logo {{ height:{int(LOGO_SIZE)}px; width:auto; display:block; transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px); }}
 </style>
 <div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
   <div class="page-header">
@@ -392,7 +373,6 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# ----- Random Forest (joblib FIRST even for .json; fall back to SKOPS) -----
 rf_model = None
 try:
     rf_path = pfind([
@@ -456,7 +436,6 @@ for name, ok, *_ in health:
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
-# Optional model health in sidebar only when tuning is on
 if SHOW_TUNING:
     with st.sidebar:
         st.header("Model Health")
@@ -480,7 +459,6 @@ R = {
     "AR":(0.388889,5.833333), "M_Vlw":(0.388889,4.1), "theta":(0.0275,4.85),
 }
 THETA_MAX = R["theta"][1]
-
 U = lambda s: rf"\;(\mathrm{{{s}}})"
 
 GEOM = [
@@ -522,14 +500,10 @@ left, right = st.columns([1.5, 2], gap="large")
 
 with left:
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
-
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
-
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
-
     c1, _gap, c2 = st.columns([1, 0.08, 1], gap="large")
 
     with c1:
@@ -574,14 +548,12 @@ with right:
     }
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
-    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
-    div[role="option"] { color: black !important; font-size: 16px !important; }
-    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
-    #action-row { display:flex; align-items:center; gap: 1px; }
+    div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * {{ color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }}
+    div[data-testid="stButton"] button p {{ font-size: {FS_BUTTON}px !important; color: black !important; font-weight: normal !important; }}
+    div[role="option"] {{ color: black !important; font-size: {FS_SELECT}px !important; }}
+    div.stButton > button {{ height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }}
+    #action-row {{ display:flex; align-items:center; gap: 1px; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -640,27 +612,19 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
 def predict_di(choice, _unused_array, input_df):
-    # keep training order
     df_trees = _df_in_train_order(input_df)
-
-    # ensure finite values for tree models
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
-
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
         mdl = model_registry["LightGBM"]
         prediction = float(mdl.predict(X)[0])
-
     if choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
-
     if choice == "CatBoost":
         prediction = float(model_registry["CatBoost"].predict(X)[0])
-
     if choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
-
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
         try:
@@ -669,7 +633,6 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["PS"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
         try:
@@ -704,7 +667,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
     selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 20; AXIS_TITLE_FS = 24; TICK_SIZE = 8; TITLE_PAD = 12; LABEL_PAD = 8
+    AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
@@ -722,24 +685,22 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     )
 
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=3).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
+    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
 
     k = 3
     if not curve.empty:
         curve_points = curve.iloc[::k].copy()
-        if not curve_points.empty and (curve_points.iloc[-1]["θ"] != curve.iloc[-1]["θ"]):
-            curve_points = pd.concat([curve_points, curve.tail(1)], ignore_index=True)
     else:
         curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
-    points_layer = alt.Chart(curve_points).mark_circle(size=100, opacity=0.7).encode(
+    points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
         x="θ:Q", y="Predicted_DI:Q",
         tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                  alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
     ).add_params(selection)
 
     rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
-    text_layer = alt.Chart(curve).mark_text(align='left', dx=10, dy=-10, fontSize=20, fontWeight='bold', color='red').encode(
+    text_layer = alt.Chart(curve).mark_text(align='left', dx=8, dy=-8, fontSize=14, fontWeight='bold', color='red').encode(
         x="θ:Q", y="Predicted_DI:Q", text=alt.Text("Predicted_DI:Q", format=".4f")
     ).transform_filter(selection)
 
@@ -749,7 +710,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
     chart_html = chart.to_html()
     chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }</style>')
+        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
     st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
@@ -815,10 +776,6 @@ if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
             )
 
 # ==============================  LATE PER-COMPONENT FONT & LOGO OVERRIDES ==============================
-# Use URL params to override individual font sizes WITHOUT changing any existing code:
-#   fs_title, fs_section, fs_label, fs_units, fs_input, fs_select, fs_button, fs_badge, fs_recent
-#   logo  -> header logo height in pixels
-# Example: ?fs_title=42&fs_section=28&fs_label=22&fs_units=16&fs_input=18&fs_select=22&fs_button=20&fs_badge=16&fs_recent=12&logo=80
 def _get_qp():
     try:
         return st.query_params
@@ -855,13 +812,16 @@ if _FS_SECTION is not None: _rules.append(f".section-header{{font-size:{_FS_SECT
 if _FS_LABEL   is not None: _rules.append(f".stNumberInput label, .stSelectbox label{{font-size:{_FS_LABEL}px !important;}}")
 if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm{{font-size:{_FS_UNITS}px !important;}}")
 if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
-if _FS_SELECT  is not None: _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
+if _FS_SELECT  is not None:
+    _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
+    _rules.append(f"div[data-testid='stSelectbox'] div[role='listbox'], div[data-testid='stSelectbox'] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
 if _FS_BUTTON  is not None:
     _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
     _btn_lh = max(36, int(round(_FS_BUTTON * 1.15)))
     _rules.append(f"div.stButton > button{{font-size:{_FS_BUTTON}px !important;height:{_btn_h}px !important;line-height:{_btn_lh}px !important;white-space:nowrap !important;}}")
 else:
-    _rules.append("div.stButton > button{white-space:nowrap !important;}")  # prevent wrapping even if not resizing
+    _rules.append("div.stButton > button{white-space:nowrap !important;}")
+
 if _FS_BADGE  is not None: _rules.append(f".prediction-result{{font-size:{_FS_BADGE}px !important;}}")
 if _FS_RECENT is not None: _rules.append(f".recent-box{{font-size:{_FS_RECENT}px !important;}}")
 if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}px !important;}}")
@@ -869,6 +829,3 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
-
