@@ -950,33 +950,39 @@ if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
-st.markdown("""
 <style>
 /* Ensure both elements are inline-flex, no wrap */
 .prediction-result,
-div[data-testid="stDownloadButton"]{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:auto !important;
-  margin-right:20px !important;   /* Adjusted gap between the two elements */
-  white-space:nowrap !important;
+div[data-testid="stDownloadButton"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  margin-right: 50px !important;  /* Add gap between the two elements */
+  white-space: nowrap !important;
 }
 
-div[data-testid="stDownloadButton"] > button{
-  width:auto !important;        /* Ensuring CSV button does not stretch */
-  padding:6px 12px !important;  /* Giving the button some padding */
+/* Ensure CSV button doesn't stretch and has consistent padding */
+div[data-testid="stDownloadButton"] > button {
+  width: auto !important;
+  padding: 6px 12px !important;  /* Compact button padding */
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-div[data-testid="stDownloadButton"]{
-  display:inline-block !important; /* Ensuring the button is inline */
-  margin-left:10px !important; /* Ensuring a gap on the left side of the button */
+/* Make sure the button stays inline */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left: 16px !important;  /* Add some gap to the left of the button */
+}
+
+/* Ensuring the DI badge has some breathing room and isn't too close to the button */
+.prediction-result {
+  margin-right: 10px !important; /* Ensure a reasonable gap */
 }
 </style>
-""", unsafe_allow_html=True)
-
-
-
 
 
 
