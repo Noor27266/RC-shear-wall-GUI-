@@ -277,15 +277,21 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 
 
-css("""
+st.markdown("""
 <style>
-/* keep badge and download button on the same baseline */
-.prediction-result{ margin-top:0 !important; }
-
-/* (optional) also vertically center the download button text a touch */
-div.stDownloadButton > button{ margin-top:0 !important; }
+/* Make the DI badge a compact pill instead of full width */
+.prediction-result{
+  display:inline-block !important;   /* don’t fill the column */
+  width: 380px !important;           /* ← pick the size you like (e.g., 320–420px) */
+  max-width: 100% !important;        /* stay responsive if column is narrow */
+  padding: .45rem .75rem !important; /* keep it tidy */
+  margin: 0 !important;              /* remove extra spacing that can push the button */
+  text-align: center !important;
+  border-radius: 10px !important;
+}
 </style>
-""")
+""", unsafe_allow_html=True)
+
 
 
 
@@ -867,6 +873,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
