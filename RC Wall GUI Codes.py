@@ -1,17 +1,3 @@
-# --- Streamlit launcher for Spyder: must be at the VERY TOP, before any `import streamlit` ---
-if __name__ == "__main__":
-    import os, sys, subprocess
-    from pathlib import Path
-    # If we were not started by our own launcher, start Streamlit and exit this bare run.
-    if os.environ.get("__ST_LAUNCHED_FROM_SPYDER__", "") != "1":
-        env = os.environ.copy()
-        env["__ST_LAUNCHED_FROM_SPYDER__"] = "1"   # prevents re-launch when Streamlit reruns the script
-        this_file = str(Path(__file__).resolve())
-        cmd = [sys.executable, "-m", "streamlit", "run", this_file, "--server.headless", "false"]
-        # Optional: add a fixed port, e.g., "--server.port", "8503"
-        subprocess.Popen(cmd, env=env)
-        raise SystemExit(0)
-# --- end launcher ---
 
 # -*- coding: utf-8 -*- 
 
@@ -63,7 +49,7 @@ def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # ---------- simple knobs ----------
-FS_TITLE   = 40
+FS_TITLE   = 50
 FS_SECTION = 35
 FS_LABEL   = 30
 FS_UNITS   = 18
@@ -83,7 +69,6 @@ LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
 # Step #2.1: Global UI CSS (layout, fonts, inputs, theme)
-#          → Edit this when you need to change general look & feel
 # =============================================================================
 css(f"""
 <style>
@@ -177,13 +162,12 @@ css(f"""
      ============================================================================= */
   .form-banner {{
     text-align:center;
-    background: linear-gradient(90deg, #0E9F6E, #84CC16); 
-
-    color: #fff; 
-    padding:.45rem .75rem; 
+    background: linear-gradient(90deg, #0E9F6E, #84CC16);
+    color: #fff;
+    padding:.45rem .75rem;
     border-radius:10px;
-    font-weight:800; 
-    font-size:{FS_SECTION + 4}px; 
+    font-weight:800;
+    font-size:{FS_SECTION + 4}px;
     margin:.1rem 0 !important;
     transform: translateY(-10px);
   }}
@@ -315,23 +299,43 @@ css("""
 """)
 
 # =============================================================================
-# Step #3: Title + adjustable logo position and size (with STEP changes)
+# Step #2.5: Right panel vertical offset (slider)
+#          Positive = move down, Negative = move up
+# =============================================================================
+with st.sidebar:
+    right_offset = st.slider(
+        "Right panel vertical offset (px)",
+        min_value=-200, max_value=1000, value=50, step=2,
+        help="Move the entire right side up/down"
+    )
+
+
+
+# =============================================================================
+# Step #3: Title + adjustable logo position and size (HEADER ONLY)
 # =============================================================================
 
 # Load logo (exact file name: TJU logo.png in same folder)
-_logo = Path(__file__).resolve().parent / "TJU logo.png"
-_b64 = base64.b64encode(_logo.read_bytes()).decode("ascii") if _logo.exists() else ""
+try:
+    _logo_path = Path(__file__).resolve().parent / "TJU logo.png"
+    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
+except Exception:
+    _b64 = ""
 
-# === EDIT THESE VALUES TO MOVE/RESIZE TITLE & LOGO ===
-TITLE_TOP   = 12
-TITLE_LEFT  = 70
-LOGO_TOP    = 26
-LOGO_LEFT   = 180
-LOGO_SIZE   = 80
-# ==============================================
+# Header-only position controls (move ONLY the title & the logo)
+with st.sidebar:
+    st.markdown("### Header position (title & logo)")
+    # Move the whole header row to the RIGHT (increase to go further right)
+    HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=0, step=20)
+    # Fine positioning for each element (relative to the header row)
+    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=180, step=10)
+    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=40,  step=2)
+    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=340, step=10)
+    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=60,  step=2)
+    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=80, step=2)
 
 # =============================================================================
-# Step #3.1: Header (title & logo) positioning
+# Step #3.1: Header (title & logo) positioning — FORCE right shift with transform
 # =============================================================================
 st.markdown(f"""
 <style>
@@ -340,27 +344,44 @@ st.markdown(f"""
     align-items: center;
     justify-content: flex-start;
     gap: 20px;
-    margin-bottom: 2px;
+    margin: 0;
+    padding: 0;
   }}
+
   .page-header__title {{
     font-size: {FS_TITLE}px;
     font-weight: 800;
     margin: 0;
-    transform: translate({TITLE_LEFT}px, {TITLE_TOP}px);
+    transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px);
   }}
+
   .page-header__logo {{
-    height: {LOGO_SIZE}px;
+    height: {int(LOGO_SIZE)}px;
     width: auto;
     display: block;
-    transform: translate({LOGO_LEFT}px, {LOGO_TOP}px);
+    transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px);
   }}
 </style>
 
-<div class="page-header">
-  <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
-  {f'<img class="page-header__logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
+<!--
+  IMPORTANT:
+  We shift ONLY the header row using transform: translateX(...)
+  This ignores container paddings/margins and just moves it right.
+-->
+<div class="page-header-outer"
+     style="width:100%;
+            transform: translateX({int(HEADER_X)}px) !important;
+            will-change: transform;">
+  <div class="page-header">
+    <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
+    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
+  </div>
 </div>
 """, unsafe_allow_html=True)
+
+
+
+
 
 # =============================================================================
 # Step #3.2: Remove Streamlit default top spacing & header
@@ -398,18 +419,25 @@ section.main > div.block-container{
 # STEP 5 — shift everything right (ONLY CHANGE)
 # =========================
 # =============================================================================
-# Step #3.3: Horizontal shift of whole app (set --shift-right)
+# Step #3.3: Horizontal shift of whole app (slider)
 # =============================================================================
-st.markdown("""
-<style>
-:root { --shift-right: 600px; }
+with st.sidebar:
+    app_x = st.slider(
+        "Global horizontal offset (px)",
+        min_value=0, max_value=1600, value=800, step=10,
+        help="Push the whole UI to the right"
+    )
 
+st.markdown(f"""
+<style>
+:root {{ --shift-right: {int(app_x)}px; }}
 /* Shift the entire app by adding left padding to the outer view container */
-[data-testid="stAppViewContainer"]{
+[data-testid="stAppViewContainer"]{{
   padding-left: var(--shift-right) !important;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # Step #4: Model loading (same as before; tolerant of missing files)
@@ -608,6 +636,10 @@ CHART_W = 550
 # =================================
 
 with right:
+    # --- Spacer pushes the whole right column down (reliable) ---
+    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    # -------------------------------------------------------------
+
     # 6.1: Picture
     st.markdown(
         f"""
@@ -636,13 +668,13 @@ with right:
     div[role="option"] { color: black !important; font-size: 16px !important; }
     div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
     #action-row { display:flex; align-items:center; gap: 1px; }
-    .stAltairChart { transform: translate(100px, 50px) !important; }
+    .stAltairChart { transform: translate(100px, 50px) !important; }  /* Optional: tweak or remove to avoid double shift */
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
-    row = st.columns([1.8, 4.6, 1.2, 2.0], gap="large")
+    row = st.columns([0.8, 2.1, 2.1,2.1], gap="small")
 
     # Column 1: Model Select
     with row[0]:
@@ -658,7 +690,7 @@ with right:
     # Column 2: Three buttons
     with row[1]:
         st.markdown("<div id='three-btns' style='margin-top:35px;'>", unsafe_allow_html=True)
-        b1, b2, b3 = st.columns([1.2, 1, 1.2], gap="large") 
+        b1, b2, b3 = st.columns([1, 1, 1.2], gap="small") 
         with b1:
             submit = st.button("Calculate", key="calc_btn")
         with b2:
