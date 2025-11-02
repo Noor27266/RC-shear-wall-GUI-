@@ -262,12 +262,6 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -280,6 +274,18 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 </style>
 """, unsafe_allow_html=True)
 
+
+
+
+css("""
+<style>
+/* keep badge and download button on the same baseline */
+.prediction-result{ margin-top:0 !important; }
+
+/* (optional) also vertically center the download button text a touch */
+div.stDownloadButton > button{ margin-top:0 !important; }
+</style>
+""")
 
 
 
@@ -861,6 +867,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
