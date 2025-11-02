@@ -327,25 +327,57 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
+# --- helper for ANN model loading (tries tf.keras first, then keras-3 if present) ---
+def _load_any_keras_model(candidates):
+    p = pfind(list(candidates))
+    # TensorFlow loader
+    try:
+        m = load_model(p)
+        return m, f"tf.keras ({p.name})"
+    except Exception as e_tf:
+        # Optional fallback for models saved with keras>=3
+        try:
+            import keras as k3
+            m = k3.saving.load_model(p)
+            return m, f"keras3 ({p.name})"
+        except Exception as e_k3:
+            raise RuntimeError(f"ANN load failed for {p.name}: tf.keras={e_tf} | keras3={e_k3}")
+
+# --- helper for scaler loading (joblib first, optional skops fallback) ---
+def _load_scaler_any(*cands):
+    path = pfind(list(cands))
+    try:
+        obj = joblib.load(path)
+        return obj, f"joblib ({path.name})"
+    except Exception as e_job:
+        try:
+            import skops.io as sio  # only if installed
+            obj = sio.load(path, trusted=True)
+            return obj, f"skops ({path.name})"
+        except Exception as e_sk:
+            raise RuntimeError(f"Scaler load failed for {path.name}: joblib={e_job} | skops={e_sk}")
+
+# -------------------- PS (ANN) --------------------
 ann_ps_model = None; ann_ps_proc = None
 try:
-    ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = load_model(ps_model_path)
-    sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
-    sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
+    ann_ps_model, src = _load_any_keras_model(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
+    sx, x_kind = _load_scaler_any("ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib","ANN_PS_Scaler_X.skops")
+    sy, y_kind = _load_scaler_any("ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib","ANN_PS_Scaler_y.skops")
     ann_ps_proc = _ScalerShim(sx, sy)
-    record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
+    ann_ps_proc.x_kind = x_kind; ann_ps_proc.y_kind = y_kind
+    record_health("PS (ANN)", True, f"loaded via {src}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
+# -------------------- MLP (ANN) -------------------
 ann_mlp_model = None; ann_mlp_proc = None
 try:
-    mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = load_model(mlp_model_path)
-    sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
-    sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
+    ann_mlp_model, src = _load_any_keras_model(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
+    sx, x_kind = _load_scaler_any("ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib","ANN_MLP_Scaler_X.skops")
+    sy, y_kind = _load_scaler_any("ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib","ANN_MLP_Scaler_y.skops")
     ann_mlp_proc = _ScalerShim(sx, sy)
-    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
+    ann_mlp_proc.x_kind = x_kind; ann_mlp_proc.y_kind = y_kind
+    record_health("MLP (ANN)", True, f"loaded via {src}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
@@ -599,7 +631,7 @@ def predict_di(choice, _unused_array, input_df):
     # keep training order
     df_trees = _df_in_train_order(input_df)
 
-    # --- FIX: ensure finite values for tree models (avoid NaN/inf from reindex) ---
+    # ensure finite values for tree models
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
     X = df_trees.values.astype(np.float32)
