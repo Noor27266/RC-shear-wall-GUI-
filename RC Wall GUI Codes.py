@@ -288,7 +288,7 @@ st.markdown("""
 .prediction-result {
   font-size: 0.9em !important; /* Make the text inside the DI badge smaller */
   padding: 4px 8px !important; /* Reduce padding inside the DI badge */
-  margin-right: 30px !important; /* Decrease margin on the right of DI badge */
+  margin-right: 20px !important; /* Decrease margin on the right of DI badge */
   white-space: nowrap !important;
 }
 
@@ -889,6 +889,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
