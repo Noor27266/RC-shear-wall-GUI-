@@ -1,15 +1,3 @@
-# --- Streamlit launcher for Spyder: must be at the VERY TOP, before any `import streamlit` ---
-if __name__ == "__main__":
-    import os, sys, subprocess
-    from pathlib import Path
-    if os.environ.get("__ST_LAUNCHED_FROM_SPYDER__", "") != "1":
-        env = os.environ.copy()
-        env["__ST_LAUNCHED_FROM_SPYDER__"] = "1"
-        this_file = str(Path(__file__).resolve())
-        cmd = [sys.executable, "-m", "streamlit", "run", this_file, "--server.headless", "false"]
-        subprocess.Popen(cmd, env=env)
-        raise SystemExit(0)
-# --- end launcher ---
 
 # -*- coding: utf-8 -*-
 
@@ -760,3 +748,4 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
