@@ -210,7 +210,7 @@ css(f"""
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
     margin:.1rem 0 !important;
-    transform: translateY(12px);
+    transform: translateY(-10px);
   }}
 
   .prediction-result {{
