@@ -9,7 +9,7 @@ joblib
 pyarrow
 plotly
 
-# Needed for ANN scalers (joblib) and RF .json via SKOPS
+# Needed for ANN scalers (joblib) and optional SKOPS JSON load
 scikit-learn==1.3.2
 skops==0.9.0
 
