@@ -311,7 +311,7 @@ TITLE_LEFT = 180
 TITLE_TOP  = 40
 LOGO_LEFT  = 340
 LOGO_TOP   = 60
-LOGO_SIZE  = 80
+LOGO_SIZE  = 50
 _show_recent = False
 
 # Optional tuning sidebar (only when enabled)
@@ -552,9 +552,9 @@ with left:
 # =============================================================================
 # Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 350
+HERO_X, HERO_Y, HERO_W = 100, 5, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 350
+CHART_W = 300
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -813,6 +813,7 @@ if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
 
 
 
