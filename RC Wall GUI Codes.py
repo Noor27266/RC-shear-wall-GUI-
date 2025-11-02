@@ -273,7 +273,7 @@ except Exception:
 
 st.markdown(f"""
 <div class="page-header">
-  <div class="page-header__title">Predict Damage index (DI)<br/>for RC Shear Walls</div>
+  <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
   {'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,' + _b64 + '"/>' if _b64 else ''}
 </div>
 """, unsafe_allow_html=True)
@@ -715,4 +715,3 @@ if show_recent and not st.session_state.results_df.empty:
             f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
             unsafe_allow_html=True
         )
-
