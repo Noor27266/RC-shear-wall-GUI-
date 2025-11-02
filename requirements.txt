@@ -1,30 +1,13 @@
-# Core app and UI
-streamlit==1.40.0
-altair==5.4.1
-
-# Data and numerical
-pandas==2.2.3
-numpy==1.26.4
-
-# Machine learning models
-scikit-learn==1.5.2
-xgboost==2.1.2
-catboost==1.2.5
-lightgbm==4.5.0
-
-# Deep learning
-tensorflow==2.17.0
-keras==3.4.1
-
-# Model saving/loading
-joblib==1.4.2
-
-# Utilities
-pathlib
+streamlit
+altair
+pandas
+numpy
+scikit-learn
+xgboost
+lightgbm
+catboost
+joblib
+pillow
 base64io
 
-# Optional: For CSV/Excel read/write support
-openpyxl==3.1.5
 
-# Optional but recommended for Streamlit Cloud stability
-protobuf==4.25.3
