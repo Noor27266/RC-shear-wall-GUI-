@@ -103,9 +103,9 @@ SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% 
 
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(90)  # page title
+FS_TITLE   = s(100)  # page title
 FS_SECTION = s(60)  # section headers
-FS_LABEL   = s(40)  # input & select labels (katex included)
+FS_LABEL   = s(35)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
 FS_INPUT   = s(30)  # number input value
 FS_SELECT  = s(35)  # dropdown value/options
@@ -262,6 +262,12 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -274,133 +280,8 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 </style>
 """, unsafe_allow_html=True)
 
-# =============================================================================
-# Adjusted gap between DI result and Download as CSV button
-# =============================================================================
-st.markdown("""
-<style>
-/* Ensure a large gap between the DI badge and the download button */
-.prediction-result {
-  display: inline-flex !important;
-  align-items: center !important;
-  padding: 6px 12px !important;  /* top/bottom | left/right padding */
-  margin-right: 40px !important;  /* Increased space between DI and CSV button */
-}
-
-div[data-testid="stDownloadButton"] {
-  display: inline-block !important;
-  margin-left: 40px !important;  /* Space added to left of the CSV button */
-}
-
-/* This will ensure they align properly */
-div[data-testid="stDownloadButton"] button {
-  white-space: nowrap !important;
-  padding: 8px 14px !important;  /* Compact padding for button */
-}
-</style>
-""", unsafe_allow_html=True)
 
 
-
-
-
-
-
-
-
-st.markdown("""
-<style>
-/* Make the DI badge shorter (reduce height only) */
-.prediction-result{
-  display: inline-flex !important;   /* keeps it on one line */
-  align-items: center !important;     /* vertically center the text */
-  padding: 2px 12px !important;       # top/bottom | left/right  ← smaller T/B padding
-  line-height: 1.05 !important;       # tight line height
-  border-radius: 10px !important;     # keep your rounded look
-  /* optional: if you still want it even shorter, uncomment next line */
-  /* font-size: 0.9em !important; */
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-/* Make the DI badge fill its column (same width as the button when columns are equal) */
-.prediction-result{
-  width: 100% !important;
-  display: block !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-<style>
-/* 1) Keep the DI badge inline and give it breathing room */
-.prediction-result{
-  display:inline-flex !important;
-  align-items:center !important;
-  white-space:nowrap !important;
-  width:auto !important;
-  margin-right:16px !important;   /* space before the CSV button */
-}
-
-/* 2) Make the Download button stay on one line and not wrap */
-div[data-testid="stDownloadButton"] button{
-  white-space:nowrap !important;   /* single line text */
-  display:inline-flex !important;
-  align-items:center !important;
-  height:auto !important;
-  line-height:1.1 !important;
-  padding:8px 14px !important;     /* compact; prevents forced wrap */
-}
-
-/* 3) Ensure the CSV button itself sits inline (not full-width) */
-div[data-testid="stDownloadButton"]{
-  display:inline-block !important;
-  margin-left:0 !important;        /* keep control of spacing via badge margin */
-}
-
-/* 4) Safety: never wrap the folder emoji away from the text */
-div[data-testid="stDownloadButton"] button > *{
-  white-space:nowrap !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-/* Make both widgets the same fixed width and align them inline */
-.prediction-result{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:220px !important;           /* <<< match width */
-  padding:6px 10px !important;
-  white-space:nowrap !important;     /* keep text on one line */
-}
-
-/* Download button: same width and inline alignment */
-div[data-testid="stDownloadButton"]{
-  display:inline-block !important;
-  margin-left:16px !important;       /* <<< gap so they don't touch */
-}
-div[data-testid="stDownloadButton"] button{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:220px !important;            /* <<< match width */
-  white-space:nowrap !important;
-  height:auto !important;
-  line-height:1.1 !important;
-}
-
-/* Ensure the column that contains the badge leaves some breathing room */
-div[data-testid="column"]:has(.prediction-result){
-  padding-right:12px !important;     /* extra safety gap between the two columns */
-}
-</style>
-""", unsafe_allow_html=True)
 
 
 # =============================================================================
@@ -421,11 +302,11 @@ except Exception:
         pass
 
 # Defaults (used when sidebar tuning is hidden)
-right_offset = 70
+right_offset = 80
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
-LOGO_LEFT  = 130
+LOGO_LEFT  = 70
 LOGO_TOP   = 60
 LOGO_SIZE  = DEFAULT_LOGO_H
 _show_recent = False
@@ -717,7 +598,7 @@ with right:
                 st.success("All predictions cleared.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    badge_col, dl_col, _spacer = st.columns([1, 1, 6], gap="small")
+    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
     with badge_col:
         pred_banner = st.empty()
     with dl_col:
@@ -982,17 +863,22 @@ if _rules:
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
 
-# --- FINAL tiny override: keep DI badge inline and same line as Download button ---
-st.markdown("""
-<style>
-.prediction-result{
-  display:inline-flex !important;      /* sit inline, not block */
-  align-items:center !important;
-  white-space:nowrap !important;        /* no wrapping to two lines */
-  width:auto !important;                /* don't stretch full width */
-}
-</style>
-""", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
