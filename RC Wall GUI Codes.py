@@ -285,31 +285,32 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 st.markdown("""
 <style>
-/* Reduce the width of the Predicted Damage Index (DI) box */
+/* Increase the width of the Predicted Damage Index (DI) box */
 .prediction-result {
   width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 220px !important;  /* Limit the width of the DI box */
-  padding: 4px 12px !important;  /* Reduce padding for the DI box */
+  max-width: 250px !important;  /* Slightly increase the width */
+  padding: 4px 12px !important;  /* Maintain compact padding */
   font-size: 0.9em !important;  /* Smaller text inside DI box */
   white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 10px !important;  /* Bring it closer to the button */
+  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
 }
 
 /* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left: 10px !important;  /* Slightly push it to the left */
+  margin-left: 5px !important;  /* Move it slightly to the left */
 }
 
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
-  padding: 6px 12px !important;  /* Make the button smaller */
+  padding: 6px 12px !important;  /* Smaller button padding */
   font-size: 12px !important;  /* Smaller font size */
-  height: auto !important;  /* Let the button adjust to the content size */
-  line-height: 1.1 !important;  /* Adjust the line height for better visual alignment */
+  height: auto !important;  /* Adjust height according to content */
+  line-height: 1.1 !important;  /* Adjust line height */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -892,6 +893,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
