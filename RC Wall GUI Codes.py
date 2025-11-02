@@ -99,9 +99,9 @@ def pfind(candidates):
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # Compact sizes so everything fits at 100% zoom
-FS_TITLE   = 25
-FS_SECTION = 26
-FS_LABEL   = 22
+FS_TITLE   = 20
+FS_SECTION = 20
+FS_LABEL   = 20
 FS_UNITS   = 16
 FS_INPUT   = 18
 FS_SELECT  = 20
@@ -598,4 +598,5 @@ with right:
 # =============================================================================
 if st.session_state.results_df is not None and not st.session_state.results_df.empty:
     st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+
 
