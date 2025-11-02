@@ -1,0 +1,18 @@
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+
+# Optional: larger file uploads if you ever need it (commented out)
+# maxUploadSize = 200
+
+# Optional theme tweaks (uncomment & edit if desired)
+# [theme]
+# primaryColor = "#8E44AD"
+# base = "light"
