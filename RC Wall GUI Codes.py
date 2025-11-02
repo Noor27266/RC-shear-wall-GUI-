@@ -280,7 +280,7 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.38, 1.62], gap="large")
 
 with left:
-    # a wrapper that is guaranteed gray
+    # a wrapper that is guaranteed grey
     st.markdown("<div class='left-panel'><div class='left-panel-inner'>", unsafe_allow_html=True)
 
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -508,3 +508,4 @@ with st.sidebar.expander("Recent Predictions", expanded=False):
     if not st.session_state.results_df.empty:
         for i, row in st.session_state.results_df.tail(5).reset_index(drop=True).iterrows():
             st.write(f"Pred {i+1} → DI = {row['Predicted_DI']:.4f}")
+
