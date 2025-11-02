@@ -103,7 +103,7 @@ SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% 
 
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(50)  # page title
+FS_TITLE   = s(80)  # page title
 FS_SECTION = s(35)  # section headers
 FS_LABEL   = s(35)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
@@ -861,6 +861,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
