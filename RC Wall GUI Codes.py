@@ -292,6 +292,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* Make the DI badge fill its column (same width as the button when columns are equal) */
+.prediction-result{
+  width: 100% !important;
+  display: block !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 
@@ -611,7 +620,7 @@ with right:
                 st.success("All predictions cleared.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
+    badge_col, dl_col, _spacer = st.columns([1, 1, 6], gap="small")
     with badge_col:
         pred_banner = st.empty()
     with dl_col:
@@ -874,6 +883,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
