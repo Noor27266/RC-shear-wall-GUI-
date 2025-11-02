@@ -115,15 +115,20 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-FS_TITLE   = 50
-FS_SECTION = 35
-FS_LABEL   = 30
-FS_UNITS   = 18
-FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
-FS_BADGE   = 25
-FS_RECENT  = 16
+# ---- GLOBAL SCALE (the only knob you need to tweak) ----
+SCALE_UI = 0.85  # change to 0.80 or 0.90 if you want smaller/bigger
+
+s = lambda v: int(round(v * SCALE_UI))
+
+FS_TITLE   = s(50)
+FS_SECTION = s(35)
+FS_LABEL   = s(30)
+FS_UNITS   = s(18)
+FS_INPUT   = s(20)
+FS_SELECT  = s(50)
+FS_BUTTON  = s(55)
+FS_BADGE   = s(25)
+FS_RECENT  = s(16)
 INPUT_H    = max(32, int(FS_INPUT * 2.1))
 
 PRIMARY   = "#8E44AD"
@@ -252,76 +257,32 @@ css(f"""
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
       background: #000 !important; color: #fff !important; border-radius: 8px !important;
-      padding: 6px 10px !important; font-size: 24px !important; font-weight: 500 !important;
+      padding: 6px 10px !important; font-size: {s(24)}px !important; font-weight: 500 !important;
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color: #fff !important; }}
 
-  label[for="model_select_compact"] {{ font-size: 50px !important; font-weight: bold !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: 40px !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] {{ font-size: 35px !important; }}
+  label[for="model_select_compact"] {{ font-size: {s(50)}px !important; font-weight: bold !important; }}
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: {s(40)}px !important; }}
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] {{ font-size: {s(35)}px !important; }}
 
-  div.stButton > button {{ font-size: 35px !important; font-weight: bold !important; height: 50px !important; }}
+  div.stButton > button {{ font-size: {s(35)}px !important; font-weight: bold !important; height: {s(50)}px !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
-  .stSelectbox, .stButton {{ font-size:35px !important; }}
+  .stSelectbox, .stButton {{ font-size:{s(35)}px !important; }}
 </style>
 """)
 
-# Keep header area slim
-st.markdown("""
+css("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+#leftwrap { position: relative; top: -80px; }
+.block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) [data-testid="stHorizontalBlock"] {
+  position: relative !important; top: -60px !important;
+}
+.prediction-result{ white-space: nowrap !important; display: inline-block !important; width: auto !important; line-height: 1.2 !important; margin-top: 0 !important; }
 </style>
-""", unsafe_allow_html=True)
+""")
 
-# =============================================================================
-# NEW: Feature flag to hide/show sidebar tuning widgets
-# =============================================================================
-def _is_on(v):
-    return str(v).lower() in {"1","true","yes","on"}
-
-SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
-# Support URL param ?tune=1 for quick access (works on Streamlit >= 1.29 via st.query_params; fallback to experimental)
-try:
-    qp = st.query_params  # modern API
-    if "tune" in qp:
-        SHOW_TUNING = _is_on(qp.get("tune"))
-except Exception:
-    try:
-        qp = st.experimental_get_query_params()
-        if "tune" in qp:
-            SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
-    except Exception:
-        pass
-
-# Defaults (used when sidebar tuning is hidden)
-right_offset = 0
-HEADER_X   = 0
-TITLE_LEFT = 180
-TITLE_TOP  = 40
-LOGO_LEFT  = 340
-LOGO_TOP   = 60
-LOGO_SIZE  = 80
-_show_recent = False
-
-# Optional tuning sidebar (only when enabled)
-if SHOW_TUNING:
-    with st.sidebar:
-        right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
-    with st.sidebar:
-        st.markdown("### Header position (title & logo)")
-        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
-        TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
-        TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
-        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
-        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
-        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
-        _show_recent = st.checkbox("Show Recent Predictions", value=False)
+with st.sidebar:
+    right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
 
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
@@ -331,6 +292,16 @@ try:
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
     _b64 = ""
+
+with st.sidebar:
+    st.markdown("### Header position (title & logo)")
+    HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=0, step=20)
+    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=180, step=10)
+    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=40,  step=2)
+    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=340, step=10)
+    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=60,  step=2)
+    # scaled default size (position unchanged)
+    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=int(80 * SCALE_UI), step=2)
 
 st.markdown(f"""
 <style>
@@ -344,6 +315,26 @@ st.markdown(f"""
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
   </div>
 </div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+</style>
+""", unsafe_allow_html=True)
+
+with st.sidebar:
+    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=800, step=10)
+
+st.markdown(f"""
+<style>
+:root {{ --shift-right: {int(app_x)}px; }}
+[data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right) !important; }}
+</style>
 """, unsafe_allow_html=True)
 
 # =============================================================================
@@ -451,15 +442,13 @@ for name, ok, *_ in health:
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
-# Optional model health in sidebar only when tuning is on
-if SHOW_TUNING:
-    with st.sidebar:
-        st.header("Model Health")
-        for name, ok, msg, cls in health:
-            st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
-        for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
-            try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
-            except Exception: pass
+with st.sidebar:
+    st.header("Model Health")
+    for name, ok, msg, cls in health:
+        st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
+    for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
+        try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
+        except Exception: pass
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
@@ -476,7 +465,7 @@ R = {
 }
 THETA_MAX = R["theta"][1]
 
-U = lambda s: rf"\;(\mathrm{{{s}}})"
+U = lambda s_: rf"\;(\mathrm{{{s_}}})"
 
 GEOM = [
     (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
@@ -545,11 +534,11 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# Step #6: Right panel
+# Step #6: Right panel (unchanged positions; scaled sizes only)
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 550
+HERO_X, HERO_Y, HERO_W = 100, 5, int(550 * SCALE_UI)  # width scaled only
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 550
+CHART_W = int(550 * SCALE_UI)  # scaled chart width
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -562,21 +551,22 @@ with right:
         unsafe_allow_html=True,
     )
 
-    st.markdown(""" 
+    st.markdown(f""" 
     <style>
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {{
         border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
-    }
-    [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-    div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
-    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
-    div[role="option"] { color: black !important; font-size: 16px !important; }
-    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
-    #action-row { display:flex; align-items:center; gap: 1px; }
+    }}
+    [data-baseweb="popover"], [data-baseweb="popover"] > div {{ background: transparent !important; box-shadow: none !important; border: none !important; }}
+    div[data-testid="stSelectbox"] > div > div {{ height: {s(50)}px !important; display:flex !important; align-items:center !important; margin-top: -0px; }}
+    div[data-testid="stSelectbox"] label p {{ font-size: {s(18)}px !important; color: black !important; font-weight: bold !important; }}
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: {s(30)}px !important; }}
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] {{ font-size: {s(30)}px !important; color: black !important; }}
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * {{ color: black !important; background-color: #D3D3D3 !important; font-size: {s(30)}px !important; }}
+    div[data-testid="stButton"] button p {{ font-size: {s(30)}px !important; color: black !important; font-weight: normal !important; }}
+    div[role="option"] {{ color: black !important; font-size: {s(16)}px !important; }}
+    div.stButton > button {{ height: {s(50)}px !important; display:flex; align-items:center; justify-content:center; }}
+    #action-row {{ display:flex; align-items:center; gap: 1px; }}
+    .stAltairChart {{ transform: translate(100px, 50px) !important; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -699,7 +689,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
     selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 20; AXIS_TITLE_FS = 24; TICK_SIZE = 8; TITLE_PAD = 12; LABEL_PAD = 8
+    AXIS_LABEL_FS = s(20); AXIS_TITLE_FS = s(24); TICK_SIZE = s(8); TITLE_PAD = s(12); LABEL_PAD = s(8)
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
@@ -734,7 +724,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     ).add_params(selection)
 
     rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
-    text_layer = alt.Chart(curve).mark_text(align='left', dx=10, dy=-10, fontSize=20, fontWeight='bold', color='red').encode(
+    text_layer = alt.Chart(curve).mark_text(align='left', dx=10, dy=-10, fontSize=s(20), fontWeight='bold', color='red').encode(
         x="θ:Q", y="Predicted_DI:Q", text=alt.Text("Predicted_DI:Q", format=".4f")
     ).transform_filter(selection)
 
@@ -744,7 +734,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
     chart_html = chart.to_html()
     chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }</style>')
+        f'</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * {{ font-size: {s(32)}px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: {s(20)}px !important; }}</style>')
     st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
@@ -796,9 +786,10 @@ with right:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
-# Step #9: Optional "Recent Predictions"
+# Step #9: Optional "Recent Predictions" (hidden by default)
 # =============================================================================
-if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
+show_recent = st.sidebar.checkbox("Show Recent Predictions", value=False)
+if show_recent and not st.session_state.results_df.empty:
     right_predictions = st.empty()
     with right_predictions:
         st.markdown("### 🧾 Recent Predictions")
