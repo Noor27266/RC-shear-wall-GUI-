@@ -99,17 +99,17 @@ def pfind(candidates):
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
-SCALE_UI = 0.45  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
 
 s = lambda v: int(round(v * SCALE_UI))
 
 FS_TITLE   = s(50)  # page title
 FS_SECTION = s(35)  # section headers
-FS_LABEL   = s(35)  # input & select labels (katex included)
-FS_UNITS   = s(30)  # math units in labels
-FS_INPUT   = s(30)  # number input value
-FS_SELECT  = s(20)  # dropdown value/options
-FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
+FS_LABEL   = s(22)  # input & select labels (katex included)
+FS_UNITS   = s(14)  # math units in labels
+FS_INPUT   = s(16)  # number input value
+FS_SELECT  = s(16)  # dropdown value/options
+FS_BUTTON  = s(18)  # Calculate / Reset / Clear All
 FS_BADGE   = s(16)  # predicted badge
 FS_RECENT  = s(12)  # small chips
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
@@ -493,7 +493,6 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 2], gap="large")
 
 with left:
-    # (removed the small .left-panel wrapper)
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
@@ -515,7 +514,6 @@ with left:
 
     css("</div>")
     css("</div>")
-    # (no closing tag for .left-panel, since it was removed)
 
 # =============================================================================
 # Step #6: Right panel
@@ -543,10 +541,10 @@ with right:
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
     div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * {{ color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }}
-    div[role="option"] {{ color: black !important; font-size: {FS_SELECT}px !important; }}
-    div.stButton > button {{ height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }}
-    #action-row {{ display:flex; align-items:center; gap: 1px; }}
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }
+    div[role="option"] { color: black !important; font-size: {FS_SELECT}px !important; }
+    div.stButton > button { height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }
+    #action-row { display:flex; align-items:center; gap: 1px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -755,6 +753,23 @@ with right:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
+# FINAL: Bring back banner color and drop it slightly (override placed last)
+# =============================================================================
+st.markdown("""
+<style>
+.form-banner{
+  background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
+  color: #fff !important;
+  text-align: center !important;
+  border-radius: 10px !important;
+  padding: .45rem .75rem !important;
+  margin-top: 12px !important;
+  transform: translateY(0) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =============================================================================
 # Step #9: Optional "Recent Predictions"
 # =============================================================================
 if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
@@ -822,8 +837,3 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
-
-
-
