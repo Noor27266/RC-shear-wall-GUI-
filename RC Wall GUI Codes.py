@@ -108,7 +108,7 @@ FS_SECTION = s(35)  # section headers
 FS_LABEL   = s(35)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
 FS_INPUT   = s(30)  # number input value
-FS_SELECT  = s(40)  # dropdown value/options
+FS_SELECT  = s(35)  # dropdown value/options
 FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
 FS_BADGE   = s(20)  # predicted badge
 FS_RECENT  = s(20)  # small chips
@@ -837,6 +837,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
