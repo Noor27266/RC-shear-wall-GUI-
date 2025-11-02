@@ -372,6 +372,55 @@ div[data-testid="column"]:has(.prediction-result){
 """, unsafe_allow_html=True)
 
 
+
+
+# ---- APPEND THIS AT THE VERY BOTTOM OF THE FILE ----
+st.markdown("""
+<style>
+/* 1) Make the DI badge a fixed width and add clear space to the right */
+.prediction-result{
+  width:240px !important;            /* set badge width */
+  white-space:nowrap !important;     /* single line */
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin-right:24px !important;      /* space so it never touches the button */
+}
+
+/* 2) Keep the Download control inline and EXACTLY the same width as the badge */
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important;   /* sit next to the badge, not full width */
+}
+
+/* Streamlit sometimes uses <button>, sometimes <a> for download */
+div[data-testid="stDownloadButton"] button,
+div[data-testid="stDownloadButton"] a{
+  width:240px !important;            /* match badge width */
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:nowrap !important;     /* keep "Download as CSV" on one line */
+  padding:8px 12px !important;
+}
+
+/* Ensure inner spans/icons never wrap */
+div[data-testid="stDownloadButton"] button * ,
+div[data-testid="stDownloadButton"] a *{
+  white-space:nowrap !important;
+}
+
+/* 3) Prevent column containers from squeezing and causing overlap */
+[data-testid="stHorizontalBlock"] > div:has(.prediction-result),
+[data-testid="stHorizontalBlock"] > div:has([data-testid="stDownloadButton"]){
+  flex:0 0 auto !important;
+  align-items:center !important;
+  display:flex !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
@@ -998,3 +1047,4 @@ div[data-testid="stHorizontalBlock"] > div:has(div[data-testid="stDownloadButton
 }
 </style>
 """, unsafe_allow_html=True)
+
