@@ -41,9 +41,8 @@ def pfind(candidates):
     `candidates` may be names or relative paths. We search:
       - BASE_DIR
       - CWD
-      - /mnt/data (if present)
+      - /mnt/data
       - any subdir under BASE_DIR (one level deep)
-      - glob fallbacks
     """
     # exact paths first
     for c in candidates:
@@ -52,8 +51,7 @@ def pfind(candidates):
             return p
 
     # next to script, cwd, and /mnt/data
-    extra = Path("/mnt/data")
-    roots = [BASE_DIR, Path.cwd()] + ([extra] if extra.exists() else [])
+    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]  # <-- added /mnt/data
     for root in roots:
         for c in candidates:
             p = root / c
@@ -73,8 +71,7 @@ def pfind(candidates):
     for c in candidates:
         pats.append(str(BASE_DIR / "**" / c))
         pats.append(str(Path.cwd() / "**" / c))
-        if extra.exists():
-            pats.append(str(extra / "**" / c))
+        pats.append(str(Path("/mnt/data") / "**" / c))  # also glob /mnt/data
     for pat in pats:
         matches = glob(pat, recursive=True)
         if matches:
@@ -207,7 +204,7 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* EXISTING experimental rule (kept) */
+  /* EXISTING experimental rule (kept): may or may not match across Streamlit versions */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -215,7 +212,7 @@ css(f"""
       padding:16px !important;
   }}
 
-  /* hard wrapper for the inputs panel (works everywhere) */
+  /* ### FIX: hard wrapper for the inputs panel (100% reliable) */
   .left-panel {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -328,7 +325,7 @@ ann_ps_model = None; ann_ps_proc = None
 try:
     ### FIX: accept multiple common names / locations
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = load_model(ps_model_path)
+    ann_ps_model = load_model(ps_model_path, compile=False)   # <-- compile=False
     sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
@@ -339,7 +336,7 @@ except Exception as e:
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = load_model(mlp_model_path)
+    ann_mlp_model = load_model(mlp_model_path, compile=False)  # <-- compile=False
     sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
@@ -462,7 +459,7 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 2], gap="large")
 
 with left:
-    ### hard wrapper so the background is definitely gray
+    ### FIX: hard wrapper so the background is definitely gray
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
 
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -489,7 +486,7 @@ with left:
 
     css("</div>")   # close #compact-form
     css("</div>")   # close #leftwrap
-    st.markdown("</div>", unsafe_allow_html=True)  # close .left-panel
+    st.markdown("</div>", unsafe_allow_html=True)  # ### FIX: close .left-panel
 
 # =============================================================================
 # Step #6: Right panel (unchanged)
@@ -518,7 +515,7 @@ with right:
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
     div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
     div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font size: 30px !important; color: black !important; }
     [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
     div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
     div[role="option"] { color: black !important; font-size: 16px !important; }
