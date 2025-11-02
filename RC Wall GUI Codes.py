@@ -263,6 +263,27 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 </style>
 """, unsafe_allow_html=True)
 
+
+
+
+
+
+st.markdown("""
+<style>
+/* Hide Streamlit's small +/- buttons on number inputs */
+div[data-testid="stNumberInput"] button { display: none !important; }
+
+/* Also hide browser numeric spinners for consistency */
+div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
@@ -840,6 +861,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
