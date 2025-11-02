@@ -201,7 +201,7 @@ css(f"""
   button[key="reset_btn"] {{ background:#2196F3 !important; }}
   button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-  .form-banner {{
+   {{
     text-align:center;
     background: linear-gradient(90deg, #0E9F6E, #84CC16);
     color: #fff;
@@ -210,7 +210,7 @@ css(f"""
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
     margin:.1rem 0 !important;
-    transform: translateY(-10px);
+    transform: translateY(12px);
   }}
 
   .prediction-result {{
@@ -822,4 +822,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
