@@ -958,7 +958,7 @@ st.markdown("""
   align-items: center !important;
   justify-content: center !important;
   width: auto !important;
-  margin-right: 16px !important;   /* Add space between the DI badge and the CSV button */
+  margin-right: 50px !important;   /* Add space between the DI badge and the CSV button */
   white-space: nowrap !important;
 }
 
@@ -975,6 +975,7 @@ div[data-testid="stDownloadButton"] > button {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
