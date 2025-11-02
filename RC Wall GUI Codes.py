@@ -950,6 +950,7 @@ if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
+st.markdown("""
 <style>
 /* Ensure both elements are inline-flex, no wrap */
 .prediction-result,
@@ -972,6 +973,7 @@ div[data-testid="stDownloadButton"]{
   margin-left:10px !important; /* Ensuring a gap on the left side of the button */
 }
 </style>
+""", unsafe_allow_html=True)
 
 
 
