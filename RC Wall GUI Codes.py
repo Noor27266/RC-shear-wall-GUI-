@@ -31,15 +31,10 @@ import joblib
 import catboost
 import lightgbm as lgb
 
-# --- Lazy TensorFlow/Keras import helper (avoid heavy import on startup) ---
-def _lazy_tf_load_model(path: str):
-    """
-    Import TensorFlow Keras only when needed and load a .keras/.h5 model.
-    Keeps startup light and avoids TF native init issues if ANN models aren't used.
-    """
-    from importlib import import_module
-    load_model = import_module("tensorflow.keras.models").load_model
-    return load_model(path)
+from tensorflow.keras.models import model_from_json
+from tensorflow.keras import Model, Sequential
+from tensorflow.keras import layers as KL
+from tensorflow.keras.models import load_model
 
 # =============================================================================
 # Small helpers
@@ -314,6 +309,8 @@ with st.sidebar:
         help="Move the entire right side up/down"
     )
 
+
+
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
 # =============================================================================
@@ -382,6 +379,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+
+
+
+
 # =============================================================================
 # Step #3.2: Remove Streamlit default top spacing & header
 # =============================================================================
@@ -437,6 +438,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+
 # =============================================================================
 # Step #4: Model loading (same as before; tolerant of missing files)
 # =============================================================================
@@ -458,8 +460,7 @@ class _ScalerShim:
 
 ann_ps_model = None; ann_ps_proc = None
 try:
-    # Lazy import TF only when loading this ANN
-    ann_ps_model = _lazy_tf_load_model("ANN_PS_Model.keras")
+    ann_ps_model = load_model("ANN_PS_Model.keras")
     import joblib as _jb
     ann_ps_proc = _ScalerShim(_jb.load("ANN_PS_Scaler_X.save"), _jb.load("ANN_PS_Scaler_y.save"))
     record_health("PS (ANN)", True, "loaded via .keras + joblib scalers")
@@ -468,8 +469,7 @@ except Exception as e:
 
 ann_mlp_model = None; ann_mlp_proc = None
 try:
-    # Lazy import TF only when loading this ANN
-    ann_mlp_model = _lazy_tf_load_model("ANN_MLP_Model.keras")
+    ann_mlp_model = load_model("ANN_MLP_Model.keras")
     import joblib as _jb
     ann_mlp_proc = _ScalerShim(_jb.load("ANN_MLP_Scaler_X.save"), _jb.load("ANN_MLP_Scaler_y.save"))
     record_health("MLP (ANN)", True, "loaded via .keras + joblib scalers")
@@ -645,7 +645,6 @@ with right:
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
             <img src='data:image/png;base64,{b64(Path("logo2-01.png"))}' width='{int(HERO_W)}'/>
-
         </div>
         """,
         unsafe_allow_html=True,
@@ -745,23 +744,23 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
 def predict_di(choice, _unused_array, input_df):
     df_trees = _df_in_train_order(input_df)
     X = df_trees.values.astype(np.float32)
-
+    
     if choice == "LightGBM":
         mdl = model_registry["LightGBM"]
         try:
             prediction = float(mdl.predict(X)[0])
         except Exception:
             prediction = float(mdl.predict(X)[0])
-
+    
     if choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
-
+    
     if choice == "CatBoost":
         prediction = float(model_registry["CatBoost"].predict(X)[0])
-
+    
     if choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
-
+    
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
         try:
@@ -770,7 +769,7 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["PS"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-
+    
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
         try:
@@ -779,7 +778,7 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["MLP"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
-
+    
     # Apply the limits (0.035, 1.5) to the prediction
     prediction = max(0.035, min(prediction, 1.5))
     return prediction
@@ -805,7 +804,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
 def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
-
+    
     selection = alt.selection_point(
         name='select',
         fields=['θ', 'Predicted_DI'],
@@ -814,7 +813,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
         empty=False,
         clear='mouseout'
     )
-
+    
     AXIS_LABEL_FS = 20
     AXIS_TITLE_FS = 24
     TICK_SIZE = 8
@@ -920,8 +919,11 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
         '</style>',
         '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }</style>'
     )
-
+    
     st.components.v1.html(chart_html, height=size + 100)
+
+
+
 
 # =============================================================================
 # Step #8: Predict on click; always render curve
