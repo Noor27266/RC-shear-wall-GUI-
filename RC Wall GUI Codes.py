@@ -115,7 +115,7 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-FS_TITLE   = 50
+FS_TITLE   = 30
 FS_SECTION = 34
 FS_LABEL   = 26
 FS_UNITS   = 18
@@ -715,3 +715,4 @@ if show_recent and not st.session_state.results_df.empty:
             f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
             unsafe_allow_html=True
         )
+
