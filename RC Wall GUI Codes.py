@@ -115,51 +115,55 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# === Fit the whole app to one screen without changing your layout/colors ===
+# === Fit the whole app to one screen without changing layout/colors ===
 st.markdown("""
 <style>
-/* Design reference for "full" layout (adjust if you want). */
+/* Reference canvas your UI was designed for (change if your base canvas differs). */
 :root{
-  --design-w: 2300;    /* width in px of your intended one-screen layout */
-  --design-h: 1200;     /* height in px of your intended one-screen layout */
+  --design-w: 1600;     /* base width in px of your one-screen layout */
+  --design-h: 900;      /* base height in px of your one-screen layout */
   --scale: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
 }
 
-/* Anchor the entire app to the viewport and scale it uniformly */
+/* Wrap the entire app and scale it uniformly to viewer screen */
 #fit-to-screen{
-  position: fixed;      /* <-- keeps it at (0,0) regardless of page flow */
-  top: 0;
-  left: 0;
-  transform: scale(var(--scale));
-  transform-origin: top left;
+  position: fixed;
+  inset: 0 auto auto 0;      /* top:0; left:0 */
   width: calc(var(--design-w) * 1px);
   height: calc(var(--design-h) * 1px);
-  z-index: 1;
+  transform: scale(var(--scale));
+  transform-origin: top left;
+  z-index: 2;                 /* above Streamlit chrome */
 }
 
-/* Kill outer scrolling so everything stays on one screen */
+/* Remove page scrolling; keep everything on one visual screen */
 html, body{
   overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
-/* CRITICAL: neutralize any left padding that could push the app off-screen */
-html body [data-testid="stAppViewContainer"]{
-  padding-left: 0 !important;
-}
+/* Neutralize Streamlit paddings and chrome that add height */
+html body [data-testid="stAppViewContainer"]{ padding-left: 0 !important; padding-right: 0 !important; }
+section.main > div.block-container{ padding-top: 0 !important; padding-bottom: 0 !important; margin: 0 !important; height: 100% !important; overflow: hidden !important; }
+
+/* Hide default Streamlit menus/footers that can create extra space */
+#MainMenu, footer, [data-testid="stStatusWidget"], [data-testid="stToolbar"] { display:none !important; }
+
+/* Also prevent any inner scrolls in columns/panels */
+[data-testid="stHorizontalBlock"], [data-testid="column"]{ overflow: hidden !important; }
 </style>
 <div id="fit-to-screen">
 """, unsafe_allow_html=True)
 # === END fit-to-screen insertion ===
 
-FS_TITLE   = 25
-FS_SECTION = 25
-FS_LABEL   = 25
+FS_TITLE   = 50
+FS_SECTION = 35
+FS_LABEL   = 30
 FS_UNITS   = 18
 FS_INPUT   = 20
-FS_SELECT  = 25
-FS_BUTTON  = 25
+FS_SELECT  = 50
+FS_BUTTON  = 55
 FS_BADGE   = 25
 FS_RECENT  = 16
 INPUT_H    = max(32, int(FS_INPUT * 2.1))
@@ -181,7 +185,7 @@ css(f"""
 
   .section-header {{
     font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.2rem 0;
+    font-weight:700; margin:.35rem 0;
   }}
 
   .stNumberInput label, .stSelectbox label {{
@@ -365,8 +369,7 @@ with st.sidebar:
 st.markdown(f"""
 <style>
 :root {{ --shift-right: {int(app_x)}px; }}
-/* Original code sets padding-left using --shift-right.
-   The fit-to-screen block above already forces it to 0 so it doesn't push off-screen. */
+/* keep your original left shift API; the fit-to-screen wrapper already cancels extra padding */
 [data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right) !important; }}
 </style>
 """, unsafe_allow_html=True)
@@ -393,7 +396,6 @@ css("""
   .stSelectbox [role="combobox"]{ font-size:28px !important; }
   div.stButton > button{ font-size:24px !important; height:42px !important; }
 
-  /* reduce right offset so content fits */
   [data-testid="stAppViewContainer"]{ padding-left: 280px !important; }
 }
 
@@ -885,5 +887,3 @@ if show_recent and not st.session_state.results_df.empty:
 
 # === close fit-to-screen wrapper (added) ===
 st.markdown("</div>", unsafe_allow_html=True)
-
-
