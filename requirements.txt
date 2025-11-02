@@ -20,3 +20,5 @@ h5py
 # Helpers (optional but harmless)
 pyarrow
 skops==0.9.0
+
+tensorflow
