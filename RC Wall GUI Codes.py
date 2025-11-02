@@ -950,37 +950,29 @@ if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
-
 st.markdown("""
 <style>
-/* Final minimal fix: same width + gap + single line */
-.prediction-result{
+/* Ensure both elements are inline-flex, no wrap */
+.prediction-result,
+div[data-testid="stDownloadButton"]{
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
-  width:220px !important;          /* set badge width */
-  margin:0 !important;
+  width:auto !important;
+  margin-right:16px !important;   /* gap between the two elements */
   white-space:nowrap !important;
 }
 
-/* Download button inline, same width, not touching */
-div[data-testid="stDownloadButton"]{
-  display:inline-block !important;
-  margin-left:16px !important;     /* gap so they don't touch */
+div[data-testid="stDownloadButton"] > button{
+  width:auto !important;        /* Ensuring CSV button does not stretch */
+  padding:6px 12px !important;  /* Giving the button some padding */
 }
-div[data-testid="stDownloadButton"] > button,
-div[data-testid="stDownloadButton"] > a{
-  width:220px !important;          /* match badge width */
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  white-space:nowrap !important;
-  box-sizing:border-box !important;
-  padding:6px 10px !important;
+
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important; /* Ensuring the button is inline */
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 
 
