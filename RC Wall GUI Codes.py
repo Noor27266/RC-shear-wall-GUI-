@@ -115,15 +115,13 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# (REMOVED the old fit-to-screen wrapper and overflow-hidden CSS)
-
-FS_TITLE   = 25
-FS_SECTION = 25
-FS_LABEL   = 25
+FS_TITLE   = 50
+FS_SECTION = 35
+FS_LABEL   = 30
 FS_UNITS   = 18
 FS_INPUT   = 20
-FS_SELECT  = 25
-FS_BUTTON  = 25
+FS_SELECT  = 50
+FS_BUTTON  = 55
 FS_BADGE   = 25
 FS_RECENT  = 16
 INPUT_H    = max(32, int(FS_INPUT * 2.1))
@@ -268,10 +266,62 @@ css(f"""
 </style>
 """)
 
-# (REMOVED the old #leftwrap/top and deep top:-60px hacks)
+# Keep header area slim
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
 
-with st.sidebar:
-    right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
+# =============================================================================
+# NEW: Feature flag to hide/show sidebar tuning widgets
+# =============================================================================
+def _is_on(v):
+    return str(v).lower() in {"1","true","yes","on"}
+
+SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
+# Support URL param ?tune=1 for quick access (works on Streamlit >= 1.29 via st.query_params; fallback to experimental)
+try:
+    qp = st.query_params  # modern API
+    if "tune" in qp:
+        SHOW_TUNING = _is_on(qp.get("tune"))
+except Exception:
+    try:
+        qp = st.experimental_get_query_params()
+        if "tune" in qp:
+            SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
+    except Exception:
+        pass
+
+# Defaults (used when sidebar tuning is hidden)
+right_offset = 0
+HEADER_X   = 0
+TITLE_LEFT = 180
+TITLE_TOP  = 40
+LOGO_LEFT  = 340
+LOGO_TOP   = 60
+LOGO_SIZE  = 80
+_show_recent = False
+
+# Optional tuning sidebar (only when enabled)
+if SHOW_TUNING:
+    with st.sidebar:
+        right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
+    with st.sidebar:
+        st.markdown("### Header position (title & logo)")
+        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
+        TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
+        TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
+        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
+        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
+        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
+        _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
@@ -281,15 +331,6 @@ try:
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
     _b64 = ""
-
-with st.sidebar:
-    st.markdown("### Header position (title & logo)")
-    HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=0, step=20)
-    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=180, step=10)
-    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=40,  step=2)
-    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=340, step=10)
-    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=60,  step=2)
-    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=80, step=2)
 
 st.markdown(f"""
 <style>
@@ -304,27 +345,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# (REMOVED the sidebar app_x slider and padding-left: var(--shift-right) override)
-
-# -------------------------  <<< Responsive overrides  -------------------------
-css("""
-<style>
-/* Keep Altair responsive without shifting layout */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""")
-# -----------------------  end responsive overrides  --------------------------
 
 # =============================================================================
 # Step #4: Model loading (robust; tolerates different names/paths)
@@ -431,13 +451,15 @@ for name, ok, *_ in health:
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
-with st.sidebar:
-    st.header("Model Health")
-    for name, ok, msg, cls in health:
-        st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
-    for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
-        try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
-        except Exception: pass
+# Optional model health in sidebar only when tuning is on
+if SHOW_TUNING:
+    with st.sidebar:
+        st.header("Model Health")
+        for name, ok, msg, cls in health:
+            st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
+        for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
+            try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
+            except Exception: pass
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
@@ -523,11 +545,11 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# Step #6: Right panel (unchanged except: removed chart translate)
+# Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 400
+HERO_X, HERO_Y, HERO_W = 100, 5, 550
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 400
+CHART_W = 550
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -774,10 +796,9 @@ with right:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
-# Step #9: Optional "Recent Predictions" (hidden by default)
+# Step #9: Optional "Recent Predictions"
 # =============================================================================
-show_recent = st.sidebar.checkbox("Show Recent Predictions", value=False)
-if show_recent and not st.session_state.results_df.empty:
+if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
     right_predictions = st.empty()
     with right_predictions:
         st.markdown("### 🧾 Recent Predictions")
@@ -787,7 +808,3 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
-
-# (REMOVED the old closing tag for the deleted fit-to-screen wrapper)
-
-
