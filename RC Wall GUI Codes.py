@@ -138,7 +138,12 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0rem; }}
+  /* >>> UI FIXES: base layout & anti-wrapping */
+  .block-container {{
+    padding-top: 0rem;
+    max-width: 1400px;          /* keep the content readable on 100% zoom */
+    margin: 0 auto;             /* center the whole app */
+  }}
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
@@ -147,7 +152,7 @@ css(f"""
   }}
 
   .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
+    font-size:{FS_LABEL}px !important; font-weight:700; white-space: nowrap;
   }}
   .stNumberInput label .katex,
   .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
@@ -193,12 +198,15 @@ css(f"""
 
   .stSelectbox [role="combobox"] {{ font-size:{FS_SELECT}px !important; }}
 
+  /* prevent "C a l c u l a t e" vertical letters anywhere */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
     height:40px !important;
     color:#fff !important;
     font-weight:700; border:none !important; border-radius:8px !important;
     background: #4CAF50 !important;
+    white-space: nowrap; display:inline-flex; align-items:center; justify-content:center;
+    letter-spacing: normal; word-break: keep-all; word-spacing: normal;
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
@@ -221,10 +229,12 @@ css(f"""
   .prediction-result {{
     font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
     background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
+    white-space: nowrap;
   }}
   .recent-box {{
     font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+    white-space: nowrap;
   }}
 
   #compact-form{{ max-width:900px; margin:0 auto; }}
@@ -322,18 +332,22 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 """, unsafe_allow_html=True)
 
 with st.sidebar:
-    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=800, step=10)
+    # default 0 so it's sane on 100% zoom screens; you can still move it if needed
+    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=0, step=10)
 
 st.markdown(f"""
 <style>
 :root {{ --shift-right: {int(app_x)}px; }}
-[data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right) !important; }}
+[data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right, 0px) !important; }}
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------  <<< Responsive overrides  -------------------------
+# -------------------------  <<< UI FIXES: responsive overrides  -------------------------
 css("""
 <style>
+/* cancel any hard transforms that distort layout at normal zoom */
+.stAltairChart { transform: none !important; }
+
 /* Large desktops (<= 1800px) */
 @media (max-width: 1800px){
   .page-header__title{ font-size:42px !important; }
@@ -343,7 +357,7 @@ css("""
   div.stButton > button{ font-size:30px !important; height:46px !important; }
 }
 
-/* Laptops (<= 1500px) – fits at 80–100% zoom */
+/* Laptops (<= 1500px) – readable at 80–100% zoom */
 @media (max-width: 1500px){
   .page-header__title{ font-size:36px !important; }
   .form-banner{ font-size:32px !important; }
@@ -352,20 +366,19 @@ css("""
   div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
   .stSelectbox [role="combobox"]{ font-size:28px !important; }
   div.stButton > button{ font-size:24px !important; height:42px !important; }
-
-  /* reduce right offset so content fits */
-  [data-testid="stAppViewContainer"]{ padding-left: 280px !important; }
+  /* force-cancel any previous “shift-right” */
+  [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
 }
 
 /* Narrow laptops (<= 1280px) */
 @media (max-width: 1280px){
   .page-header__logo{ height:60px !important; }
-  [data-testid="stAppViewContainer"]{ padding-left: 120px !important; }
+  [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
 }
 
 /* Small widths (<= 1100px): allow wrapping and cancel transforms */
 @media (max-width: 1100px){
-  [data-testid="stAppViewContainer"]{ padding-left: 16px !important; }
+  [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
   .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
   .block-container [data-testid="stHorizontalBlock"] > div{
     width:100% !important; max-width:100% !important;
@@ -402,7 +415,7 @@ class _ScalerShim:
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = _load_keras_model(ps_model_path)                   # << robust loader
+    ann_ps_model = _load_keras_model(ps_model_path)
     sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
@@ -413,7 +426,7 @@ except Exception as e:
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = _load_keras_model(mlp_model_path)                 # << robust loader
+    ann_mlp_model = _load_keras_model(mlp_model_path)
     sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
@@ -601,15 +614,16 @@ with right:
     }
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
+    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; white-space: nowrap; }
     div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
     div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
     [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
-    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
+    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; white-space: nowrap; }
     div[role="option"] { color: black !important; font-size: 16px !important; }
-    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
+    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; white-space: nowrap; }
     #action-row { display:flex; align-items:center; gap: 1px; }
-    .stAltairChart { transform: translate(100px, 50px) !important; }
+    /* force-cancel any chart translations that caused overlap */
+    .stAltairChart { transform: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -842,4 +856,3 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
-
