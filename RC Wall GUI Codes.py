@@ -115,16 +115,16 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-FS_TITLE   = 50
-FS_SECTION = 35
-FS_LABEL   = 30
-FS_UNITS   = 18
-FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
-FS_BADGE   = 25
+FS_TITLE   = 42   # UI FIX: smaller so header fits at 100% zoom
+FS_SECTION = 28   # UI FIX
+FS_LABEL   = 24   # UI FIX
+FS_UNITS   = 16
+FS_INPUT   = 18   # UI FIX
+FS_SELECT  = 28   # UI FIX
+FS_BUTTON  = 24   # UI FIX
+FS_BADGE   = 22
 FS_RECENT  = 16
-INPUT_H    = max(32, int(FS_INPUT * 2.1))
+INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
@@ -138,12 +138,13 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  /* >>> UI FIXES: base layout & anti-wrapping */
+  /* UI FIX: center app & cap width so things never collide at 100% zoom */
   .block-container {{
     padding-top: 0rem;
-    max-width: 1400px;          /* keep the content readable on 100% zoom */
-    margin: 0 auto;             /* center the whole app */
+    max-width: 1280px;
+    margin: 0 auto;
   }}
+
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
@@ -198,15 +199,16 @@ css(f"""
 
   .stSelectbox [role="combobox"] {{ font-size:{FS_SELECT}px !important; }}
 
-  /* prevent "C a l c u l a t e" vertical letters anywhere */
+  /* UI FIX: no vertical letter wrapping; let buttons size themselves */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
-    height:40px !important;
+    height:auto !important;
+    min-width: 140px !important;
+    padding: .4rem 1rem !important;
     color:#fff !important;
     font-weight:700; border:none !important; border-radius:8px !important;
     background: #4CAF50 !important;
     white-space: nowrap; display:inline-flex; align-items:center; justify-content:center;
-    letter-spacing: normal; word-break: keep-all; word-spacing: normal;
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
@@ -221,9 +223,8 @@ css(f"""
     padding:.45rem .75rem;
     border-radius:10px;
     font-weight:800;
-    font-size:{FS_SECTION + 4}px;
+    font-size:{FS_SECTION + 2}px;
     margin:.1rem 0 !important;
-    transform: translateY(-10px);
   }}
 
   .prediction-result {{
@@ -243,7 +244,7 @@ css(f"""
   #compact-form [data-testid="stNumberInput"],
   #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+  #button-row {{ display:flex; gap:16px; margin:10px 0 6px 0; align-items:center; }}
 
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
@@ -262,25 +263,24 @@ css(f"""
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
       background: #000 !important; color: #fff !important; border-radius: 8px !important;
-      padding: 6px 10px !important; font-size: 24px !important; font-weight: 500 !important;
+      padding: 6px 10px !important; font-size: 20px !important; font-weight: 500 !important;
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color: #fff !important; }}
 
-  label[for="model_select_compact"] {{ font-size: 50px !important; font-weight: bold !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: 40px !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] {{ font-size: 35px !important; }}
+  label[for="model_select_compact"] {{ font-size: {FS_LABEL}px !important; font-weight: bold !important; }}
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: {FS_SELECT}px !important; }}
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] {{ font-size: {FS_SELECT}px !important; }}
 
-  div.stButton > button {{ font-size: 35px !important; font-weight: bold !important; height: 50px !important; }}
-  #action-row {{ display:flex; align-items:center; gap:10px; }}
-  .stSelectbox, .stButton {{ font-size:35px !important; }}
+  .stSelectbox, .stButton {{ font-size:{FS_BUTTON}px !important; }}
 </style>
 """)
 
+# UI FIX: remove the negative vertical lifts that squeezed the form
 css("""
 <style>
-#leftwrap { position: relative; top: -80px; }
+#leftwrap { position: relative; top: 0px; }
 .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) [data-testid="stHorizontalBlock"] {
-  position: relative !important; top: -60px !important;
+  position: relative !important; top: 0px !important;
 }
 .prediction-result{ white-space: nowrap !important; display: inline-block !important; width: auto !important; line-height: 1.2 !important; margin-top: 0 !important; }
 </style>
@@ -301,11 +301,11 @@ except Exception:
 with st.sidebar:
     st.markdown("### Header position (title & logo)")
     HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=0, step=20)
-    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=180, step=10)
-    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=40,  step=2)
-    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=340, step=10)
-    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=60,  step=2)
-    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=80, step=2)
+    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=120, step=10)  # UI FIX default smaller
+    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=20,  step=2)  # UI FIX
+    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=260, step=10) # UI FIX
+    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=20,  step=2)  # UI FIX
+    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=64, step=2)      # UI FIX
 
 st.markdown(f"""
 <style>
@@ -326,14 +326,13 @@ st.markdown("""
 html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
+div.stApp{ margin-top:-2rem !important; } /* UI FIX: less negative margin */
 section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 with st.sidebar:
-    # default 0 so it's sane on 100% zoom screens; you can still move it if needed
-    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=0, step=10)
+    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=0, step=10)  # UI FIX default 0
 
 st.markdown(f"""
 <style>
@@ -342,41 +341,37 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------  <<< UI FIXES: responsive overrides  -------------------------
+# -------------------------  Responsive / safety overrides  -------------------------
 css("""
 <style>
-/* cancel any hard transforms that distort layout at normal zoom */
+/* normalize charts & any stray transforms */
 .stAltairChart { transform: none !important; }
 
 /* Large desktops (<= 1800px) */
 @media (max-width: 1800px){
-  .page-header__title{ font-size:42px !important; }
-  .stNumberInput label, .stSelectbox label{ font-size:26px !important; }
-  div[data-testid="stNumberInput"] input{ font-size:18px !important; height:44px !important; line-height:40px !important; }
-  .stSelectbox [role="combobox"]{ font-size:32px !important; }
-  div.stButton > button{ font-size:30px !important; height:46px !important; }
+  .page-header__title{ font-size:40px !important; }
+  div.stButton > button{ font-size:22px !important; }
 }
 
-/* Laptops (<= 1500px) – readable at 80–100% zoom */
+/* Laptops (<= 1500px) */
 @media (max-width: 1500px){
   .page-header__title{ font-size:36px !important; }
-  .form-banner{ font-size:32px !important; }
-  .section-header{ font-size:26px !important; }
-  .stNumberInput label, .stSelectbox label{ font-size:22px !important; }
+  .form-banner{ font-size:30px !important; }
+  .section-header{ font-size:24px !important; }
+  .stNumberInput label, .stSelectbox label{ font-size:20px !important; }
   div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
-  .stSelectbox [role="combobox"]{ font-size:28px !important; }
-  div.stButton > button{ font-size:24px !important; height:42px !important; }
-  /* force-cancel any previous “shift-right” */
+  .stSelectbox [role="combobox"]{ font-size:24px !important; }
+  div.stButton > button{ font-size:20px !important; }
   [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
 }
 
 /* Narrow laptops (<= 1280px) */
 @media (max-width: 1280px){
-  .page-header__logo{ height:60px !important; }
+  .page-header__logo{ height:56px !important; }
   [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
 }
 
-/* Small widths (<= 1100px): allow wrapping and cancel transforms */
+/* Small widths (<= 1100px): allow wrapping cleanly */
 @media (max-width: 1100px){
   [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
   .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
@@ -384,14 +379,10 @@ css("""
     width:100% !important; max-width:100% !important;
   }
   .page-header-outer{ transform:none !important; }
-  .stAltairChart{ transform:none !important; }
 }
-
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """)
-# -----------------------  end responsive overrides  --------------------------
+# ------------------------------------------------------------------------------
 
 # =============================================================================
 # Step #4: Model loading (robust; tolerates different names/paths)
@@ -558,7 +549,7 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-left, right = st.columns([1.5, 2], gap="large")
+left, right = st.columns([1.4, 2], gap="large")  # UI FIX: slightly narrower left column
 
 with left:
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
@@ -590,11 +581,11 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# Step #6: Right panel (unchanged)
+# Step #6: Right panel (unchanged logic; UI defaults improved)
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 550
-MODEL_X, MODEL_Y = 100, -2
-CHART_W = 550
+HERO_X, HERO_Y, HERO_W = 20, 0, 420  # UI FIX: smaller, fits at 100% zoom
+MODEL_X, MODEL_Y = 0, 0
+CHART_W = 520   # UI FIX: slightly smaller so it fits under the buttons
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -613,22 +604,19 @@ with right:
         border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
     }
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-    div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
+    div[data-testid="stSelectbox"] > div > div { height: 46px !important; display:flex !important; align-items:center !important; }
     div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; white-space: nowrap; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
-    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; white-space: nowrap; }
-    div[role="option"] { color: black !important; font-size: 16px !important; }
-    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; white-space: nowrap; }
-    #action-row { display:flex; align-items:center; gap: 1px; }
-    /* force-cancel any chart translations that caused overlap */
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 24px !important; }
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 24px !important; color: black !important; }
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 24px !important; }
+    div[data-testid="stButton"] button p { font-size: 20px !important; color: white !important; font-weight: 700 !important; white-space: nowrap; }
+    #action-row { display:flex; align-items:center; gap: 12px; flex-wrap: wrap; } /* UI FIX: allow clean wrap if needed */
     .stAltairChart { transform: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
-    row = st.columns([0.8, 2.1, 2.1, 2.1], gap="small")
+    row = st.columns([1.3, 1.1, 1.1, 1.1], gap="small")  # UI FIX: more balanced widths
 
     with row[0]:
         available = set(model_registry.keys())
@@ -640,18 +628,18 @@ with right:
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
     with row[1]:
-        st.markdown("<div id='three-btns' style='margin-top:35px;'>", unsafe_allow_html=True)
-        b1, b2, b3 = st.columns([1, 1, 1.2], gap="small")
-        with b1:
-            submit = st.button("Calculate", key="calc_btn")
-        with b2:
-            if st.button("Reset", key="reset_btn"):
-                st.rerun()
-        with b3:
-            if st.button("Clear All", key="clear_btn"):
-                st.session_state.results_df = pd.DataFrame()
-                st.success("All predictions cleared.")
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<div id='three-btns' style='margin-top:26px;'>", unsafe_allow_html=True)
+        submit = st.button("Calculate", key="calc_btn")
+    with row[2]:
+        st.markdown("<div style='margin-top:26px;'></div>", unsafe_allow_html=True)
+        if st.button("Reset", key="reset_btn"):
+            st.rerun()
+    with row[3]:
+        st.markdown("<div style='margin-top:26px;'></div>", unsafe_allow_html=True)
+        if st.button("Clear All", key="clear_btn"):
+            st.session_state.results_df = pd.DataFrame()
+            st.success("All predictions cleared.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
     badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
     with badge_col:
@@ -746,7 +734,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
     selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 20; AXIS_TITLE_FS = 24; TICK_SIZE = 8; TITLE_PAD = 12; LABEL_PAD = 8
+    AXIS_LABEL_FS = 16; AXIS_TITLE_FS = 18; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6  # UI FIX: slightly smaller
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
@@ -774,14 +762,14 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     else:
         curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
-    points_layer = alt.Chart(curve_points).mark_circle(size=100, opacity=0.7).encode(
+    points_layer = alt.Chart(curve_points).mark_circle(size=90, opacity=0.7).encode(
         x="θ:Q", y="Predicted_DI:Q",
         tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                  alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
     ).add_params(selection)
 
     rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
-    text_layer = alt.Chart(curve).mark_text(align='left', dx=10, dy=-10, fontSize=20, fontWeight='bold', color='red').encode(
+    text_layer = alt.Chart(curve).mark_text(align='left', dx=10, dy=-10, fontSize=16, fontWeight='bold', color='red').encode(
         x="θ:Q", y="Predicted_DI:Q", text=alt.Text("Predicted_DI:Q", format=".4f")
     ).transform_filter(selection)
 
@@ -791,8 +779,8 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
     chart_html = chart.to_html()
     chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }</style>')
-    st.components.v1.html(chart_html, height=size + 100)
+        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 18px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 10px !important; }</style>')
+    st.components.v1.html(chart_html, height=size + 80)
 
 # =============================================================================
 # Step #8: Predict on click; always render curve
