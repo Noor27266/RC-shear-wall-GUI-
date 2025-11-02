@@ -153,7 +153,7 @@ html body [data-testid="stAppViewContainer"]{
 """, unsafe_allow_html=True)
 # === END fit-to-screen insertion ===
 
-FS_TITLE   = 50
+FS_TITLE   = 20
 FS_SECTION = 35
 FS_LABEL   = 30
 FS_UNITS   = 18
@@ -885,3 +885,4 @@ if show_recent and not st.session_state.results_df.empty:
 
 # === close fit-to-screen wrapper (added) ===
 st.markdown("</div>", unsafe_allow_html=True)
+
