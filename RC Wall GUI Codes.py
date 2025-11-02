@@ -279,22 +279,27 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 # =============================================================================
 st.markdown("""
 <style>
-/* Increase gap between the DI badge and the download button */
-.prediction-result{
-  display: inline-flex !important;   /* keeps it on one line */
-  align-items: center !important;     /* vertically center the text */
-  padding: 2px 12px !important;       /* top/bottom | left/right */
-  line-height: 1.05 !important;       /* tighter line height */
-  border-radius: 10px !important;     /* keep your rounded look */
-  margin-right: 30px !important;      /* Further increase gap between DI badge and CSV button */
+/* Ensure a large gap between the DI badge and the download button */
+.prediction-result {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 6px 12px !important;  /* top/bottom | left/right padding */
+  margin-right: 40px !important;  /* Increased space between DI and CSV button */
 }
 
-div[data-testid="stDownloadButton"]{
-  display:inline-block !important;
-  margin-left: 30px !important; /* Increase gap to separate it further from the DI badge */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left: 40px !important;  /* Space added to left of the CSV button */
+}
+
+/* This will ensure they align properly */
+div[data-testid="stDownloadButton"] button {
+  white-space: nowrap !important;
+  padding: 8px 14px !important;  /* Compact padding for button */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -988,6 +993,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
