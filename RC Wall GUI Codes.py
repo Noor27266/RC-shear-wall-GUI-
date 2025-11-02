@@ -605,7 +605,7 @@ with right:
         dl_slot = st.empty()
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download All Results as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
 
     col1, col2 = st.columns([0.01, 20])
     with col2:
@@ -861,6 +861,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
