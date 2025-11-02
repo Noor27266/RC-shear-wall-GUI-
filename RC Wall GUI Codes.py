@@ -953,26 +953,27 @@ if _rules:
 st.markdown("""
 <style>
 /* Ensure both elements are inline-flex, no wrap */
-.prediction-result,
-div[data-testid="stDownloadButton"]{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:auto !important;
-  margin-right:16px !important;   /* gap between the two elements */
-  white-space:nowrap !important;
+.prediction-result {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  margin-right: 16px !important;   /* Add space between the DI badge and the CSV button */
+  white-space: nowrap !important;
 }
 
-div[data-testid="stDownloadButton"] > button{
-  width:auto !important;        /* Ensuring CSV button does not stretch */
-  padding:6px 12px !important;  /* Giving the button some padding */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left: 16px !important; /* Add space between the two elements */
 }
 
-div[data-testid="stDownloadButton"]{
-  display:inline-block !important; /* Ensuring the button is inline */
+div[data-testid="stDownloadButton"] > button {
+  padding: 6px 12px !important;  /* Give the button comfortable padding */
+  white-space: nowrap !important; /* Ensure text stays on one line */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
