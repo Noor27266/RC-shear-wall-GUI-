@@ -279,18 +279,19 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 
 st.markdown("""
 <style>
-/* Make the DI badge a compact pill instead of full width */
+/* Make the DI badge shorter (reduce height only) */
 .prediction-result{
-  display:inline-block !important;   /* don’t fill the column */
-  width: 380px !important;           /* ← pick the size you like (e.g., 320–420px) */
-  max-width: 100% !important;        /* stay responsive if column is narrow */
-  padding: .45rem .75rem !important; /* keep it tidy */
-  margin: 0 !important;              /* remove extra spacing that can push the button */
-  text-align: center !important;
-  border-radius: 10px !important;
+  display: inline-flex !important;   /* keeps it on one line */
+  align-items: center !important;     /* vertically center the text */
+  padding: 2px 12px !important;       # top/bottom | left/right  ← smaller T/B padding
+  line-height: 1.05 !important;       # tight line height
+  border-radius: 10px !important;     # keep your rounded look
+  /* optional: if you still want it even shorter, uncomment next line */
+  /* font-size: 0.9em !important; */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -873,6 +874,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
