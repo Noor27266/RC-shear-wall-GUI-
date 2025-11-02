@@ -23,7 +23,12 @@ import joblib
 import catboost
 import lightgbm as lgb
 
-from tensorflow.keras.models import load_model
+# --- IMPORTANT: we will try both keras loaders for .keras models ---
+from tensorflow.keras.models import load_model as tf_load_model
+try:
+    from keras.models import load_model as k_load_model  # Keras 3 (standalone)
+except Exception:
+    k_load_model = None
 
 # =============================================================================
 # Small helpers
@@ -35,54 +40,42 @@ def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi
 # ---------- path helper (so PS/MLP/RF actually load) ----------
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
-    """
-    Return the first existing file path among `candidates`.
-    Search order:
-      1) exact paths
-      2) alongside this script (BASE_DIR)
-      3) current working directory
-      4) **/mnt/data** (where uploaded files live)
-      5) one-level subdirs under BASE_DIR and /mnt/data
-      6) recursive glob fallback
-    """
-    # exact paths first
     for c in candidates:
         p = Path(c)
         if p.exists():
             return p
-
-    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
+    roots = [BASE_DIR, Path.cwd()]
     for root in roots:
-        if not root.exists():
-            continue
         for c in candidates:
             p = root / c
             if p.exists():
                 return p
-
-    # one-level subdirs under BASE_DIR and /mnt/data
-    for root in [BASE_DIR, Path("/mnt/data")]:
-        if not root.exists():
-            continue
-        for sub in root.iterdir():
-            if sub.is_dir():
-                for c in candidates:
-                    p = sub / c
-                    if p.exists():
-                        return p
-
-    # glob fallbacks
+    for sub in BASE_DIR.iterdir():
+        if sub.is_dir():
+            for c in candidates:
+                p = sub / c
+                if p.exists():
+                    return p
     pats = []
     for c in candidates:
-        for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
-            if root.exists():
-                pats.append(str(root / "**" / c))
+        pats.append(str(BASE_DIR / "**" / c))
+        pats.append(str(Path.cwd() / "**" / c))
     for pat in pats:
         matches = glob(pat, recursive=True)
         if matches:
             return Path(matches[0])
-
     raise FileNotFoundError(f"None of these files were found: {candidates}")
+
+# Helper: load a .keras/.h5 model no matter which API saved it
+def load_any_keras(path):
+    # Try standalone Keras 3 first if available (common cause of silent failures)
+    if k_load_model is not None:
+        try:
+            return k_load_model(path)
+        except Exception:
+            pass
+    # Fallback to tf.keras
+    return tf_load_model(path)
 
 # =============================================================================
 # Step #2: Page config + COLORS + font knobs
@@ -105,7 +98,7 @@ SECONDARY = "#f9f9f9"
 
 INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
-LEFT_BG      = "#e0e4ec"   # your gray
+LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
 # Step #2.1: Global UI CSS (layout, fonts, inputs, theme)
@@ -209,13 +202,12 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
+  .block-container [data-testid="stHorizontalBlock"] > div {{
+      background: transparent !important;
+      box-shadow: none !important;
   }}
 
+  /* LEFT panel hard wrapper — guaranteed gray */
   .left-panel {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -256,6 +248,7 @@ with st.sidebar:
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
 # =============================================================================
+BASE_DIR = Path(__file__).resolve().parent
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
@@ -327,44 +320,53 @@ class _ScalerShim:
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = load_model(ps_model_path)
+    ann_ps_model = load_any_keras(ps_model_path)
     sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
-    record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
+    record_health("PS (ANN)", True, f"loaded from {ps_model_path.name}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = load_model(mlp_model_path)
+    ann_mlp_model = load_any_keras(mlp_model_path)
     sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
-    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
+    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path.name}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
 rf_model = None
 try:
-    # preferred persisted formats
-    rf_path = pfind(["random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl"])
-    rf_model = joblib.load(rf_path)
-    record_health("Random Forest", True, f"loaded from {rf_path}")
-except Exception as e:
-    # if only JSON exists, explain why it can't be used
+    # First: usual pickle/joblib formats
     try:
-        rf_json = pfind(["Best_RF_Model.json","best_rf_model.json","RF_model.json"])
-        record_health("Random Forest", False, f"Found {rf_json.name} but RandomForest can't be restored from plain JSON. Save as .pkl/.joblib instead.")
-    except Exception:
-        record_health("Random Forest", False, str(e))
+        rf_path = pfind(["random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl"])
+        rf_model = joblib.load(rf_path)
+        record_health("Random Forest", True, f"loaded from {rf_path.name}")
+    except Exception as _e1:
+        # Then: JSON via sklearn-json (only if the package is installed)
+        try:
+            json_path = pfind(["Best_RF_Model.json", "rf_model.json"])
+            try:
+                from sklearn_json import load as skjson_load
+            except Exception:
+                raise RuntimeError("Best_RF_Model.json found, but sklearn-json is not installed. Save RF as .pkl/.joblib instead.")
+            with open(json_path, "r", encoding="utf-8") as f:
+                rf_model = skjson_load(f)
+            record_health("Random Forest", True, f"loaded from {json_path.name} via sklearn-json")
+        except Exception as _e2:
+            raise _e2
+except Exception as e:
+    record_health("Random Forest", False, str(e))
 
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","xgboost_model.json"])
     xgb_model = xgb.XGBRegressor(); xgb_model.load_model(xgb_path)
-    record_health("XGBoost", True, f"loaded from {xgb_path}")
+    record_health("XGBoost", True, f"loaded from {xgb_path.name}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
@@ -372,7 +374,7 @@ cat_model = None
 try:
     cat_path = pfind(["CatBoost.cbm","catboost.cbm"])
     cat_model = catboost.CatBoostRegressor(); cat_model.load_model(cat_path)
-    record_health("CatBoost", True, f"loaded from {cat_path}")
+    record_health("CatBoost", True, f"loaded from {cat_path.name}")
 except Exception as e:
     record_health("CatBoost", False, str(e))
 
@@ -381,7 +383,6 @@ def load_lightgbm_flex():
         p = pfind(["LightGBM_model","LightGBM_model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib"])
     except Exception:
         raise FileNotFoundError("No LightGBM_model file found.")
-    # try booster first
     try: return lgb.Booster(model_file=str(p)), "booster", p
     except Exception:
         try: return joblib.load(p), "sklearn", p
@@ -468,29 +469,22 @@ left, right = st.columns([1.5, 2], gap="large")
 
 with left:
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
-
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
-
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
-
     c1, _gap, c2 = st.columns([1, 0.08, 1], gap="large")
-
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
-
     with c2:
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fyl, fybl = [num(*row) for row in MATS[3:]]
         st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
-
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)
