@@ -306,7 +306,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# Step #4: Model loading (robust; tolerates different names/paths)
+# Step #4: Model loading (explicit filenames + RF .json via SKOPS)
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -324,6 +324,7 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
+# ----- PS (ANN) -----
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
@@ -335,6 +336,7 @@ try:
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
+# ----- MLP (ANN) -----
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
@@ -346,49 +348,45 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# --- Random Forest (now supports joblib/pkl and SKOPS .json) ---
+# ----- Random Forest (joblib/pkl first; fallback to SKOPS .json like Best_RF_Model.json) -----
 rf_model = None
 try:
-    # preferred persisted formats
     rf_path = pfind(["random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl"])
     rf_model = joblib.load(rf_path)
     record_health("Random Forest", True, f"loaded from {rf_path}")
 except Exception as e_joblib:
-    # try SKOPS JSON fallback (e.g., Best_RF_Model.json)
     try:
         rf_json = pfind(["Best_RF_Model.json","best_rf_model.json","RF_model.json"])
-        try:
-            import skops.io as sio  # lazy import so it's only needed if JSON exists
-            rf_model = sio.load(rf_json, trusted=True)
-            record_health("Random Forest", True, f"loaded via skops from {rf_json}")
-        except Exception as e_skops:
-            record_health("Random Forest", False, f"Found {rf_json.name} but failed to load with skops: {e_skops}")
-    except Exception:
-        # nothing RF-like was found anywhere
-        record_health("Random Forest", False, str(e_joblib))
+        import skops.io as sio
+        rf_model = sio.load(rf_json, trusted=True)
+        record_health("Random Forest", True, f"loaded via skops from {rf_json}")
+    except Exception as e_skops:
+        record_health("Random Forest", False, f"RF load failed (joblib:{e_joblib}) (skops:{e_skops})")
 
+# ----- XGBoost -----
 xgb_model = None
 try:
-    xgb_path = pfind(["XGBoost_trained_model_for_DI.json","xgboost_model.json"])
+    xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
     xgb_model = xgb.XGBRegressor(); xgb_model.load_model(xgb_path)
     record_health("XGBoost", True, f"loaded from {xgb_path}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
+# ----- CatBoost -----
 cat_model = None
 try:
-    cat_path = pfind(["CatBoost.cbm","catboost.cbm"])
+    cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
     cat_model = catboost.CatBoostRegressor(); cat_model.load_model(cat_path)
     record_health("CatBoost", True, f"loaded from {cat_path}")
 except Exception as e:
     record_health("CatBoost", False, str(e))
 
+# ----- LightGBM (Booster file or sklearn wrapper) -----
 def load_lightgbm_flex():
     try:
-        p = pfind(["LightGBM_model","LightGBM_model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib"])
+        p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
     except Exception:
-        raise FileNotFoundError("No LightGBM_model file found.")
-    # try booster first
+        raise FileNotFoundError("No LightGBM model file found.")
     try: return lgb.Booster(model_file=str(p)), "booster", p
     except Exception:
         try: return joblib.load(p), "sklearn", p
@@ -401,15 +399,14 @@ try:
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
+# ----- Register models for the dropdown (names match your reference style) -----
 model_registry = {}
-for name, ok, *_ in health:
-    if not ok: continue
-    if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
-    elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
-    elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
-    elif name == "PS (ANN)" and ann_ps_model is not None: model_registry["PS"] = ann_ps_model
-    elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
-    elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
+if xgb_model is not None:            model_registry["XGBoost"] = xgb_model
+if cat_model is not None:            model_registry["CatBoost"] = cat_model
+if lgb_model is not None:            model_registry["LightGBM"] = lgb_model
+if ann_ps_model is not None:         model_registry["PS"] = ann_ps_model
+if ann_mlp_model is not None:        model_registry["MLP"] = ann_mlp_model
+if rf_model is not None:             model_registry["Random Forest"] = rf_model  # will show as "RF" in your UI
 
 with st.sidebar:
     st.header("Model Health")
@@ -419,8 +416,6 @@ with st.sidebar:
         try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
         except Exception: pass
 
-if "results_df" not in st.session_state:
-    st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
 # Step #5: Ranges, inputs, layout
@@ -763,3 +758,4 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
