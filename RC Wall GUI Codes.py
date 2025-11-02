@@ -121,7 +121,7 @@ st.markdown("""
 /* Design reference for "full" layout (adjust if you want). */
 :root{
   --design-w: 1600;    /* width in px of your intended one-screen layout */
-  --design-h: 900;     /* height in px of your intended one-screen layout */
+  --design-h: 500;     /* height in px of your intended one-screen layout */
   --scale: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
 }
 
@@ -885,4 +885,5 @@ if show_recent and not st.session_state.results_df.empty:
 
 # === close fit-to-screen wrapper (added) ===
 st.markdown("</div>", unsafe_allow_html=True)
+
 
