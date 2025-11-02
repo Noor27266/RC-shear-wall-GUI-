@@ -279,10 +279,6 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 # =============================================================================
 st.markdown("""
 <style>
-st.markdown("""
-<style>
-st.markdown("""
-<style>
 /* Increase gap between the DI badge and the download button */
 .prediction-result{
   display: inline-flex !important;   /* keeps it on one line */
@@ -299,6 +295,7 @@ div[data-testid="stDownloadButton"]{
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -991,6 +988,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
