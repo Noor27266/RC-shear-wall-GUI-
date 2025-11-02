@@ -9,7 +9,7 @@ joblib
 pyarrow
 plotly
 
-# NEW: required to deserialize your scalers and RF when saved with sklearn
+# Needed for scalers saved with joblib and RF JSON via SKOPS
 scikit-learn==1.3.2
 skops==0.9.0
 
