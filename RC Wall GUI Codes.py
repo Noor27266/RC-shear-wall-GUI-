@@ -236,12 +236,6 @@ css(f"""
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
   }}
-  .left-panel {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-  }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
@@ -466,7 +460,7 @@ GEOM = [
     (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
     (rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness"),
     (rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width"),
-    (rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length"),
+    (rf("$d_b{U('mm')}$")),"db",400.0,1.0,None,"Boundary element length"),
     (r"$AR$","AR",2.0,0.01,None,"Aspect ratio"),
     (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
 ]
@@ -475,8 +469,8 @@ MATS = [
     (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
     (rf"$f_{{ysh}}{U('MPa')}$",   "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
-    (rf"$f_{{yl}}{U('MPa')}$",    "fyl",  400.0, 1.0, None, "Vertical web yield strength"),
-    (rf"$f_{{ybl}}{U('MPa')}$",   "fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
+    (rf("$f_{{yl}}{U('MPa')}$")),"fyl",  400.0, 1.0, None, "Vertical web yield strength"),
+    (rf("$f_{{ybl}}{U('MPa')}$")),"fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
 
 REINF = [
@@ -499,7 +493,7 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 2], gap="large")
 
 with left:
-    st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
+    # (removed the small .left-panel wrapper)
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
@@ -521,7 +515,7 @@ with left:
 
     css("</div>")
     css("</div>")
-    st.markdown("</div>", unsafe_allow_html=True)
+    # (no closing tag for .left-panel, since it was removed)
 
 # =============================================================================
 # Step #6: Right panel
@@ -550,7 +544,6 @@ with right:
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
     div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
     [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * {{ color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }}
-    div[data-testid="stButton"] button p {{ font-size: {FS_BUTTON}px !important; color: black !important; font-weight: normal !important; }}
     div[role="option"] {{ color: black !important; font-size: {FS_SELECT}px !important; }}
     div.stButton > button {{ height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }}
     #action-row {{ display:flex; align-items:center; gap: 1px; }}
@@ -829,5 +822,3 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
