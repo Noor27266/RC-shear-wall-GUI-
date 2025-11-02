@@ -108,7 +108,7 @@ FS_SELECT  = 20
 FS_BUTTON  = 18
 FS_BADGE   = 20
 FS_RECENT  = 16
-INPUT_H    = max(38, int(FS_INPUT * 2.0))
+INPUT_H    = max(30, int(FS_INPUT * 2.0))
 
 PRIMARY   = "#8E44AD"
 LEFT_BG   = "#eef1f6"      # grey panel background
@@ -598,5 +598,6 @@ with right:
 # =============================================================================
 if st.session_state.results_df is not None and not st.session_state.results_df.empty:
     st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+
 
 
