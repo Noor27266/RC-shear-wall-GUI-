@@ -28,66 +28,71 @@ def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("a
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # =============================================================================
-# GLOBAL STYLES (kept clean & responsive)
+# GLOBAL STYLES (compact + left panel gray)
 # =============================================================================
 css("""
 <style>
   :root{
-    --fs-title: clamp(26px, 3.2vw, 42px);
-    --fs-section: clamp(18px, 2.1vw, 28px);
-    --fs-label: clamp(14px, 1.6vw, 22px);
-    --fs-units: clamp(12px, 1.2vw, 16px);
-    --fs-input: clamp(13px, 1.4vw, 18px);
-    --fs-select: clamp(14px, 1.6vw, 20px);
-    --fs-button: clamp(14px, 1.6vw, 20px);
-    --fs-badge: clamp(13px, 1.4vw, 18px);
+    /* slightly smaller so everything fits one screen */
+    --fs-title: clamp(26px, 2.6vw, 36px);
+    --fs-section: clamp(16px, 1.8vw, 22px);
+    --fs-label: clamp(13px, 1.4vw, 18px);
+    --fs-units: clamp(11px, 1.1vw, 14px);
+    --fs-input: clamp(12px, 1.2vw, 16px);
+    --fs-select: clamp(13px, 1.3vw, 18px);
+    --fs-button: clamp(13px, 1.3vw, 18px);
+    --fs-badge: clamp(12px, 1.2vw, 16px);
   }
 
   .block-container { padding-top: 0rem; max-width: 1400px; }
 
   /* Title row */
-  .page-header {
-    display:flex; align-items:center; gap:16px; margin:0 0 .25rem 0;
-  }
+  .page-header { display:flex; align-items:center; gap:16px; margin:0 0 .25rem 0; }
   .page-header__title { font-size: var(--fs-title); font-weight:800; margin:0; }
-  .page-header__logo { height: clamp(36px, 5vw, 70px); width:auto; display:block; }
+  .page-header__logo  { height: clamp(34px, 4.2vw, 64px); width:auto; display:block; }
 
-  /* Left inputs panel background (light grey) */
-  .left-panel {
-    background: #e0e4ec;               /* <-- same grey as your original */
+  /* ---------- LEFT PANEL MUST BE GRAY ---------- */
+  /* We wrap the whole left side in .left-panel + .left-panel-inner to beat Streamlit styles */
+  .left-panel,
+  .left-panel-inner{
+    background: #e0e4ec !important;           /* FORCE gray */
     border-radius: 12px;
-    padding: 14px 16px 10px 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+  }
+  .left-panel-inner{
+    padding: 12px 14px 10px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
   }
 
+  /* Banner */
   .form-banner{
     text-align:center; background: linear-gradient(90deg, #0E9F6E, #84CC16); color:#fff;
-    padding:.45rem .75rem; border-radius:10px; font-weight:800;
-    font-size: calc(var(--fs-section) + 2px); margin:.35rem 0 .6rem 0 !important;
+    padding:.35rem .6rem; border-radius:10px; font-weight:800;
+    font-size: calc(var(--fs-section) + 1px); margin:.25rem 0 .4rem 0 !important;
   }
 
   .section-header{
-    font-size: var(--fs-section) !important; font-weight: 700; margin:.35rem 0;
+    font-size: var(--fs-section) !important; font-weight:700; margin:.2rem 0 .2rem 0 !important;
   }
 
-  /* Number inputs / labels */
+  /* Compact the inputs */
   .stNumberInput label, .stSelectbox label { font-size: var(--fs-label) !important; font-weight:700; }
-  .stNumberInput label .katex, .stSelectbox label .katex { font-size: var(--fs-label) !important; line-height:1.1 !important; }
+  .stNumberInput label .katex, .stSelectbox label .katex { font-size: var(--fs-label) !important; line-height:1.0 !important; }
   .stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm { font-size: var(--fs-units) !important; }
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"]{
-    font-size: var(--fs-input) !important; height: clamp(36px, 4.2vw, 48px) !important;
-    font-weight:600 !important; padding:8px 10px !important;
+    font-size: var(--fs-input) !important;
+    height: clamp(30px, 3.2vw, 40px) !important;  /* smaller */
+    font-weight:600 !important; padding:6px 8px !important;
   }
   div[data-testid="stNumberInput"] [data-baseweb*="input"]{
-    background:#fff !important; border:1px solid #e6e9f2 !important; border-radius:12px !important;
+    background:#fff !important; border:1px solid #e6e9f2 !important; border-radius:10px !important;
     box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
   }
 
   /* Buttons */
   div.stButton > button{
-    font-size: var(--fs-button) !important; height: clamp(36px, 4.2vw, 46px) !important;
+    font-size: var(--fs-button) !important; height: clamp(32px, 3.2vw, 40px) !important;
     color:#fff !important; font-weight:700; border:none !important; border-radius:8px !important;
     background:#4CAF50 !important;
   }
@@ -96,14 +101,18 @@ css("""
 
   .prediction-result{
     font-size: var(--fs-badge) !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.5rem .65rem; border-radius:6px; text-align:center; margin-top:.35rem;
+    background:#f1f3f4; padding:.35rem .5rem; border-radius:6px; text-align:center; margin-top:.2rem;
     white-space:nowrap; display:inline-block;
   }
 
+  /* Remove Streamlit header */
   header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
   header[data-testid="stHeader"] *{ display:none !important; }
 
   .altair-chart-wrap{ width:100%; }
+
+  /* Tighten column spacing inside the left panel */
+  .left-panel-inner [data-testid="stHorizontalBlock"]{ gap: .8rem !important; }
 </style>
 """)
 
@@ -266,25 +275,33 @@ def num(label, key, default, step, fmt, help_):
     )
 
 # =============================================================================
-# LAYOUT (Left gray inputs + Right column exactly like your screenshot #2)
+# LAYOUT (Left gray inputs + Right column)
 # =============================================================================
-left, right = st.columns([1.4, 1.6], gap="large")
+left, right = st.columns([1.38, 1.62], gap="large")
 
 with left:
-    st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
+    # a wrapper that is guaranteed gray
+    st.markdown("<div class='left-panel'><div class='left-panel-inner'>", unsafe_allow_html=True)
+
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-    c1, c2 = st.columns(2, gap="large")
+
+    # Two columns of inputs (compact spacing)
+    c1, c2 = st.columns(2, gap="small")
     with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Geometry</div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
+
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
+
     with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Reinf. Ratios</div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
+
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fyl, fybl = [num(*row) for row in MATS[3:]]
-    st.markdown("</div>", unsafe_allow_html=True)  # close .left-panel
+
+    st.markdown("</div></div>", unsafe_allow_html=True)  # close inner + panel
 
 with right:
     # 1) Big schematic image on top
@@ -292,9 +309,9 @@ with right:
         img_b64 = b64(Path("logo2-01.png"))
         st.markdown(
             f"""
-            <div style="display:flex; justify-content:center; margin-bottom:10px;">
+            <div style="display:flex; justify-content:center; margin-bottom:6px;">
               <img src="data:image/png;base64,{img_b64}"
-                   style="width: clamp(420px, 36vw, 560px); height:auto;" />
+                   style="width: clamp(420px, 34vw, 540px); height:auto;" />
             </div>
             """,
             unsafe_allow_html=True,
@@ -302,7 +319,7 @@ with right:
     except Exception:
         pass
 
-    # 2) Model Selection + 3 buttons on the SAME row
+    # 2) Model Selection + buttons on one row
     sel_col, calc_col, reset_col, clear_col = st.columns([1.25, 0.85, 0.85, 0.95], gap="small")
     with sel_col:
         st.markdown("**Model Selection**")
@@ -326,7 +343,7 @@ with right:
             st.session_state.results_df = pd.DataFrame()
             st.success("All predictions cleared.")
 
-    # 3) DI badge + CSV row
+    # 3) DI badge + CSV
     badge_col, dl_col, _sp = st.columns([1.55, 0.95, 0.5], gap="small")
     with badge_col:
         pred_banner = st.empty()
@@ -343,7 +360,7 @@ with right:
                 key="dl_csv_main",
             )
 
-    # 4) Chart container (always below)
+    # 4) Chart container (reduced height)
     chart_slot = st.container()
 
 # =============================================================================
@@ -416,7 +433,8 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
     return pd.DataFrame(rows)
 
-def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame, theta_max: float = THETA_MAX, di_max: float = 1.5):
+def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
+                    theta_max: float = THETA_MAX, di_max: float = 1.5):
     import altair as alt
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
@@ -429,13 +447,13 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame, theta_max:
             y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
                     scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
                     axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5])),
-        ).properties(width="container", height=420)
+        ).properties(width="container", height=360)   # <-- shorter
     )
 
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
     line_layer = alt.Chart(curve).mark_line(point=True).encode(
         x="θ:Q", y="Predicted_DI:Q"
-    ).properties(width="container", height=420)
+    ).properties(width="container", height=360)       # <-- shorter
 
     chart = (alt.layer(axes_layer, line_layer)
              .configure_view(strokeWidth=0)
@@ -445,7 +463,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame, theta_max:
     st.altair_chart(chart, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# decide selected model / default
+# Selected model / default
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
 label_from_state = (st.session_state.get("model_select_compact") or st.session_state.get("model_select"))
