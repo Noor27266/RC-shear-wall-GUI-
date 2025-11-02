@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*- 
 
 # Keep these notes internal (Streamlit won't render variables)
@@ -308,6 +309,8 @@ with st.sidebar:
         help="Move the entire right side up/down"
     )
 
+
+
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
 # =============================================================================
@@ -375,6 +378,10 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+
+
+
 
 # =============================================================================
 # Step #3.2: Remove Streamlit default top spacing & header
@@ -914,6 +921,9 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     )
     
     st.components.v1.html(chart_html, height=size + 100)
+
+
+
 
 # =============================================================================
 # Step #8: Predict on click; always render curve
