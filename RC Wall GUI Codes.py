@@ -113,34 +113,6 @@ def pfind(candidates):
 # =============================================================================
 # Step #2: Page config + COLORS + font knobs
 # =============================================================================
-st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
-
-# === Sub-Step: Auto-scale the whole UI at 100% zoom (no layout/color changes) ===
-st.markdown("""
-<style>
-:root{
-  /* Choose a realistic unscaled size of your full UI. */
-  --design-w: 1900;   /* was 1600 */
-  --design-h: 1200;   /* was 900  */
-  --zoom: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
-}
-
-/* Preferred path (Chromium/Safari): shrink the whole page without reflow */
-body { zoom: var(--zoom); }
-
-/* Prevent vertical/horizontal scroll when zoomed */
-html, body { overflow: hidden; }
-
-/* Firefox fallback (no 'zoom' support): scale the main container in place */
-@supports not (zoom: 1) {
-  section.main > div.block-container{
-    width: calc(var(--design-w) * 1px) !important;
-    height: calc(var(--design-h) * 1px) !important;
-    transform: scale(var(--zoom));
-    transform-origin: top left;
-    overflow: hidden !important;
-  }
-}
 
 /* Keep text from breaking into vertical letters when scaled */
 div.stButton > button,
@@ -874,3 +846,4 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
