@@ -115,16 +115,21 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-FS_TITLE   = 50
-FS_SECTION = 35
-FS_LABEL   = 30
-FS_UNITS   = 18
-FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
-FS_BADGE   = 25
-FS_RECENT  = 16
-INPUT_H    = max(32, int(FS_INPUT * 2.1))
+# >>> GLOBAL SCALE (shrink everything uniformly without moving anything) <<<
+SCALE_UI = 0.85  # 85% of current sizes; tweak to 0.80 or 0.90 if you want
+
+s = lambda v: int(round(v * SCALE_UI))
+
+FS_TITLE   = s(50)
+FS_SECTION = s(35)
+FS_LABEL   = s(30)
+FS_UNITS   = s(18)
+FS_INPUT   = s(20)
+FS_SELECT  = s(50)
+FS_BUTTON  = s(55)
+FS_BADGE   = s(25)
+FS_RECENT  = s(16)
+INPUT_H    = max(32, int(FS_INPUT * 2.1))  # keep same formula, just uses scaled FS_INPUT
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
@@ -808,3 +813,4 @@ if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
