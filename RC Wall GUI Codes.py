@@ -115,6 +115,8 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
+# (REMOVED the old fit-to-screen wrapper and overflow-hidden CSS)
+
 FS_TITLE   = 50
 FS_SECTION = 35
 FS_LABEL   = 30
@@ -266,15 +268,7 @@ css(f"""
 </style>
 """)
 
-css("""
-<style>
-#leftwrap { position: relative; top: -80px; }
-.block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) [data-testid="stHorizontalBlock"] {
-  position: relative !important; top: -60px !important;
-}
-.prediction-result{ white-space: nowrap !important; display: inline-block !important; width: auto !important; line-height: 1.2 !important; margin-top: 0 !important; }
-</style>
-""")
+# (REMOVED the old #leftwrap/top and deep top:-60px hacks)
 
 with st.sidebar:
     right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
@@ -321,58 +315,12 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 </style>
 """, unsafe_allow_html=True)
 
-with st.sidebar:
-    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=800, step=10)
-
-st.markdown(f"""
-<style>
-:root {{ --shift-right: {int(app_x)}px; }}
-[data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right) !important; }}
-</style>
-""", unsafe_allow_html=True)
+# (REMOVED the sidebar app_x slider and padding-left: var(--shift-right) override)
 
 # -------------------------  <<< Responsive overrides  -------------------------
 css("""
 <style>
-/* Large desktops (<= 1800px) */
-@media (max-width: 1800px){
-  .page-header__title{ font-size:42px !important; }
-  .stNumberInput label, .stSelectbox label{ font-size:26px !important; }
-  div[data-testid="stNumberInput"] input{ font-size:18px !important; height:44px !important; line-height:40px !important; }
-  .stSelectbox [role="combobox"]{ font-size:32px !important; }
-  div.stButton > button{ font-size:30px !important; height:46px !important; }
-}
-
-/* Laptops (<= 1500px) – fits at 80–100% zoom */
-@media (max-width: 1500px){
-  .page-header__title{ font-size:36px !important; }
-  .form-banner{ font-size:32px !important; }
-  .section-header{ font-size:26px !important; }
-  .stNumberInput label, .stSelectbox label{ font-size:22px !important; }
-  div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
-  .stSelectbox [role="combobox"]{ font-size:28px !important; }
-  div.stButton > button{ font-size:24px !important; height:42px !important; }
-  [data-testid="stAppViewContainer"]{ padding-left: 280px !important; }
-}
-
-/* Narrow laptops (<= 1280px) */
-@media (max-width: 1280px){
-  .page-header__logo{ height:60px !important; }
-  [data-testid="stAppViewContainer"]{ padding-left: 120px !important; }
-}
-
-/* Small widths (<= 1100px): allow wrapping and cancel transforms */
-@media (max-width: 1100px){
-  [data-testid="stAppViewContainer"]{ padding-left: 16px !important; }
-  .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
-  .block-container [data-testid="stHorizontalBlock"] > div{
-    width:100% !important; max-width:100% !important;
-  }
-  .page-header-outer{ transform:none !important; }
-  .stAltairChart{ transform:none !important; }
-}
-
-/* Keep Altair responsive */
+/* Keep Altair responsive without shifting layout */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """)
@@ -575,7 +523,7 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# Step #6: Right panel (unchanged)
+# Step #6: Right panel (unchanged except: removed chart translate)
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 5, 550
 MODEL_X, MODEL_Y = 100, -2
@@ -607,7 +555,6 @@ with right:
     div[role="option"] { color: black !important; font-size: 16px !important; }
     div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
     #action-row { display:flex; align-items:center; gap: 1px; }
-    .stAltairChart { transform: translate(100px, 50px) !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -840,3 +787,5 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
+# (REMOVED the old closing tag for the deleted fit-to-screen wrapper)
