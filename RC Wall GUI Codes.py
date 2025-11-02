@@ -307,11 +307,11 @@ except Exception:
 # Defaults (used when sidebar tuning is hidden)
 right_offset = 0
 HEADER_X   = 0
-TITLE_LEFT = 180
+TITLE_LEFT = 150
 TITLE_TOP  = 40
-LOGO_LEFT  = 340
+LOGO_LEFT  = 300
 LOGO_TOP   = 60
-LOGO_SIZE  = 80
+LOGO_SIZE  = 30
 _show_recent = False
 
 # Optional tuning sidebar (only when enabled)
@@ -552,9 +552,9 @@ with left:
 # =============================================================================
 # Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 550
+HERO_X, HERO_Y, HERO_W = 100, 5, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 550
+CHART_W = 300
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -869,3 +869,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
