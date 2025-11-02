@@ -115,16 +115,16 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-FS_TITLE   = 42   # UI FIX: smaller so header fits at 100% zoom
-FS_SECTION = 28   # UI FIX
-FS_LABEL   = 24   # UI FIX
-FS_UNITS   = 16
-FS_INPUT   = 18   # UI FIX
-FS_SELECT  = 28   # UI FIX
-FS_BUTTON  = 24   # UI FIX
+FS_TITLE   = 50
+FS_SECTION = 34
+FS_LABEL   = 26
+FS_UNITS   = 18
+FS_INPUT   = 20
+FS_SELECT  = 26
+FS_BUTTON  = 20
 FS_BADGE   = 22
 FS_RECENT  = 16
-INPUT_H    = max(32, int(FS_INPUT * 2.0))
+INPUT_H    = max(38, int(FS_INPUT * 2.0))
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
@@ -138,14 +138,16 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  /* UI FIX: center app & cap width so things never collide at 100% zoom */
-  .block-container {{
-    padding-top: 0rem;
-    max-width: 1280px;
-    margin: 0 auto;
+  /* Use the whole screen with small side gutters */
+  .block-container {{ 
+    padding-top: 0.6rem; 
+    max-width: 96vw !important; 
+    width: 96vw !important; 
+    padding-left: 2vw !important; 
+    padding-right: 2vw !important; 
   }}
 
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
+  h1 {{ font-size:{FS_TITLE}px !important; margin:0 0 .6rem 0 !important; }}
 
   .section-header {{
     font-size:{FS_SECTION}px !important;
@@ -153,7 +155,7 @@ css(f"""
   }}
 
   .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700; white-space: nowrap;
+    font-size:{FS_LABEL}px !important; font-weight:700;
   }}
   .stNumberInput label .katex,
   .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
@@ -163,13 +165,15 @@ css(f"""
   .stNumberInput label .katex .mathrm,
   .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
+  /* make inputs comfortable width */
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
       font-size:{FS_INPUT}px !important;
       height:{INPUT_H}px !important;
-      line-height:{INPUT_H - 8}px !important;
+      line-height:{INPUT_H - 6}px !important;
       font-weight:600 !important;
       padding:10px 12px !important;
+      width: 210px !important;          /* <-- wider fields */
   }}
 
   div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
@@ -177,38 +181,22 @@ css(f"""
       border:1px solid {INPUT_BORDER} !important;
       border-radius:12px !important;
       box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-      transition:border-color .15s ease, box-shadow .15s ease !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{
-      border-color:#d6dced !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-      border-color:{PRIMARY} !important;
-      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
   }}
 
   div[data-testid="stNumberInput"] button {{
       background:#ffffff !important;
       border:1px solid {INPUT_BORDER} !important;
       border-radius:10px !important;
-      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
-  }}
-  div[data-testid="stNumberInput"] button:hover {{
-      border-color:#cbd3e5 !important;
   }}
 
   .stSelectbox [role="combobox"] {{ font-size:{FS_SELECT}px !important; }}
 
-  /* UI FIX: no vertical letter wrapping; let buttons size themselves */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
-    height:auto !important;
-    min-width: 140px !important;
-    padding: .4rem 1rem !important;
+    height:44px !important;
     color:#fff !important;
     font-weight:700; border:none !important; border-radius:8px !important;
     background: #4CAF50 !important;
-    white-space: nowrap; display:inline-flex; align-items:center; justify-content:center;
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
@@ -224,73 +212,58 @@ css(f"""
     border-radius:10px;
     font-weight:800;
     font-size:{FS_SECTION + 2}px;
-    margin:.1rem 0 !important;
+    margin:.1rem 0 .8rem 0 !important;
   }}
 
   .prediction-result {{
     font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
     background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-    white-space: nowrap;
   }}
   .recent-box {{
     font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
-    white-space: nowrap;
   }}
 
-  #compact-form{{ max-width:900px; margin:0 auto; }}
-  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  /* WIDEN the inputs panel – remove old hard locks and use a roomier grid */
+  #compact-form {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(360px, 1fr)); /* two wide columns */
+      column-gap: 28px;
+  }}
+  #compact-form .colbox {{ background:{LEFT_BG}; border-radius:12px; padding:10px; }}
+
+  /* remove previous narrow rules */
+  #compact-form [data-testid="column"]{{ width:auto !important; max-width:none !important; flex:1 1 auto !important; }}
   #compact-form [data-testid="stNumberInput"],
   #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:16px; margin:10px 0 6px 0; align-items:center; }}
 
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-  }}
+  /* right side image + controls area spacing */
+  .right-wrap{{ padding-left: 18px; }}
 
-  .left-panel {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-  }}
+  /* header (title + logo) */
+  .page-header {{ display:flex; align-items:center; justify-content:space-between; gap:20px; }}
+  .page-header__title {{ font-size:{FS_TITLE}px; font-weight: 800; margin: 0; }}
+  .page-header__logo {{ height: 64px; width: auto; }}
 
-  [data-baseweb="popover"], [data-baseweb="tooltip"],
-  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background: #000 !important; color: #fff !important; border-radius: 8px !important;
-      padding: 6px 10px !important; font-size: 20px !important; font-weight: 500 !important;
-  }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color: #fff !important; }}
-
-  label[for="model_select_compact"] {{ font-size: {FS_LABEL}px !important; font-weight: bold !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: {FS_SELECT}px !important; }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] {{ font-size: {FS_SELECT}px !important; }}
-
-  .stSelectbox, .stButton {{ font-size:{FS_BUTTON}px !important; }}
+  /* Optional: hide sidebar completely (keep commented if you want Model Health)
+  [data-testid="stSidebar"]{{ display:none !important; }}
+  [data-testid="stAppViewContainer"]{{ padding-left:0 !important; }}
+  */
+  
+  /* Make vega chart responsive */
+  .vega-embed, .vega-embed .chart-wrapper{{ max-width:100% !important; }}
 </style>
 """)
 
-# UI FIX: remove the negative vertical lifts that squeezed the form
-css("""
-<style>
-#leftwrap { position: relative; top: 0px; }
-.block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) [data-testid="stHorizontalBlock"] {
-  position: relative !important; top: 0px !important;
-}
-.prediction-result{ white-space: nowrap !important; display: inline-block !important; width: auto !important; line-height: 1.2 !important; margin-top: 0 !important; }
-</style>
-""")
-
-with st.sidebar:
-    right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
+# No sidebar offset controls anymore; fixed defaults
+right_offset = 0
+HEADER_X, TITLE_LEFT, TITLE_TOP = 0, 0, 0   # not using transforms now
+LOGO_LEFT, LOGO_TOP, LOGO_SIZE  = 0, 0, 64  # kept for compatibility
+app_x = 0
 
 # =============================================================================
-# Step #3: Title + adjustable logo position and size (HEADER ONLY)
+# Step #3: Title + logo (HEADER ONLY)
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -298,91 +271,20 @@ try:
 except Exception:
     _b64 = ""
 
-with st.sidebar:
-    st.markdown("### Header position (title & logo)")
-    HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=0, step=20)
-    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=120, step=10)  # UI FIX default smaller
-    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=20,  step=2)  # UI FIX
-    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=260, step=10) # UI FIX
-    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=20,  step=2)  # UI FIX
-    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=64, step=2)      # UI FIX
-
 st.markdown(f"""
-<style>
-  .page-header {{ display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin: 0; padding: 0; }}
-  .page-header__title {{ font-size: {FS_TITLE}px; font-weight: 800; margin: 0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
-  .page-header__logo {{ height: {int(LOGO_SIZE)}px; width: auto; display: block; transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px); }}
-</style>
-<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
-  <div class="page-header">
-    <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
+<div class="page-header">
+  <div class="page-header__title">Predict Damage index (DI)<br/>for RC Shear Walls</div>
+  {'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,' + _b64 + '"/>' if _b64 else ''}
 </div>
 """, unsafe_allow_html=True)
 
+# Clean header area
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; } /* UI FIX: less negative margin */
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
 </style>
 """, unsafe_allow_html=True)
-
-with st.sidebar:
-    app_x = st.slider("Global horizontal offset (px)", min_value=0, max_value=1600, value=0, step=10)  # UI FIX default 0
-
-st.markdown(f"""
-<style>
-:root {{ --shift-right: {int(app_x)}px; }}
-[data-testid="stAppViewContainer"]{{ padding-left: var(--shift-right, 0px) !important; }}
-</style>
-""", unsafe_allow_html=True)
-
-# -------------------------  Responsive / safety overrides  -------------------------
-css("""
-<style>
-/* normalize charts & any stray transforms */
-.stAltairChart { transform: none !important; }
-
-/* Large desktops (<= 1800px) */
-@media (max-width: 1800px){
-  .page-header__title{ font-size:40px !important; }
-  div.stButton > button{ font-size:22px !important; }
-}
-
-/* Laptops (<= 1500px) */
-@media (max-width: 1500px){
-  .page-header__title{ font-size:36px !important; }
-  .form-banner{ font-size:30px !important; }
-  .section-header{ font-size:24px !important; }
-  .stNumberInput label, .stSelectbox label{ font-size:20px !important; }
-  div[data-testid="stNumberInput"] input{ font-size:16px !important; height:40px !important; line-height:36px !important; }
-  .stSelectbox [role="combobox"]{ font-size:24px !important; }
-  div.stButton > button{ font-size:20px !important; }
-  [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
-}
-
-/* Narrow laptops (<= 1280px) */
-@media (max-width: 1280px){
-  .page-header__logo{ height:56px !important; }
-  [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
-}
-
-/* Small widths (<= 1100px): allow wrapping cleanly */
-@media (max-width: 1100px){
-  [data-testid="stAppViewContainer"]{ padding-left: 0 !important; }
-  .block-container [data-testid="stHorizontalBlock"]{ flex-wrap: wrap !important; }
-  .block-container [data-testid="stHorizontalBlock"] > div{
-    width:100% !important; max-width:100% !important;
-  }
-  .page-header-outer{ transform:none !important; }
-}
-</style>
-""")
-# ------------------------------------------------------------------------------
 
 # =============================================================================
 # Step #4: Model loading (robust; tolerates different names/paths)
@@ -425,7 +327,7 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# ----- Random Forest (joblib FIRST even for .json; fall back to SKOPS) -----
+# ----- Random Forest (joblib FIRST; fall back to SKOPS) -----
 rf_model = None
 try:
     rf_path = pfind([
@@ -549,19 +451,16 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-left, right = st.columns([1.4, 2], gap="large")  # UI FIX: slightly narrower left column
+# wider overall grid: inputs take more space
+left, right = st.columns([1.9, 1.4], gap="large")
 
 with left:
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
-
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
 
-    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
-
-    css("<div id='leftwrap'>")
+    # roomy grid – each side a "colbox"
     css("<div id='compact-form'>")
-
-    c1, _gap, c2 = st.columns([1, 0.08, 1], gap="large")
+    c1, c2 = st.columns(2, gap="large")
 
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
@@ -575,23 +474,19 @@ with left:
         st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
+    css("</div>")  # end compact-form
 
-    css("</div>")
-    css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# Step #6: Right panel (unchanged logic; UI defaults improved)
+# Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 20, 0, 420  # UI FIX: smaller, fits at 100% zoom
-MODEL_X, MODEL_Y = 0, 0
-CHART_W = 520   # UI FIX: slightly smaller so it fits under the buttons
-
+HERO_W = 520
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
+        <div class="right-wrap" style="text-align:left;">
             <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
         </div>
         """,
@@ -600,23 +495,17 @@ with right:
 
     st.markdown(""" 
     <style>
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {{
         border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
-    }
-    [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-    div[data-testid="stSelectbox"] > div > div { height: 46px !important; display:flex !important; align-items:center !important; }
-    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; white-space: nowrap; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 24px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 24px !important; color: black !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 24px !important; }
-    div[data-testid="stButton"] button p { font-size: 20px !important; color: white !important; font-weight: 700 !important; white-space: nowrap; }
-    #action-row { display:flex; align-items:center; gap: 12px; flex-wrap: wrap; } /* UI FIX: allow clean wrap if needed */
-    .stAltairChart { transform: none !important; }
+    }}
+    div[data-testid="stSelectbox"] > div > div {{ height: 48px !important; display:flex !important; align-items:center !important; }}
+    div[data-testid="stSelectbox"] label p {{ font-size: 18px !important; color: black !important; font-weight: bold !important; }}
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{ font-size: 22px !important; }}
+    div[data-testid="stSelectbox"] div[role="listbox"] div[role="option"] {{ font-size: 20px !important; color: black !important; }}
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div id='action-row'>", unsafe_allow_html=True)
-    row = st.columns([1.3, 1.1, 1.1, 1.1], gap="small")  # UI FIX: more balanced widths
+    row = st.columns([1.2, 1.1, 1.1, 1.2], gap="small")
 
     with row[0]:
         available = set(model_registry.keys())
@@ -628,31 +517,25 @@ with right:
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
     with row[1]:
-        st.markdown("<div id='three-btns' style='margin-top:26px;'>", unsafe_allow_html=True)
         submit = st.button("Calculate", key="calc_btn")
     with row[2]:
-        st.markdown("<div style='margin-top:26px;'></div>", unsafe_allow_html=True)
         if st.button("Reset", key="reset_btn"):
             st.rerun()
     with row[3]:
-        st.markdown("<div style='margin-top:26px;'></div>", unsafe_allow_html=True)
         if st.button("Clear All", key="clear_btn"):
             st.session_state.results_df = pd.DataFrame()
             st.success("All predictions cleared.")
-    st.markdown("</div>", unsafe_allow_html=True)
 
-    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
+    badge_col, dl_col = st.columns([3, 2], gap="small")
     with badge_col:
         pred_banner = st.empty()
     with dl_col:
         dl_slot = st.empty()
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download All Results as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+        dl_slot.download_button("📂 Download All Results as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
 
-    col1, col2 = st.columns([0.01, 20])
-    with col2:
-        chart_slot = st.empty()
+    chart_slot = st.empty()
 
 # =============================================================================
 # Step #7: Prediction utilities & curve helpers
@@ -672,10 +555,7 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
 def predict_di(choice, _unused_array, input_df):
     # keep training order
     df_trees = _df_in_train_order(input_df)
-
-    # --- ensure finite values for tree models (avoid NaN/inf from reindex) ---
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
-
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
@@ -731,10 +611,10 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     return pd.DataFrame(rows)
 
 def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
-                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
+                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 520):
     import altair as alt
     selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 16; AXIS_TITLE_FS = 18; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6  # UI FIX: slightly smaller
+    AXIS_LABEL_FS = 16; AXIS_TITLE_FS = 18; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
@@ -742,12 +622,10 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
         alt.Chart(base_axes_df).mark_line(opacity=0).encode(
             x=alt.X("θ:Q", title="Drift Ratio (θ)", scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
                     axis=alt.Axis(values=list(x_ticks), labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
+                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000)),
             y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)", scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
                     axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5], labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
+                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000)),
         ).properties(width=size, height=size)
     )
 
@@ -762,7 +640,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     else:
         curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
-    points_layer = alt.Chart(curve_points).mark_circle(size=90, opacity=0.7).encode(
+    points_layer = alt.Chart(curve_points).mark_circle(size=72, opacity=0.8).encode(
         x="θ:Q", y="Predicted_DI:Q",
         tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                  alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
@@ -779,8 +657,8 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
     chart_html = chart.to_html()
     chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 18px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 10px !important; }</style>')
-    st.components.v1.html(chart_html, height=size + 80)
+        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 16px !important; font-weight: 700 !important; background: #000 !important; color: #fff !important; padding: 10px !important; }</style>')
+    st.components.v1.html(chart_html, height=size + 110)
 
 # =============================================================================
 # Step #8: Predict on click; always render curve
@@ -794,6 +672,7 @@ def _pick_default_model():
             return m
     return None
 
+# model_choice from selectbox already set in Step #6
 if 'model_choice' not in locals():
     _label = (st.session_state.get("model_select_compact")
               or st.session_state.get("model_select"))
@@ -814,33 +693,25 @@ else:
             pred_banner.markdown(f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download All Results as CSV", data=csv, file_name="di_predictions.csv",
-                                    mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
+                                    mime="text/csv", use_container_width=True, key="dl_csv_after_submit")
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
     _base_xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
     _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
 
-try:
-    _slot = chart_slot
-except NameError:
-    _slot = st.empty()
-
 with right:
-    with _slot:
-        render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+    render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=520)
 
 # =============================================================================
-# Step #9: Optional "Recent Predictions" (hidden by default)
+# Step #9: Optional "Recent Predictions"
 # =============================================================================
-show_recent = st.sidebar.checkbox("Show Recent Predictions", value=False)
+show_recent = False  # default hidden
 if show_recent and not st.session_state.results_df.empty:
-    right_predictions = st.empty()
-    with right_predictions:
-        st.markdown("### 🧾 Recent Predictions")
-        for i, row in st.session_state.results_df.tail(5).reset_index(drop=True).iterrows():
-            st.markdown(
-                f"<div class='recent-box' style='display:inline-block; width:auto; padding:4px 10px;'>"
-                f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
-                unsafe_allow_html=True
-            )
+    st.markdown("### 🧾 Recent Predictions")
+    for i, row in st.session_state.results_df.tail(5).reset_index(drop=True).iterrows():
+        st.markdown(
+            f"<div class='recent-box' style='display:inline-block; width:auto; padding:4px 10px;'>"
+            f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
+            unsafe_allow_html=True
+        )
