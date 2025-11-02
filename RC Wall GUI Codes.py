@@ -33,16 +33,17 @@ def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("a
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
 # ---------- path helper (so PS/MLP/RF actually load) ----------
-### FIX: robust file finder that searches next to this file and in subfolders
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
     """
     Return the first existing file path among `candidates`.
-    `candidates` may be names or relative paths. We search:
-      - BASE_DIR
-      - CWD
-      - /mnt/data
-      - any subdir under BASE_DIR (one level deep)
+    Search order:
+      1) exact paths
+      2) alongside this script (BASE_DIR)
+      3) current working directory
+      4) **/mnt/data** (where uploaded files live)
+      5) one-level subdirs under BASE_DIR and /mnt/data
+      6) recursive glob fallback
     """
     # exact paths first
     for c in candidates:
@@ -50,28 +51,32 @@ def pfind(candidates):
         if p.exists():
             return p
 
-    # next to script, cwd, and /mnt/data
-    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]  # <-- added /mnt/data
+    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
     for root in roots:
+        if not root.exists():
+            continue
         for c in candidates:
             p = root / c
             if p.exists():
                 return p
 
-    # one-level subdirs under BASE_DIR
-    for sub in BASE_DIR.iterdir():
-        if sub.is_dir():
-            for c in candidates:
-                p = sub / c
-                if p.exists():
-                    return p
+    # one-level subdirs under BASE_DIR and /mnt/data
+    for root in [BASE_DIR, Path("/mnt/data")]:
+        if not root.exists():
+            continue
+        for sub in root.iterdir():
+            if sub.is_dir():
+                for c in candidates:
+                    p = sub / c
+                    if p.exists():
+                        return p
 
     # glob fallbacks
     pats = []
     for c in candidates:
-        pats.append(str(BASE_DIR / "**" / c))
-        pats.append(str(Path.cwd() / "**" / c))
-        pats.append(str(Path("/mnt/data") / "**" / c))  # also glob /mnt/data
+        for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
+            if root.exists():
+                pats.append(str(root / "**" / c))
     for pat in pats:
         matches = glob(pat, recursive=True)
         if matches:
@@ -204,7 +209,6 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* EXISTING experimental rule (kept): may or may not match across Streamlit versions */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -212,7 +216,6 @@ css(f"""
       padding:16px !important;
   }}
 
-  /* ### FIX: hard wrapper for the inputs panel (100% reliable) */
   .left-panel {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
@@ -323,40 +326,45 @@ class _ScalerShim:
 
 ann_ps_model = None; ann_ps_proc = None
 try:
-    ### FIX: accept multiple common names / locations
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = load_model(ps_model_path, compile=False)   # <-- compile=False
+    ann_ps_model = load_model(ps_model_path)
     sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
-    record_health("PS (ANN)", True, f"loaded from {ps_model_path.name}")
+    record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = load_model(mlp_model_path, compile=False)  # <-- compile=False
+    ann_mlp_model = load_model(mlp_model_path)
     sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
     sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
-    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path.name}")
+    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
 rf_model = None
 try:
+    # preferred persisted formats
     rf_path = pfind(["random_forest_model.pkl","random_forest_model.joblib","rf_model.pkl","RF_model.pkl"])
     rf_model = joblib.load(rf_path)
-    record_health("Random Forest", True, f"loaded from {rf_path.name}")
+    record_health("Random Forest", True, f"loaded from {rf_path}")
 except Exception as e:
-    record_health("Random Forest", False, str(e))
+    # if only JSON exists, explain why it can't be used
+    try:
+        rf_json = pfind(["Best_RF_Model.json","best_rf_model.json","RF_model.json"])
+        record_health("Random Forest", False, f"Found {rf_json.name} but RandomForest can't be restored from plain JSON. Save as .pkl/.joblib instead.")
+    except Exception:
+        record_health("Random Forest", False, str(e))
 
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","xgboost_model.json"])
     xgb_model = xgb.XGBRegressor(); xgb_model.load_model(xgb_path)
-    record_health("XGBoost", True, f"loaded from {xgb_path.name}")
+    record_health("XGBoost", True, f"loaded from {xgb_path}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
@@ -364,7 +372,7 @@ cat_model = None
 try:
     cat_path = pfind(["CatBoost.cbm","catboost.cbm"])
     cat_model = catboost.CatBoostRegressor(); cat_model.load_model(cat_path)
-    record_health("CatBoost", True, f"loaded from {cat_path.name}")
+    record_health("CatBoost", True, f"loaded from {cat_path}")
 except Exception as e:
     record_health("CatBoost", False, str(e))
 
@@ -459,7 +467,6 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 2], gap="large")
 
 with left:
-    ### FIX: hard wrapper so the background is definitely gray
     st.markdown("<div class='left-panel'>", unsafe_allow_html=True)
 
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -484,9 +491,9 @@ with left:
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
-    css("</div>")   # close #compact-form
-    css("</div>")   # close #leftwrap
-    st.markdown("</div>", unsafe_allow_html=True)  # ### FIX: close .left-panel
+    css("</div>")
+    css("</div>")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # Step #6: Right panel (unchanged)
@@ -515,7 +522,7 @@ with right:
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
     div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
     div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font size: 30px !important; color: black !important; }
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
     [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
     div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
     div[role="option"] { color: black !important; font-size: 16px !important; }
