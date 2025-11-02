@@ -11,8 +11,7 @@ openpyxl
 pyarrow
 plotly
 
-# ML framework (CPU build) + matching TFP
+# TF + TFP (CPU) — compatible pair
 tensorflow-cpu==2.15.0.post1
 tensorflow-probability==0.23.0
-
-# DO NOT list "keras" separately
+# DO NOT add standalone "keras"
