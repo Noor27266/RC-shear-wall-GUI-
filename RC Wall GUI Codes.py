@@ -125,9 +125,9 @@ FS_SECTION = s(35)
 FS_LABEL   = s(30)
 FS_UNITS   = s(18)
 FS_INPUT   = s(20)
-FS_SELECT  = s(50)
-FS_BUTTON  = s(55)
-FS_BADGE   = s(25)
+FS_SELECT  = s(20)
+FS_BUTTON  = s(20)
+FS_BADGE   = s(20)
 FS_RECENT  = s(16)
 INPUT_H    = max(32, int(FS_INPUT * 2.1))  # keep same formula, just uses scaled FS_INPUT
 
@@ -869,4 +869,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
