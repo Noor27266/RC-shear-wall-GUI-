@@ -951,17 +951,36 @@ if _rules:
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
 
 
-# --- FINAL tiny override: keep DI badge inline and same line as Download button ---
 st.markdown("""
 <style>
+/* Final minimal fix: same width + gap + single line */
 .prediction-result{
-  display:inline-flex !important;      /* sit inline, not block */
+  display:inline-flex !important;
   align-items:center !important;
-  white-space:nowrap !important;        /* no wrapping to two lines */
-  width:auto !important;                /* don't stretch full width */
+  justify-content:center !important;
+  width:220px !important;          /* set badge width */
+  margin:0 !important;
+  white-space:nowrap !important;
+}
+
+/* Download button inline, same width, not touching */
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important;
+  margin-left:16px !important;     /* gap so they don't touch */
+}
+div[data-testid="stDownloadButton"] > button,
+div[data-testid="stDownloadButton"] > a{
+  width:220px !important;          /* match badge width */
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:nowrap !important;
+  box-sizing:border-box !important;
+  padding:6px 10px !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
