@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# =============================================================================
+# Imports
+# =============================================================================
 import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
 
@@ -13,92 +16,116 @@ import xgboost as xgb
 import joblib
 import catboost
 import lightgbm as lgb
+
 from tensorflow.keras.models import load_model
 
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 
-# ---------------- Page config ----------------
+# =============================================================================
+# Page config
+# =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# ---------------- Global CSS -----------------
+# =============================================================================
+# GLOBAL STYLES (kept clean & responsive)
+# =============================================================================
 css("""
 <style>
   :root{
-    --fs-title: 38px;
-    --fs-section: 22px;
-    --fs-label: 18px;
-    --fs-units: 14px;
-    --fs-input: 16px;
-    --fs-select: 16px;
-    --fs-button: 16px;
+    --fs-title: clamp(26px, 3.2vw, 42px);
+    --fs-section: clamp(18px, 2.1vw, 28px);
+    --fs-label: clamp(14px, 1.6vw, 22px);
+    --fs-units: clamp(12px, 1.2vw, 16px);
+    --fs-input: clamp(13px, 1.4vw, 18px);
+    --fs-select: clamp(14px, 1.6vw, 20px);
+    --fs-button: clamp(14px, 1.6vw, 20px);
+    --fs-badge: clamp(13px, 1.4vw, 18px);
   }
-  .block-container{padding-top:0rem; max-width: 1400px;}
 
-  /* Header */
-  .page-header{display:flex; align-items:center; gap:16px; margin:0 0 .25rem 0;}
-  .page-header__title{font-size:var(--fs-title); font-weight:800; margin:0;}
-  .page-header__logo{height:64px; width:auto; display:block;}
+  .block-container { padding-top: 0rem; max-width: 1400px; }
 
-  /* Inputs & labels */
-  .stNumberInput label, .stSelectbox label{font-size:var(--fs-label)!important; font-weight:700;}
-  .stNumberInput label .katex, .stSelectbox label .katex{font-size:var(--fs-label)!important; line-height:1.1!important;}
-  .stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm{font-size:var(--fs-units)!important;}
+  /* Title row */
+  .page-header {
+    display:flex; align-items:center; gap:16px; margin:0 0 .25rem 0;
+  }
+  .page-header__title { font-size: var(--fs-title); font-weight:800; margin:0; }
+  .page-header__logo { height: clamp(36px, 5vw, 70px); width:auto; display:block; }
+
+  /* -------- LEFT PANEL GREY (wrapper-safe) -------- */
+  .left-panel{
+    background:#e0e4ec !important;         /* <<< CHANGE: persistent grey */
+    border-radius: 12px !important;
+    padding: 14px 16px 10px 16px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1) !important;
+  }
+  /* paint the column that contains left-panel too (covers extra wrappers) */
+  [data-testid="column"]:has(.left-panel){
+    background:#e0e4ec !important;         /* <<< CHANGE */
+    border-radius:12px !important;
+    box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+    padding:8px !important;
+  }
+  /* make inner wrappers transparent */
+  .left-panel [data-testid="stVerticalBlock"],
+  .left-panel [data-testid="stHorizontalBlock"]{
+    background:transparent !important; box-shadow:none !important;
+  }
+
+  .form-banner{
+    text-align:center; background: linear-gradient(90deg, #0E9F6E, #84CC16); color:#fff;
+    padding:.45rem .75rem; border-radius:10px; font-weight:800;
+    font-size: calc(var(--fs-section) + 2px); margin:.35rem 0 .6rem 0 !important;
+  }
+
+  .section-header{
+    font-size: var(--fs-section) !important; font-weight: 700; margin:.35rem 0;
+  }
+
+  /* Number inputs / labels */
+  .stNumberInput label, .stSelectbox label { font-size: var(--fs-label) !important; font-weight:700; }
+  .stNumberInput label .katex, .stSelectbox label .katex { font-size: var(--fs-label) !important; line-height:1.1 !important; }
+  .stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm { font-size: var(--fs-units) !important; }
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"]{
-    font-size:var(--fs-input)!important; height:40px!important; font-weight:600!important; padding:8px 10px!important;
+    font-size: var(--fs-input) !important; height: clamp(36px, 4.2vw, 48px) !important;
+    font-weight:600 !important; padding:8px 10px !important;
   }
   div[data-testid="stNumberInput"] [data-baseweb*="input"]{
-    background:#fff!important; border:1px solid #e6e9f2!important; border-radius:12px!important;
-    box-shadow:0 1px 2px rgba(16,24,40,.06)!important;
+    background:#fff !important; border:1px solid #e6e9f2 !important; border-radius:12px !important;
+    box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
   }
-  /* Compact vertical spacing for inputs */
-  div[data-testid="stNumberInput"]{margin-bottom:.45rem!important;}
 
-  /* Selectbox font */
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child{font-size:var(--fs-select)!important;}
+  /* Selectbox value/options */
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: var(--fs-select) !important; }
+  div[data-testid="stSelectbox"] div[role="listbox"] div[role="option"] { font-size: var(--fs-select) !important; }
 
   /* Buttons */
   div.stButton > button{
-    font-size:var(--fs-button)!important; height:40px!important; color:#fff!important; font-weight:700;
-    border:none!important; border-radius:8px!important; background:#4CAF50!important;
+    font-size: var(--fs-button) !important; height: clamp(36px, 4.2vw, 46px) !important;
+    color:#fff !important; font-weight:700; border:none !important; border-radius:8px !important;
+    background:#4CAF50 !important;
   }
-  button[key="reset_btn"]{background:#2196F3!important;}
-  button[key="clear_btn"]{background:#f44336!important;}
+  button[key="reset_btn"]{ background:#2196F3 !important; }
+  button[key="clear_btn"]{ background:#f44336 !important; }
 
-  /* Banner */
-  .form-banner{ text-align:center; background:linear-gradient(90deg,#0E9F6E,#84CC16); color:#fff;
-    padding:.45rem .75rem; border-radius:10px; font-weight:800; font-size:24px; margin:.2rem 0 .6rem 0!important;}
-
-  .section-header{font-size:var(--fs-section)!important; font-weight:700; margin:.2rem 0 .4rem;}
-
-  .prediction-result{font-weight:700; color:#2e86ab; background:#f1f3f4; padding:.45rem .6rem; border-radius:6px;
-    text-align:center; display:inline-block; margin-top:.3rem;}
-
-  header[data-testid="stHeader"]{height:0!important; padding:0!important; background:transparent!important;}
-  header[data-testid="stHeader"] *{display:none!important;}
-
-  .altair-chart-wrap{width:100%;}
-
-  /* -------------------------------------------------------------
-     RELIABLE GREY BACKGROUND FOR THE ENTIRE LEFT COLUMN
-     We drop a sentinel div (#left-sentinel) at the very top of the
-     left column. Then we color the column that contains it.
-     ------------------------------------------------------------- */
-  [data-testid="column"]:has(#left-sentinel){
-    background:#e0e4ec !important;       /* <-- your grey */
-    border-radius:12px!important;
-    box-shadow:0 1px 3px rgba(0,0,0,.1)!important;
-    padding:16px!important;
+  .prediction-result{
+    font-size: var(--fs-badge) !important; font-weight:700; color:#2e86ab;
+    background:#f1f3f4; padding:.5rem .65rem; border-radius:6px; text-align:center; margin-top:.35rem;
+    white-space:nowrap; display:inline-block;
   }
 
-  /* Keep left column compact */
-  [data-testid="column"]:has(#left-sentinel) .section-header{margin-top:.1rem!important;}
+  header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+  header[data-testid="stHeader"] *{ display:none !important; }
+
+  .altair-chart-wrap{ width:100%; }
 </style>
 """)
 
-# ---------------- Title + Logos ----------------
+# =============================================================================
+# Title + Logo
+# =============================================================================
 try:
     _logo_path = Path(__file__).resolve().parent / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
@@ -115,55 +142,80 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------------- Model loading ----------------
+# =============================================================================
+# Model loading (same logic, with robust fallbacks)
+# =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
 
 class _ScalerShim:
     def __init__(self, X_scaler, y_scaler):
         import numpy as _np
-        self._np = _np; self.Xs = X_scaler; self.Ys = y_scaler
+        self._np = _np
+        self.Xs = X_scaler
+        self.Ys = y_scaler
+        self.x_kind = "External joblib"
+        self.y_kind = "External joblib"
     def transform_X(self, X): return self.Xs.transform(X)
     def inverse_transform_y(self, y):
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
+# --- ANN: PS ---
 ann_ps_model = None; ann_ps_proc = None
 try:
-    ann_ps_model = load_model("ANN_PS_Model.keras")
+    # <<< CHANGE: load_model with compile=False for better cross-version tolerance
+    ann_ps_model = load_model("ANN_PS_Model.keras", compile=False)
     import joblib as _jb
     ann_ps_proc = _ScalerShim(_jb.load("ANN_PS_Scaler_X.save"), _jb.load("ANN_PS_Scaler_y.save"))
-    record_health("PS (ANN)", True, "loaded")
+    record_health("PS (ANN)", True, "loaded via .keras + joblib scalers")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
+# --- ANN: MLP ---
 ann_mlp_model = None; ann_mlp_proc = None
 try:
-    ann_mlp_model = load_model("ANN_MLP_Model.keras")
+    # <<< CHANGE: compile=False fallback
+    ann_mlp_model = load_model("ANN_MLP_Model.keras", compile=False)
     import joblib as _jb
     ann_mlp_proc = _ScalerShim(_jb.load("ANN_MLP_Scaler_X.save"), _jb.load("ANN_MLP_Scaler_y.save"))
-    record_health("MLP (ANN)", True, "loaded")
+    record_health("MLP (ANN)", True, "loaded via .keras + joblib scalers")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
+# --- Random Forest ---
+def _try_load_rf():
+    """Try common RF filenames; return model or raise."""
+    # <<< CHANGE: allow several filenames
+    for name in ["random_forest_model.pkl", "RandomForest.pkl", "rf_model.pkl", "random_forest.pkl"]:
+        p = Path(name)
+        if p.exists():
+            return joblib.load(p)
+    raise FileNotFoundError("RF file not found (tried: random_forest_model.pkl / RandomForest.pkl / rf_model.pkl / random_forest.pkl)")
+
 try:
-    rf_model = joblib.load("random_forest_model.pkl")
+    rf_model = _try_load_rf()
     record_health("Random Forest", True, "loaded")
 except Exception as e:
+    rf_model = None
     record_health("Random Forest", False, str(e))
 
+# --- XGBoost ---
 try:
     xgb_model = xgb.XGBRegressor(); xgb_model.load_model("XGBoost_trained_model_for_DI.json")
     record_health("XGBoost", True, "loaded")
 except Exception as e:
+    xgb_model = None
     record_health("XGBoost", False, str(e))
 
+# --- CatBoost ---
 try:
     cat_model = catboost.CatBoostRegressor(); cat_model.load_model("CatBoost.cbm")
     record_health("CatBoost", True, "loaded")
 except Exception as e:
     cat_model = None; record_health("CatBoost", False, str(e))
 
+# --- LightGBM ---
 def load_lightgbm_flex():
     cand = ["LightGBM_model", "LightGBM_model.txt", "LightGBM_model.bin",
             "LightGBM_model.pkl", "LightGBM_model.joblib"]
@@ -177,28 +229,31 @@ def load_lightgbm_flex():
 
 try:
     lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
-    record_health("LightGBM", True, f"loaded as {lgb_kind}")
+    record_health("LightGBM", True, f"loaded as {lgb_kind} from {lgb_path}")
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
+# Build registry from whatever loaded successfully (unchanged idea)
 model_registry = {}
 for name, ok, *_ in health:
     if not ok: continue
-    if name == "XGBoost": model_registry["XGBoost"] = xgb_model
+    if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
     elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
     elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
     elif name == "PS (ANN)" and ann_ps_model is not None: model_registry["PS"] = ann_ps_model
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
-    elif name == "Random Forest": model_registry["Random Forest"] = rf_model
+    elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
 with st.sidebar.expander("Model Health", expanded=False):
-    for name, ok, msg, _ in health:
-        st.markdown(f"- {'✅' if ok else '❌'} **{name}**<br/><small>{msg}</small>", unsafe_allow_html=True)
+    for name, ok, msg, cls in health:
+        st.markdown(f"- {'✅' if ok else '❌'} **{name}**  \n<small>{msg}</small>", unsafe_allow_html=True)
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
-# ---------------- Inputs config ----------------
+# =============================================================================
+# Ranges & Inputs
+# =============================================================================
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
     "fyt":(0.0,1187.0), "fysh":(0.0,1375.0), "fyl":(160.0,1000.0), "fybl":(0.0,900.0),
@@ -218,6 +273,7 @@ GEOM = [
     (r"$AR$","AR",2.0,0.01,None,"Aspect ratio"),
     (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
 ]
+
 MATS = [
     (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
@@ -225,6 +281,7 @@ MATS = [
     (rf"$f_{{yl}}{U('MPa')}$",    "fyl",  400.0, 1.0, None, "Vertical web yield strength"),
     (rf"$f_{{ybl}}{U('MPa')}$",   "fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
+
 REINF = [
     (r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio"),
     (r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio"),
@@ -236,54 +293,62 @@ REINF = [
 ]
 
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
-def num(label, key, default, step, fmt, help_):
-    return st.number_input(label, value=dv(R, key, default), step=step,
-        min_value=R[key][0], max_value=R[key][1], format=fmt if fmt else None, help=help_)
 
-# ---------------- Layout ----------------
+def num(label, key, default, step, fmt, help_):
+    return st.number_input(
+        label, value=dv(R, key, default), step=step,
+        min_value=R[key][0], max_value=R[key][1],
+        format=fmt if fmt else None, help=help_
+    )
+
+# =============================================================================
+# LAYOUT (Left gray inputs + Right column exactly like your screenshot #2)
+# =============================================================================
 left, right = st.columns([1.4, 1.6], gap="large")
 
 with left:
-    # Sentinel for reliable grey background
-    st.markdown("<div id='left-sentinel'></div>", unsafe_allow_html=True)
-
+    st.markdown("<div class='left-panel'>", unsafe_allow_html=True)  # <<< CHANGE: wrapper stays
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
     c1, c2 = st.columns(2, gap="large")
-
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
-
     with c2:
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fyl, fybl = [num(*row) for row in MATS[3:]]
+    st.markdown("</div>", unsafe_allow_html=True)  # close .left-panel
 
 with right:
-    # Top schematic (fixed width so the whole page fits on one screen)
+    # 1) Big schematic image on top
     try:
         img_b64 = b64(Path("logo2-01.png"))
         st.markdown(
-            f"<div style='display:flex;justify-content:center;margin-bottom:8px;'>"
-            f"<img src='data:image/png;base64,{img_b64}' style='width:540px;height:auto;'/>"
-            f"</div>", unsafe_allow_html=True)
+            f"""
+            <div style="display:flex; justify-content:center; margin-bottom:10px;">
+              <img src="data:image/png;base64,{img_b64}"
+                   style="width: clamp(420px, 36vw, 560px); height:auto;" />
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     except Exception:
         pass
 
-    # Model select row
-    sel_col, calc_col, reset_col, clear_col = st.columns([1.25, 0.9, 0.9, 1.0], gap="small")
+    # 2) Model Selection + 3 buttons on the SAME row
+    sel_col, calc_col, reset_col, clear_col = st.columns([1.25, 0.85, 0.85, 0.95], gap="small")
     with sel_col:
         st.markdown("**Model Selection**")
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
         ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
-        lab2key = {"RF": "Random Forest"}
-        choice_label = st.selectbox(" ", display_labels, key="model_select_compact", label_visibility="collapsed")
-        model_choice = lab2key.get(choice_label, choice_label)
+        _label_to_key = {"RF": "Random Forest"}
+        model_choice_label = st.selectbox(" ", display_labels, key="model_select_compact", label_visibility="collapsed")
+        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
     with calc_col:
         st.markdown("&nbsp;", unsafe_allow_html=True)
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
@@ -297,15 +362,29 @@ with right:
             st.session_state.results_df = pd.DataFrame()
             st.success("All predictions cleared.")
 
-    badge_col, dl_col = st.columns([2, 1], gap="small")
+    # 3) DI badge + CSV row
+    badge_col, dl_col, _sp = st.columns([1.55, 0.95, 0.5], gap="small")
     with badge_col:
         pred_banner = st.empty()
     with dl_col:
         dl_slot = st.empty()
+        if not st.session_state.results_df.empty:
+            csv = st.session_state.results_df.to_csv(index=False)
+            dl_slot.download_button(
+                "📥 Download All Results as CSV",
+                data=csv,
+                file_name="di_predictions.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="dl_csv_main",
+            )
 
+    # 4) Chart container (always below)
     chart_slot = st.container()
 
-# ---------------- Prediction + curve ----------------
+# =============================================================================
+# Prediction + Curve + Chart
+# =============================================================================
 _TRAIN_NAME_MAP = {
     'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
     'fyt': 'fyt', 'fysh': 'fysh', 'fyl': 'fyl', 'fybl': 'fybl',
@@ -380,35 +459,33 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame, theta_max:
 
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0).encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                    scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
+            x=alt.X("θ:Q", title="Drift Ratio (θ)", scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
                     axis=alt.Axis(values=list(x_ticks))),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                    scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)", scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
                     axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5])),
-        ).properties(width=540, height=420)   # fixed width to keep everything on one screen
+        ).properties(width="container", height=420)
     )
 
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(point=True).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=540, height=420)
+    line_layer = alt.Chart(curve).mark_line(point=True).encode(x="θ:Q", y="Predicted_DI:Q").properties(width="container", height=420)
 
     chart = (alt.layer(axes_layer, line_layer)
              .configure_view(strokeWidth=0)
              .interactive())
 
     st.markdown('<div class="altair-chart-wrap">', unsafe_allow_html=True)
-    st.altair_chart(chart, use_container_width=False)
+    st.altair_chart(chart, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# pick model from state / default
+# decide selected model / default
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
 label_from_state = (st.session_state.get("model_select_compact") or st.session_state.get("model_select"))
 model_choice = _label_to_key.get(label_from_state, label_from_state) if label_from_state else next((m for m in _order if m in model_registry), None)
 
-# predict & plot
+# prediction + badge + csv + chart
 if (model_choice is None) or (model_choice not in model_registry):
-    st.error("No trained model is available. See Model Health in the sidebar.")
+    st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
     if 'submit' in locals() and submit:
         xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
@@ -416,10 +493,19 @@ else:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
+            pred_banner.markdown(
+                f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>",
+                unsafe_allow_html=True
+            )
             csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download All Results as CSV", data=csv, file_name="di_predictions.csv",
-                                    mime="text/csv", use_container_width=True, key="dl_csv_after_submit")
+            dl_slot.download_button(
+                "📥 Download All Results as CSV",
+                data=csv,
+                file_name="di_predictions.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="dl_csv_after_submit"
+            )
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
@@ -429,7 +515,7 @@ else:
 with right:
     render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5)
 
-# Recent predictions (optional)
+# Optional: recent predictions
 with st.sidebar.expander("Recent Predictions", expanded=False):
     if not st.session_state.results_df.empty:
         for i, row in st.session_state.results_df.tail(5).reset_index(drop=True).iterrows():
