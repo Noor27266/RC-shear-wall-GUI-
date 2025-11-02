@@ -303,6 +303,39 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+st.markdown("""
+<style>
+/* 1) Keep the DI badge inline and give it breathing room */
+.prediction-result{
+  display:inline-flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  width:auto !important;
+  margin-right:16px !important;   /* space before the CSV button */
+}
+
+/* 2) Make the Download button stay on one line and not wrap */
+div[data-testid="stDownloadButton"] button{
+  white-space:nowrap !important;   /* single line text */
+  display:inline-flex !important;
+  align-items:center !important;
+  height:auto !important;
+  line-height:1.1 !important;
+  padding:8px 14px !important;     /* compact; prevents forced wrap */
+}
+
+/* 3) Ensure the CSV button itself sits inline (not full-width) */
+div[data-testid="stDownloadButton"]{
+  display:inline-block !important;
+  margin-left:0 !important;        /* keep control of spacing via badge margin */
+}
+
+/* 4) Safety: never wrap the folder emoji away from the text */
+div[data-testid="stDownloadButton"] button > *{
+  white-space:nowrap !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 
@@ -896,3 +929,4 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
