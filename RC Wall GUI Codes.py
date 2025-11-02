@@ -120,8 +120,8 @@ st.markdown("""
 <style>
 /* Reference canvas your UI was designed for (change if your base canvas differs). */
 :root{
-  --design-w: 1600;     /* base width in px of your one-screen layout */
-  --design-h: 900;      /* base height in px of your one-screen layout */
+  --design-w: 2550;     /* base width in px of your one-screen layout */
+  --design-h: 1390;      /* base height in px of your one-screen layout */
   --scale: min( calc(100vw / var(--design-w)), calc(100vh / var(--design-h)) );
 }
 
@@ -887,3 +887,4 @@ if show_recent and not st.session_state.results_df.empty:
 
 # === close fit-to-screen wrapper (added) ===
 st.markdown("</div>", unsafe_allow_html=True)
+
