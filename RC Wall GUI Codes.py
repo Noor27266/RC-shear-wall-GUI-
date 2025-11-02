@@ -311,7 +311,7 @@ TITLE_LEFT = 180
 TITLE_TOP  = 40
 LOGO_LEFT  = 340
 LOGO_TOP   = 60
-LOGO_SIZE  = 50
+LOGO_SIZE  = 80
 _show_recent = False
 
 # Optional tuning sidebar (only when enabled)
@@ -552,9 +552,9 @@ with left:
 # =============================================================================
 # Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 300
+HERO_X, HERO_Y, HERO_W = 100, 5, 550
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 300
+CHART_W = 550
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -814,7 +814,58 @@ if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
                 unsafe_allow_html=True
             )
 
+# ==============================  LATE PER-COMPONENT FONT & LOGO OVERRIDES ==============================
+# Use URL params to override individual font sizes WITHOUT changing any existing code:
+#   fs_title, fs_section, fs_label, fs_units, fs_input, fs_select, fs_button, fs_badge, fs_recent
+#   logo  -> header logo height in pixels
+# Example: ?fs_title=42&fs_section=28&fs_label=22&fs_units=16&fs_input=18&fs_select=22&fs_button=20&fs_badge=16&fs_recent=12&logo=80
+def _get_qp():
+    try:
+        return st.query_params
+    except Exception:
+        try:
+            return st.experimental_get_query_params()
+        except Exception:
+            return {}
 
+_qp = _get_qp()
 
+def _get_int(name):
+    try:
+        v = _qp.get(name)
+        if isinstance(v, list): v = v[0]
+        return int(v) if v not in (None, "", []) else None
+    except Exception:
+        return None
 
+_FS_TITLE   = _get_int("fs_title")
+_FS_SECTION = _get_int("fs_section")
+_FS_LABEL   = _get_int("fs_label")
+_FS_UNITS   = _get_int("fs_units")
+_FS_INPUT   = _get_int("fs_input")
+_FS_SELECT  = _get_int("fs_select")
+_FS_BUTTON  = _get_int("fs_button")
+_FS_BADGE   = _get_int("fs_badge")
+_FS_RECENT  = _get_int("fs_recent")
+_LOGO_H     = _get_int("logo")
 
+_rules = []
+if _FS_TITLE   is not None: _rules.append(f".page-header__title{{font-size:{_FS_TITLE}px !important;}}")
+if _FS_SECTION is not None: _rules.append(f".section-header{{font-size:{_FS_SECTION}px !important;}}")
+if _FS_LABEL   is not None: _rules.append(f".stNumberInput label, .stSelectbox label{{font-size:{_FS_LABEL}px !important;}}")
+if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm{{font-size:{_FS_UNITS}px !important;}}")
+if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
+if _FS_SELECT  is not None: _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
+if _FS_BUTTON  is not None:
+    _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
+    _btn_lh = max(36, int(round(_FS_BUTTON * 1.15)))
+    _rules.append(f"div.stButton > button{{font-size:{_FS_BUTTON}px !important;height:{_btn_h}px !important;line-height:{_btn_lh}px !important;white-space:nowrap !important;}}")
+else:
+    _rules.append("div.stButton > button{white-space:nowrap !important;}")  # prevent wrapping even if not resizing
+if _FS_BADGE  is not None: _rules.append(f".prediction-result{{font-size:{_FS_BADGE}px !important;}}")
+if _FS_RECENT is not None: _rules.append(f".recent-box{{font-size:{_FS_RECENT}px !important;}}")
+if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}px !important;}}")
+
+if _rules:
+    css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
+# ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
