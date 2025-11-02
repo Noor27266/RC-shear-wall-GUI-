@@ -1,46 +1,21 @@
 streamlit
 
-# Core scientific stack
-numpy==1.26.2
-pandas==2.0.3
+# Core
+pandas==1.5.3
+numpy==1.24.3
 joblib==1.3.2
+scikit-learn==1.3.2
 
-# scikit-learn must match the version used to pickle RF (works with most 2024–2025 saves)
-scikit-learn==1.4.2
-
-# Tree libraries
+# Tree models
 xgboost==1.7.6
 lightgbm==4.3.0
 catboost==1.2.5
 
-# TensorFlow/Keras for PS & MLP
+# ANN (PS & MLP) — Keras inside TF 2.15; do NOT pin separate "keras"
 tensorflow-cpu==2.15.0.post1
 h5py
 
-# Helpers (optional but harmless)
+# Optional helpers (safe)
 pyarrow
 skops==0.9.0
 
-# For PS & MLP (Keras models)
-tensorflow-cpu==2.15.0.post1
-h5py
-
-
-streamlit
-pandas==1.5.3
-numpy==1.24.0
-xgboost==1.4.2
-catboost
-lightgbm
-tensorflow
-joblib==1.5.0
-scikit-learn==1.1.3
-streamlit
-pandas
-numpy
-xgboost
-catboost
-lightgbm
-tensorflow
-scikit-learn
-joblib
