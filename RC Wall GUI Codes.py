@@ -153,13 +153,13 @@ html body [data-testid="stAppViewContainer"]{
 """, unsafe_allow_html=True)
 # === END fit-to-screen insertion ===
 
-FS_TITLE   = 50
-FS_SECTION = 35
-FS_LABEL   = 30
+FS_TITLE   = 25
+FS_SECTION = 25
+FS_LABEL   = 25
 FS_UNITS   = 18
 FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
+FS_SELECT  = 25
+FS_BUTTON  = 25
 FS_BADGE   = 25
 FS_RECENT  = 16
 INPUT_H    = max(32, int(FS_INPUT * 2.1))
@@ -181,7 +181,7 @@ css(f"""
 
   .section-header {{
     font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
+    font-weight:700; margin:.2rem 0;
   }}
 
   .stNumberInput label, .stSelectbox label {{
@@ -885,4 +885,5 @@ if show_recent and not st.session_state.results_df.empty:
 
 # === close fit-to-screen wrapper (added) ===
 st.markdown("</div>", unsafe_allow_html=True)
+
 
