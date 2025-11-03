@@ -305,7 +305,7 @@ div[data-testid="stDownloadButton"] button {
 css(f"""
     <style>
     .stSelectbox [role="combobox"] {{
-        width: 250px !important;  /* Adjust width */
+        width: 200px !important;  /* Adjust width */
         height: 40px !important;  /* Adjust height */
     }}
     </style>
@@ -896,6 +896,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
