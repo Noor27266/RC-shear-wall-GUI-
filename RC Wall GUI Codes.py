@@ -316,6 +316,48 @@ div[data-testid="stSelectbox"] > div > div {
 """, unsafe_allow_html=True)
 
 
+
+
+
+
+
+
+st.markdown("""
+<style>
+/* Adjust the header to eliminate any space at the top */
+header[data-testid="stHeader"] {
+    height: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* Remove the extra space at the top of the app */
+div.stApp {
+    margin-top: -2rem !important; /* Adjust this value if needed */
+}
+
+/* Adjust the margins and padding for the block container */
+section.main > div.block-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
@@ -893,6 +935,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
