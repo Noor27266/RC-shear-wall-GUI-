@@ -299,14 +299,6 @@ div[data-testid="stDownloadButton"] button {
 </style>
 """, unsafe_allow_html=True)
 
-
-
-
-
-
-
-
-
 st.markdown("""
 <style>
 /* Decrease the width and increase the height of the model selection box */
@@ -329,6 +321,21 @@ div[data-testid="stSelectbox"] > div > div {
 
 
 
+st.markdown("""
+<style>
+/* Decrease the width of the 'Download as CSV' button */
+div[data-testid="stDownloadButton"] {
+    width: 120px !important;  /* Set the width to a desired value */
+    padding: 6px 12px !important;  /* Adjust padding to keep the text inside properly */
+}
+
+div[data-testid="stDownloadButton"] button {
+    font-size: 12px !important;  /* Smaller text size */
+    height: auto !important;  /* Adjust height */
+    line-height: 1.1 !important;  /* Adjust line height */
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 
@@ -927,6 +934,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
