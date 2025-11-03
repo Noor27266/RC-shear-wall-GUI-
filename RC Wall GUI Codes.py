@@ -306,8 +306,8 @@ css(f"""
     <style>
     /* Increase the width and adjust the height of the selectbox */
     div[data-testid="stSelectbox"] .stSelectbox [role="combobox"] {{
-        width: 250px !important;
-        height: 40px !important;
+        width: 150px !important;
+        height: 60px !important;
     }}
     </style>
 """)
@@ -896,6 +896,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
