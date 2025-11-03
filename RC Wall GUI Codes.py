@@ -325,7 +325,7 @@ st.markdown("""
 <style>
 /* Decrease the width of the 'Download as CSV' button */
 div[data-testid="stDownloadButton"] {
-    width: 120px !important;  /* Set the width to a desired value */
+    width: 150px !important;  /* Set the width to a desired value */
     padding: 6px 12px !important;  /* Adjust padding to keep the text inside properly */
 }
 
@@ -934,6 +934,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
