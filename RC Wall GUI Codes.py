@@ -287,12 +287,12 @@ st.markdown("""
 /* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left:-90px !important;  /* Move it slightly to the left */
+  margin-left:-100px !important;  /* Move it slightly to the left */
 }
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
-  padding: 6px 12px !important;  /* Smaller button padding */
-  font-size: 12px !important;  /* Smaller font size */
+  padding: 4px 10px !important;  /* Smaller button padding */
+  font-size: 10px !important;  /* Smaller font size */
   height: auto !important;  /* Adjust height according to content */
   line-height: 1.1 !important;  /* Adjust line height */
 }
@@ -319,22 +319,6 @@ div[data-testid="stSelectbox"] > div > div {
 
 
 
-
-st.markdown("""
-<style>
-/* Decrease the width and increase the height (length) of the 'Download as CSV' button */
-div[data-testid="stDownloadButton"] {
-    width: 180px !important;  /* Set the width to a desired value */
-    padding: 8px 10px !important;  /* Adjust padding to ensure proper fit */
-}
-
-div[data-testid="stDownloadButton"] button {
-    font-size: 12px !important;  /* Smaller text size */
-    height: 30px !important;  /* Set height (length) to match the desired value */
-    line-height: 1.2 !important;  /* Adjust line height for vertical centering */
-}
-</style>
-""", unsafe_allow_html=True)
 
 
 
@@ -935,6 +919,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
