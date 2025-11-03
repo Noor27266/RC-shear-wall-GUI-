@@ -273,13 +273,6 @@ div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appe
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
 </style>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
 st.markdown("""
 <style>
 /* Increase the width of the Predicted Damage Index (DI) box */
@@ -291,13 +284,11 @@ st.markdown("""
   white-space: nowrap !important;  /* Prevent wrapping of text */
   margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
 }
-
 /* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
   margin-left:-90px !important;  /* Move it slightly to the left */
 }
-
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
   padding: 6px 12px !important;  /* Smaller button padding */
@@ -311,6 +302,14 @@ div[data-testid="stDownloadButton"] button {
 
 
 
+css(f"""
+    <style>
+    .stSelectbox [role="combobox"] {{
+        width: 250px !important;  /* Adjust width */
+        height: 40px !important;  /* Adjust height */
+    }}
+    </style>
+""")
 
 
 
@@ -897,6 +896,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
