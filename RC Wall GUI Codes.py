@@ -291,8 +291,8 @@ div[data-testid="stDownloadButton"] {
 }
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
-  padding: 4px 10px !important;  /* Smaller button padding */
-  font-size: 10px !important;  /* Smaller font size */
+  padding: 3px 8px !important;  /* Smaller button padding */
+  font-size: 8px !important;  /* Smaller font size */
   height: auto !important;  /* Adjust height according to content */
   line-height: 1.1 !important;  /* Adjust line height */
 }
@@ -304,7 +304,7 @@ st.markdown("""
 /* Decrease the width and increase the height of the model selection box */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
     width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
-    height: 20px !important;  /* Increase the height (length) of the select box */
+    height: 10px !important;  /* Increase the height (length) of the select box */
 }
 
 /* Ensure the options inside are also displayed nicely */
@@ -919,6 +919,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
