@@ -310,7 +310,7 @@ div[data-testid="stSelectbox"] [data-baseweb="select"] {
 /* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
     height: 110px !important;  /* Set the height of the dropdown items */
-    line-height: 40px !important;  /* Make the items vertically centered */
+    line-height: 30px !important;  /* Make the items vertically centered */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -919,6 +919,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
