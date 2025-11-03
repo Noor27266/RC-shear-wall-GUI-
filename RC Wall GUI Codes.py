@@ -316,12 +316,6 @@ div[data-testid="stSelectbox"] > div > div {
 """, unsafe_allow_html=True)
 
 
-
-
-
-
-
-
 st.markdown("""
 <style>
 /* Adjust the header to eliminate any space at the top */
@@ -343,20 +337,6 @@ section.main > div.block-container {
 }
 </style>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
@@ -935,35 +915,3 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
