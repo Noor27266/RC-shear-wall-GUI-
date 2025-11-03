@@ -311,8 +311,8 @@ css(f"""
     <style>
     /* Adjust width of the Model Selection dropdown to match the button width */
     div[data-testid="stSelectbox"] > div > div[role="combobox"] {{
-        width: 120px !important;  /* Adjust this value to match button width */
-        height: 45px !important;  /* Increase height of the dropdown */
+        width: 80px !important;  /* Adjust this value to match button width */
+        height: 80px !important;  /* Increase height of the dropdown */
     }}
 
     /* Optional: Align dropdown options if needed */
@@ -924,5 +924,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
