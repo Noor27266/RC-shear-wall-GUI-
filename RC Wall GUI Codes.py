@@ -295,7 +295,7 @@ st.markdown("""
 /* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left:-80px !important;  /* Move it slightly to the left */
+  margin-left:-90px !important;  /* Move it slightly to the left */
 }
 
 div[data-testid="stDownloadButton"] button {
@@ -897,6 +897,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
