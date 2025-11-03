@@ -311,7 +311,7 @@ st.markdown("""
 <style>
 /* Decrease the width and increase the height of the model selection box */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 1000% !important;  /* Decrease width, set it to 80% or adjust as needed */
+    width: 90% !important;  /* Decrease width, set it to 80% or adjust as needed */
     height: 80px !important;  /* Increase the height (length) of the select box */
 }
 
@@ -927,6 +927,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
