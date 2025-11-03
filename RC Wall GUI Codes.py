@@ -333,7 +333,7 @@ header[data-testid="stHeader"] {
 
 /* Remove the extra space at the top of the app */
 div.stApp {
-    margin-top: -2rem !important; /* Adjust this value if needed */
+    margin-top: 0rem !important; /* Adjust this value if needed */
 }
 
 /* Adjust the margins and padding for the block container */
@@ -935,6 +935,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
