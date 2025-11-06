@@ -275,42 +275,16 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 """, unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Increase the width of the Predicted Damage Index (DI) box */
-.prediction-result {
-  width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 250px !important;  /* Slightly increase the width */
-  padding: 4px 12px !important;  /* Maintain compact padding */
-  font-size: 0.9em !important;  /* Smaller text inside DI box */
-  white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
-}
-/* Move the Download CSV button closer to the DI box */
-div[data-testid="stDownloadButton"] {
-  display: inline-block !important;
-  margin-left:-100px !important;  /* Move it slightly to the left */
-}
-div[data-testid="stDownloadButton"] button {
-  white-space: nowrap !important;
-  padding: 3px 8px !important;  /* Smaller button padding */
-  font-size: 8px !important;  /* Smaller font size */
-  height: auto !important;  /* Adjust height according to content */
-  line-height: 1.1 !important;  /* Adjust line height */
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
 /* Decrease the width and increase the height of the model selection box */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
-    height: 30px !important;  /* Increase the height (length) of the select box */
+    width: 110% !important;  /* keep your current styling */
+    height: 30px !important;
 }
 
 /* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
-    height: 110px !important;  /* Set the height of the dropdown items */
-    line-height: 30px !important;  /* Make the items vertically centered */
+    height: 110px !important;
+    line-height: 30px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -371,6 +345,11 @@ html, body, .stApp {
     max-width: 100% !important;
     overflow: hidden !important;
 }
+
+/* Keep dark tooltip styling for Altair when rendered via st.altair_chart */
+.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * {
+  font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important;
+}
 </style>
 """)
 
@@ -392,7 +371,8 @@ except Exception:
         pass
 
 # Defaults (used when sidebar tuning is hidden)
-right_offset = 80
+# (Changed: right_offset now 0 to remove forced empty space; others unchanged)
+right_offset = 0
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
@@ -632,9 +612,10 @@ with left:
 # =============================================================================
 # Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 300
+# (Changed: remove horizontal push on the hero image)
+HERO_X, HERO_Y, HERO_W = 0, 5, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 300
+CHART_W = 460  # used as height; width will expand to container
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -786,11 +767,11 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5], labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
                                   labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
                                   labelFlush=True, labelFlushOffset=0)),
-        ).properties(width=size, height=size)
+        ).properties(width='container', height=size)
     )
 
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
+    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width='container', height=size)
 
     k = 3
     if not curve.empty:
@@ -802,7 +783,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
         x="θ:Q", y="Predicted_DI:Q",
         tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                  alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
-    ).add_params(selection)
+    ).add_params(selection).properties(width='container', height=size)
 
     rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
     text_layer = alt.Chart(curve).mark_text(align='left', dx=8, dy=-8, fontSize=14, fontWeight='bold', color='red').encode(
@@ -813,10 +794,9 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure_view(strokeWidth=0)
              .configure_axis(domain=True, ticks=True)
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
-    chart_html = chart.to_html()
-    chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
-    st.components.v1.html(chart_html, height=size + 100)
+
+    # (Changed) Let Streamlit handle responsive width so the chart fills the right column
+    st.altair_chart(chart, use_container_width=True)
 
 # =============================================================================
 # Step #8: Predict on click; always render curve
