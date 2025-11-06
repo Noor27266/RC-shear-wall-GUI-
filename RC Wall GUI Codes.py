@@ -124,39 +124,60 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
-# Step #2.1: Global UI CSS (layout, fonts, inputs, theme) - FIXED FOR FULL PAGE
+# Step #2.1: Global UI CSS (layout, fonts, inputs, theme) - COMPLETELY FIXED
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ 
-    padding-top: 0rem !important; 
-    padding-bottom: 0rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: 100% !important;
-  }}
-  
-  .stApp {{
-    margin-top: -2rem !important;
+  /* COMPLETELY REMOVE ALL PADDING AND MARGINS */
+  .block-container, .main, .stApp {{
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
   }}
 
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
+  /* FIX HEADER - COMPLETELY REMOVE IT */
+  header[data-testid="stHeader"] {{
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }}
+
+  /* MAIN CONTAINER - NO SPACING */
+  section[data-testid="stAppViewContainer"] {{
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+  }}
+
+  /* COLUMNS - USE FULL HEIGHT */
+  [data-testid="column"] {{
+    height: 100vh !important;
+    padding: 0.5rem !important;
+    overflow-y: auto !important;
+  }}
+
+  h1 {{ 
+    font-size:{FS_TITLE}px !important; 
+    margin: 0.2rem 0 !important; 
+    padding: 0 !important;
+  }}
 
   .section-header {{
     font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.2rem 0 !important;
+    font-weight:700; 
+    margin: 0.1rem 0 !important;
+    padding: 0 !important;
   }}
 
   .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
+    font-size:{FS_LABEL}px !important; 
+    font-weight:700;
+    margin: 0 !important;
   }}
-  .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
-  .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
-
-  .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
@@ -164,337 +185,171 @@ css(f"""
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
-      padding:10px 12px !important;
+      padding: 8px 10px !important;
+      margin: 0 !important;
   }}
 
   div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
       background:{INPUT_BG} !important;
       border:1px solid {INPUT_BORDER} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-      transition:border-color .15s ease, box-shadow .15s ease !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-      border-color:{PRIMARY} !important;
-      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
+      border-radius:8px !important;
+      margin: 0 !important;
   }}
 
-  div[data-testid="stNumberInput"] button {{
-      background:#ffffff !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:10px !important;
-      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
+  /* COMPACT FORM - NO MARGINS */
+  #compact-form{{ 
+    max-width: none !important; 
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }}
-  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
-
-  /* Select font sizes are tied to FS_SELECT */
-  .stSelectbox [role="combobox"],
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-  div[data-testid="stSelectbox"] div[role="listbox"],
-  div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}px !important;
+  
+  #compact-form [data-testid="stHorizontalBlock"]{{ 
+    gap: 0.3rem !important; 
+    margin: 0 !important;
+    padding: 0 !important;
   }}
-
-  /* Buttons use FS_BUTTON, no wrapping */
-  div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-    white-space:nowrap !important;
-    color:#fff !important;
-    font-weight:700; border:none !important; border-radius:8px !important;
-    background:#4CAF50 !important;
+  
+  #compact-form [data-testid="column"]{{ 
+    width: 100% !important; 
+    max-width: none !important; 
+    flex: 1 !important; 
+    padding: 0 0.3rem !important;
+    margin: 0 !important;
   }}
-  div.stButton > button:hover {{ filter: brightness(0.95); }}
-
-  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-  button[key="reset_btn"] {{ background:#2196F3 !important; }}
-  button[key="clear_btn"] {{ background:#f44336 !important; }}
 
   .form-banner {{
     text-align:center;
     background: linear-gradient(90deg, #0E9F6E, #84CC16);
     color: #fff;
-    padding:.45rem .75rem;
-    border-radius:10px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 8px;
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
-    margin:.5rem 0 !important;
-    transform: none !important;
+    margin: 0.2rem 0 !important;
   }}
 
   .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-  }}
-  .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
-  }}
-
-  /* FIXED: Make form use full width and remove constraints */
-  #compact-form{{ 
-    max-width: none !important; 
-    width: 100% !important;
-    margin:0 !important;
-  }}
-  
-  #compact-form [data-testid="stHorizontalBlock"]{{ 
-    gap:.5rem !important; 
-    flex-wrap:nowrap !important;
-    justify-content: space-between !important;
-  }}
-  
-  #compact-form [data-testid="column"]{{ 
-    width: auto !important; 
-    max-width: none !important; 
-    flex: 1 !important; 
-    padding:0 0.5rem !important;
-  }}
-  
-  #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ 
-    max-width:none !important; 
-    box-sizing:border-box !important;
-    width: 100% !important;
-  }}
-  
-  #compact-form [data-testid="stNumberInput"]{{ 
-    display:inline-flex !important; 
-    width:100% !important; 
-    min-width:0 !important; 
-    flex:1 !important; 
-    margin-bottom:.2rem !important;
-  }}
-  
-  #button-row {{ 
-    display:flex !important; 
-    gap:30px !important; 
-    margin:10px 0 6px 0 !important; 
-    align-items:center !important;
+    font-size:{FS_BADGE}px !important; 
+    font-weight:700; 
+    color:#2e86ab;
+    background:#f1f3f4; 
+    padding: 0.4rem; 
+    border-radius:6px; 
+    text-align:center; 
+    margin: 0.2rem 0 !important;
   }}
 
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-      margin: 0.5rem 0 !important;
+  /* BUTTONS - COMPACT */
+  div.stButton > button {{
+    font-size:{FS_BUTTON}px !important;
+    height: {max(35, int(round(FS_BUTTON*1.3)))}px !important;
+    line-height: 1 !important;
+    margin: 0.1rem 0 !important;
+    padding: 0.2rem 0.5rem !important;
   }}
 
-  [data-baseweb="popover"], [data-baseweb="tooltip"],
-  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background:#000 !important; color:#fff !important; border-radius:8px !important;
-      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
-  }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
-
-  /* Keep consistent sizes for model select label and buttons */
-  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
-  #action-row {{ display:flex; align-items:center; gap:10px; }}
-
-  /* FIXED: Remove header transforms and positioning that create gaps */
-  .page-header-outer, .page-header, .page-header__title, .page-header__logo {{
-    transform: none !important;
+  /* REMOVE ALL SCROLLING FROM MAIN CONTAINERS */
+  html, body, .stApp {{
+    overflow: hidden !important;
+    height: 100vh !important;
+    width: 100vw !important;
     margin: 0 !important;
     padding: 0 !important;
-    position: static !important;
   }}
 
+  /* PAGE HEADER - COMPACT */
   .page-header {{ 
-    display:flex !important; 
-    align-items:center !important; 
-    justify-content:flex-start !important; 
-    gap:20px !important; 
-    margin:0.5rem 0 !important; 
-    padding:0 !important;
+    display: flex !important; 
+    align-items: center !important; 
+    justify-content: flex-start !important; 
+    gap: 15px !important; 
+    margin: 0.1rem 0 !important; 
+    padding: 0 !important;
+    height: auto !important;
   }}
   
   .page-header__title {{ 
     font-size:{FS_TITLE}px !important; 
     font-weight:800 !important; 
-    margin:0 !important;
-    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
   }}
   
   .page-header__logo {{ 
-    height:{int(DEFAULT_LOGO_H)}px !important; 
-    width:auto !important; 
-    display:block !important;
-    transform: none !important;
+    height: {int(DEFAULT_LOGO_H * 0.8)}px !important; 
+    width: auto !important; 
+    margin: 0 !important;
+    padding: 0 !important;
   }}
 
-  /* FIXED: Remove all scrolling constraints */
-  html, body, .stApp {{
-      overflow: auto !important;
-      max-height: none !important;
-      max-width: none !important;
-  }}
-
-  /* Ensure content fits within viewport */
-  .stApp > div {{
-      max-height: none !important;
-      max-width: none !important;
-  }}
-
-  /* Prevent any element from causing overflow */
-  .block-container, .main, section[data-testid="stAppViewContainer"] {{
-      overflow: visible !important;
-      max-height: none !important;
-      max-width: none !important;
-  }}
-
-  /* Make sure columns and containers don't overflow */
-  [data-testid="column"], [data-testid="stHorizontalBlock"] {{
-      max-width: none !important;
-      overflow: visible !important;
-  }}
-
-  /* FIXED: Compact the input layout */
-  .stNumberInput, .stSelectbox {{
-    margin-bottom: 0.3rem !important;
-  }}
-
-  /* FIXED: Remove the artificial spacing in right panel */
+  /* RIGHT PANEL - NO EXTRA SPACE */
   div[data-testid="column"]:nth-child(2) {{
     padding-top: 0 !important;
     margin-top: 0 !important;
+    height: 100vh !important;
+  }}
+
+  /* INPUT COMPACTNESS */
+  .stNumberInput, .stSelectbox {{
+    margin-bottom: 0.2rem !important;
+    padding: 0 !important;
+  }}
+
+  /* REMOVE NUMBER INPUT SPINNERS */
+  div[data-testid="stNumberInput"] button {{ 
+    display: none !important; 
+  }}
+  div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+  div[data-testid="stNumberInput"] input::-webkit-inner-spin-button {{ 
+    -webkit-appearance: none; 
+    margin: 0; 
+  }}
+  div[data-testid="stNumberInput"] input[type=number] {{ 
+    -moz-appearance: textfield; 
   }}
 </style>
 """)
 
-# Keep header area slim
+# ADDITIONAL COMPACT STYLING
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# Hide number input spinners
-st.markdown("""
-<style>
-/* Hide Streamlit's small +/- buttons on number inputs */
-div[data-testid="stNumberInput"] button { display: none !important; }
-
-/* Also hide browser numeric spinners for consistency */
-div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
-div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
-</style>
-""", unsafe_allow_html=True)
-
-# Compact styling for prediction result and download button
-st.markdown("""
-<style>
-/* Increase the width of the Predicted Damage Index (DI) box */
-.prediction-result {
-  width: auto !important;
-  max-width: 250px !important;
-  padding: 4px 12px !important;
-  font-size: 0.9em !important;
-  white-space: nowrap !important;
-  margin-right: 15px !important;
-}
-/* Move the Download CSV button closer to the DI box */
-div[data-testid="stDownloadButton"] {
-  display: inline-block !important;
-  margin-left: -100px !important;
-}
-div[data-testid="stDownloadButton"] button {
-  white-space: nowrap !important;
-  padding: 3px 8px !important;
-  font-size: 8px !important;
-  height: auto !important;
-  line-height: 1.1 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# Compact model selection box
-st.markdown("""
-<style>
-/* Decrease the width and increase the height of the model selection box */
-div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 100% !important;
-    height: 30px !important;
-}
-
-/* Ensure the options inside are also displayed nicely */
-div[data-testid="stSelectbox"] > div > div {
-    height: 110px !important;
-    line-height: 30px !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# Remove extra top space
-st.markdown("""
-<style>
-/* Adjust the header to eliminate any space at the top */
-header[data-testid="stHeader"] {
-    height: 0 !important;
+/* REMOVE ALL STREAMLIT DEFAULT SPACING */
+div.stApp > div {{
     padding: 0 !important;
-    background: transparent !important;
-}
+    margin: 0 !important;
+}}
 
-/* Remove the extra space at the top of the app */
-div.stApp {
-    margin-top: -8rem !important;
-}
+/* MAKE COLUMNS USE FULL HEIGHT WITHOUT SCROLL */
+[data-testid="stHorizontalBlock"] {{
+    height: calc(100vh - 80px) !important;
+    min-height: 500px !important;
+}}
 
-/* Adjust the margins and padding for the block container */
-section.main > div.block-container {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
+/* COMPACT MODEL SELECTION */
+div[data-testid="stSelectbox"] {{
+    margin: 0.1rem 0 !important;
+}}
+
+/* COMPACT ACTION ROW */
+#action-row {{
+    margin: 0.3rem 0 !important;
+    padding: 0 !important;
+}}
+
+/* CHART CONTAINER - FIXED HEIGHT */
+.vega-embed {{
+    height: 300px !important;
+    max-height: 300px !important;
+}}
+
+/* REMOVE ANY REMAINING GAPS */
+* {{
+    box-sizing: border-box !important;
+}}
 </style>
 """, unsafe_allow_html=True)
-
-# FIXED: Remove scrolling constraints and allow natural flow
-css("""
-<style>
-/* Allow natural scrolling */
-html, body, .stApp {
-    overflow: auto !important;
-    max-height: none !important;
-    max-width: none !important;
-}
-
-/* Ensure content fits within viewport */
-.stApp > div {
-    max-height: none !important;
-    max-width: none !important;
-}
-
-/* Prevent any element from causing overflow */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: visible !important;
-    max-height: none !important;
-    max-width: none !important;
-}
-
-/* Make sure columns and containers use available space */
-[data-testid="column"], [data-testid="stHorizontalBlock"] {
-    max-width: none !important;
-    overflow: visible !important;
-}
-
-/* Ensure the page header doesn't create gaps */
-.page-header-outer {
-    max-width: 100% !important;
-    transform: none !important;
-    margin: 0.5rem 0 !important;
-}
-</style>
-""")
-
 
 
 
@@ -1079,4 +934,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
