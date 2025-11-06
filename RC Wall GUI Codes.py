@@ -77,7 +77,7 @@ def pfind(candidates):
         if not root.exists():
             continue
         for sub in root.iterdir():
-            if sub.is_dir():
+            if sub is_dir():
                 for c in candidates:
                     p = sub / c
                     if p.exists():
@@ -263,19 +263,6 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------ CENTER THE WHOLE INTERFACE ------------------
-css("""
-<style>
-/* Limit page width and center the entire interface */
-section.main > div.block-container{
-    max-width: 1280px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-</style>
-""")
-# ---------------------------------------------------------------
-
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -287,6 +274,7 @@ div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appe
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
 </style>
 """, unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 /* Decrease the width and increase the height of the model selection box */
@@ -294,6 +282,8 @@ div[data-testid="stSelectbox"] [data-baseweb="select"] {
     width: 110% !important;
     height: 30px !important;
 }
+
+/* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
     height: 110px !important;
     line-height: 30px !important;
@@ -303,14 +293,19 @@ div[data-testid="stSelectbox"] > div > div {
 
 st.markdown("""
 <style>
+/* Adjust the header to eliminate any space at the top */
 header[data-testid="stHeader"] {
     height: 0 !important;
     padding: 0 !important;
     background: transparent !important;
 }
+
+/* Remove the extra space at the top of the app */
 div.stApp {
-    margin-top: -8rem !important;
+    margin-top: -8rem !important; /* Adjust this value if needed */
 }
+
+/* Adjust the margins and padding for the block container */
 section.main > div.block-container {
     padding-top: 0 !important;
     margin-top: 0 !important;
@@ -326,19 +321,27 @@ html, body, .stApp {
     max-height: 100vh !important;
     max-width: 100vw !important;
 }
+
+/* Ensure content fits within viewport */
 .stApp > div {
     max-height: 100vh !important;
     max-width: 100vw !important;
 }
+
+/* Prevent any element from causing overflow */
 .block-container, .main, section[data-testid="stAppViewContainer"] {
     overflow: hidden !important;
     max-height: 100vh !important;
-    max-width: 100vw !important;
+    /* IMPORTANT: removed max-width:100vw here so centering can work */
 }
+
+/* Constrain your specific components */
 .page-header-outer {
     max-width: 100% !important;
     transform: none !important;
 }
+
+/* Make sure columns and containers don't overflow */
 [data-testid="column"], [data-testid="stHorizontalBlock"] {
     max-width: 100% !important;
     overflow: hidden !important;
@@ -922,4 +925,16 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
+
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
+# ===== Final: Center the whole interface (must be last to win specificity) =====
+css("""
+<style>
+section.main > div.block-container {
+    max-width: 1280px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+</style>
+""")
