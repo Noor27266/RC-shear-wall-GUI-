@@ -383,33 +383,6 @@ html, body, .stApp {
 
 
 
-# Add this at the very end (after all your code)
-st.components.v1.html("""
-<script>
-// Completely disable zooming
-document.addEventListener('wheel', function(e) {
-    if (e.ctrlKey) {
-        e.preventDefault();
-        return false;
-    }
-}, { passive: false });
-
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) {
-        e.preventDefault();
-        return false;
-    }
-});
-
-// Force fixed viewport
-const viewport = document.querySelector('meta[name="viewport"]');
-if (viewport) {
-    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-}
-</script>
-""", height=0)
-
-
 
 
 
@@ -1004,6 +977,52 @@ if _rules:
 
 
 
+
+
+
+# ADD THIS AT THE VERY END OF YOUR SCRIPT - AFTER ALL YOUR CODE
+st.components.v1.html("""
+<script>
+// COMPLETELY DISABLE ALL ZOOMING
+document.addEventListener('wheel', function(e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+}, { passive: false });
+
+// DISABLE KEYBOARD ZOOM
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && 
+        (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+});
+
+// DISABLE CONTEXT MENU ZOOM OPTIONS
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+// FORCE NO ZOOM - MOST IMPORTANT
+const meta = document.createElement('meta');
+meta.name = 'viewport';
+meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no';
+document.head.appendChild(meta);
+
+// ALSO DISABLE DOUBLE-TAP ZOOM ON MOBILE
+document.addEventListener('dblclick', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+console.log('Zoom protection activated - everything locked in place');
+</script>
+""", height=0)
 
 
 
