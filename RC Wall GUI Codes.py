@@ -939,7 +939,8 @@ if _FS_LABEL   is not None: _rules.append(f".stNumberInput label, .stSelectbox l
 if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm{{font-size:{_FS_UNITS}px !important;}}")
 if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
 if _FS_SELECT  is not None:
-    _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox"] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
+    _rules.append(f".stSelectbox[role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
+
     _rules.append(f"div[data-testid='stSelectbox"] div[role='listbox'], div[data-testid='stSelectbox"] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
 if _FS_BUTTON  is not None:
     _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
@@ -955,6 +956,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
