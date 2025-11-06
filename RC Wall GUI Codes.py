@@ -385,6 +385,41 @@ html, body, .stApp {
 
 
 
+css("""
+<style>
+/* MAKE EVERYTHING FIT ON SCREEN */
+.stApp {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+.block-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+}
+
+/* Make the three columns fit better */
+[data-testid="column"] {
+    min-width: 0px !important;
+    width: auto !important;
+}
+
+/* Adjust your compact form */
+#compact-form {
+    max-width: 100% !important;
+}
+
+/* Ensure the header doesn't push content */
+.page-header-outer {
+    max-width: 100% !important;
+}
+</style>
+""")
+
+
+
+
 
 
 
@@ -975,6 +1010,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
