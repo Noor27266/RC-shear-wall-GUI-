@@ -647,11 +647,7 @@ with right:
         unsafe_allow_html=True,
     )
 
-    st.markdown(""" 
-    <style>
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
-    }
+    
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
     div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
@@ -951,4 +947,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
