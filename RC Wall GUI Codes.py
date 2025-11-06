@@ -381,30 +381,42 @@ html, body, .stApp {
 
 
 
+# Add this at the very end of your script (after all your CSS)
+st.components.v1.html("""
+<script>
+// Disable zooming completely
+document.addEventListener('wheel', function(e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+        return false;
+    }
+}, { passive: false });
+
+// Disable keyboard zoom (Ctrl +, Ctrl -, Ctrl 0)
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Disable pinch zoom on touch devices
+document.addEventListener('touchmove', function(e) {
+    if (e.scale !== 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Force viewport to stay fixed
+const meta = document.createElement('meta');
+meta.name = 'viewport';
+meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+document.getElementsByTagName('head')[0].appendChild(meta);
+</script>
+""", height=0)
 
 
 
-
-
-css("""
-<style>
-/* PREVENT MOVEMENT ON ZOOM - KEEP EVERYTHING FIXED */
-html, body {
-    zoom: 1 !important;
-    transform: scale(1) !important;
-}
-
-.stApp, .block-container, section.main {
-    zoom: 1 !important;
-    transform: none !important;
-}
-
-/* Prevent any scaling transformations */
-* {
-    transform: none !important;
-}
-</style>
-""")
 
 
 
@@ -996,6 +1008,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
