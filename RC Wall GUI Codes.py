@@ -338,12 +338,6 @@ section.main > div.block-container {
 </style>
 """, unsafe_allow_html=True)
 
-
-
-
-
-
-
 css("""
 <style>
 /* Remove ALL scrolling */
@@ -379,6 +373,127 @@ html, body, .stApp {
 }
 </style>
 """)
+
+
+
+
+
+
+
+
+
+
+css("""
+<style>
+/* Make the entire app zoom-resistant */
+.stApp {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    transform-origin: 0 0 !important;
+    width: 100% !important;
+    min-width: 1200px !important; /* Set a minimum width */
+}
+
+/* Prevent any scaling on all elements */
+* {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Fix the main container */
+section.main {
+    zoom: 1 !important;
+    transform: none !important;
+}
+
+/* Keep block container fixed */
+.block-container {
+    zoom: 1 !important;
+    transform: none !important;
+    min-width: 1200px !important;
+    max-width: 1400px !important;
+}
+
+/* Fix all columns and horizontal blocks */
+[data-testid="column"], 
+[data-testid="stHorizontalBlock"] {
+    zoom: 1 !important;
+    transform: none !important;
+    flex-shrink: 0 !important;
+}
+
+/* Prevent font size changes on zoom */
+.stNumberInput label, 
+.stSelectbox label,
+.stNumberInput input,
+.stSelectbox select,
+.stButton button,
+.section-header,
+.form-banner,
+.prediction-result {
+    zoom: 1 !important;
+    transform: none !important;
+    font-size: inherit !important;
+}
+
+/* Specifically lock your compact form */
+#compact-form {
+    zoom: 1 !important;
+    transform: none !important;
+    min-width: 800px !important;
+}
+
+/* Lock the header in place */
+.page-header-outer {
+    zoom: 1 !important;
+    transform: none !important;
+}
+
+/* Prevent any viewport scaling */
+@media screen and (max-width: 1400px) {
+    .stApp, .block-container {
+        min-width: 1200px !important;
+        overflow-x: auto !important;
+    }
+}
+
+/* Disable browser zoom behaviors */
+html {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}
+
+body {
+    transform: none !important;
+    zoom: 1 !important;
+}
+</style>
+""")
+css("""
+<style>
+@view-transition {
+    navigation: auto;
+}
+</style>
+""")
+
+# Add this meta tag via HTML
+st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+""", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -964,5 +1079,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
