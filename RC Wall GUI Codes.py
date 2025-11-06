@@ -98,45 +98,41 @@ def pfind(candidates):
 # =============================================================================
 css(f"""
 <style>
-  /* Global styles for responsiveness */
+  /* Reset and safe scaling */
   html, body {{
     margin: 0;
     padding: 0;
     font-size: 16px;  /* Base font size */
   }}
 
-  /* Make the form and other elements scale */
+  /* Prevent UI breakage */
   .block-container {{
-    padding-top: 0rem;
+    padding-top: 0 !important;
     max-width: 100% !important;
     overflow-x: hidden;
   }}
 
+  /* Title and Section Adjustments */
   h1 {{
-    font-size: 6vw;  /* Responsive font size for title */
+    font-size: 32px !important;
     margin: 0 !important;
   }}
 
   .section-header {{
-    font-size: 4vw;  /* Responsive font size for section headers */
+    font-size: 20px !important;
     font-weight: 700;
     margin: .35rem 0;
   }}
 
   .stNumberInput label, .stSelectbox label {{
-    font-size: 3vw;  /* Scalable font for labels */
+    font-size: 16px !important;
     font-weight: 700;
-  }}
-
-  .stNumberInput label .katex, .stSelectbox label .katex {{
-    font-size: 3vw;
-    line-height: 1.2 !important;
   }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size: 3.5vw;
-      height: 10vh;
+      font-size: 16px !important;
+      height: 40px !important;
       padding: 10px 12px !important;
   }}
 
@@ -147,23 +143,15 @@ css(f"""
       box-shadow: 0 1px 2px rgba(16,24,40,.06) !important;
   }}
 
-  div[data-testid="stNumberInput"] button {{
-      background: #ffffff !important;
-      border: 1px solid #e6e9f2 !important;
-      border-radius: 10px !important;
-      box-shadow: 0 1px 1px rgba(16,24,40,.05) !important;
-  }}
-
-  /* Scale dropdown inputs */
+  /* Selectbox font sizing */
   .stSelectbox [role="combobox"], div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{
-      font-size: 3vw !important;
+      font-size: 16px !important;
   }}
 
-  /* Adjust buttons with proper sizing */
   div.stButton > button {{
-    font-size: 3vw;
-    height: 8vh;
-    line-height: 7vh;
+    font-size: 16px !important;
+    height: 40px !important;
+    line-height: 36px !important;
     white-space: nowrap !important;
     color: #fff !important;
     font-weight: 700;
@@ -183,13 +171,13 @@ css(f"""
     padding: .45rem .75rem;
     border-radius: 10px;
     font-weight: 800;
-    font-size: 4vw;
+    font-size: 18px;
     margin: .1rem 0 !important;
     transform: translateY(-10px);
   }}
 
   .prediction-result {{
-    font-size: 3vw !important;
+    font-size: 16px !important;
     font-weight: 700;
     color: #2e86ab;
     background: #f1f3f4;
@@ -200,7 +188,7 @@ css(f"""
   }}
 
   .recent-box {{
-    font-size: 2vw !important;
+    font-size: 14px !important;
     background: #f8f9fa;
     padding: .5rem;
     margin: .25rem 0;
@@ -210,36 +198,26 @@ css(f"""
     display: inline-block;
   }}
 
-  /* Ensure the form fields and button row are displayed properly */
+  /* Form input fields and button row adjustments */
   #compact-form {{
     max-width: 100% !important;
     margin: 0 auto;
   }}
 
-  /* Adjust chart and other components to scale */
-  .vega-embed, .vega-embed .chart-wrapper {{
-    max-width: 100% !important;
-  }}
-
-  /* Adjust layout for model selection and buttons */
   #action-row {{
     display: flex;
     align-items: center;
     gap: 10px;
   }}
 
-  /* Adjust inputs to make sure they don't overflow */
-  div[data-testid="stNumberInput"] input[type="number"] {{
-    max-width: 100% !important;
-  }}
-
   /* For the logo in the header, adjust its size */
   .page-header__logo {{
-    height: 8vh !important;
+    height: 50px !important;
     width: auto;
   }}
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -938,5 +916,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
