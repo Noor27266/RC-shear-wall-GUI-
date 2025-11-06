@@ -601,7 +601,7 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-left, right = st.columns([1.5, 2], gap="large")
+left, right = st.columns([1, 2.5], gap="medium")
 
 with left:
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -634,10 +634,12 @@ with left:
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 5, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 300
+CHART_W = 500  # Increased from 300 to fill more space
 
 with right:
+    # Remove or minimize the empty space - CHANGED THIS LINE
     st.markdown(f"<div style='height:5px'></div>", unsafe_allow_html=True)
+    
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -647,7 +649,11 @@ with right:
         unsafe_allow_html=True,
     )
 
-    
+    st.markdown(""" 
+    <style>
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
+    }
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
     div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
@@ -947,5 +953,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
