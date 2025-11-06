@@ -129,29 +129,29 @@ LEFT_BG      = "#e0e4ec"
 css(f"""
 <style>
   .block-container {{ padding-top: 0rem; }}
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
+  h1 {{ font-size:{FS_TITLE}vw !important; margin:0 rem 0 !important; }}
 
   .section-header {{
-    font-size:{FS_SECTION}px !important;
+    font-size:{FS_SECTION}vw !important;
     font-weight:700; margin:.35rem 0;
   }}
 
   .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
+    font-size:{FS_LABEL}vw !important; font-weight:700;
   }}
   .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
+  .stSelectbox label .katex {{ font-size:{FS_LABEL}vw !important; line-height:1.2 !important; }}
   .stNumberInput label .katex .fontsize-ensurer,
   .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
   .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
+  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}vw !important; }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
-      height:{INPUT_H}px !important;
-      line-height:{INPUT_H - 8}px !important;
+      font-size:{FS_INPUT}vw !important;
+      height:{INPUT_H}vh !important;
+      line-height:{INPUT_H - 8}vh !important;
       font-weight:600 !important;
       padding:10px 12px !important;
   }}
@@ -182,14 +182,14 @@ css(f"""
   div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
   div[data-testid="stSelectbox"] div[role="listbox"],
   div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}px !important;
+      font-size:{FS_SELECT}vw !important;
   }}
 
   /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+    font-size:{FS_BUTTON}vw !important;
+    height:{max(42, int(round(FS_BUTTON*1.45)))}vh !important;
+    line-height:{max(36, int(round(FS_BUTTON*1.15)))}vh !important;
     white-space:nowrap !important;
     color:#fff !important;
     font-weight:700; border:none !important; border-radius:8px !important;
@@ -208,17 +208,17 @@ css(f"""
     padding:.45rem .75rem;
     border-radius:10px;
     font-weight:800;
-    font-size:{FS_SECTION + 4}px;
+    font-size:{FS_SECTION + 4}vw;
     margin:.1rem 0 !important;
     transform: translateY(-10px);
   }}
 
   .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
+    font-size:{FS_BADGE}vw !important; font-weight:700; color:#2e86ab;
     background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
   }}
   .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
+    font-size:{FS_RECENT}vw !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
   }}
 
@@ -240,12 +240,12 @@ css(f"""
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
       background:#000 !important; color:#fff !important; border-radius:8px !important;
-      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}vw !important; font-weight:500 !important;
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
   /* Keep consistent sizes for model select label and buttons */
-  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}vw !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
@@ -262,6 +262,14 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -951,3 +959,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
