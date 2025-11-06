@@ -52,30 +52,6 @@ def _load_keras_model(path):
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
-# DISABLE ZOOM - ADD THIS AT THE VERY TOP
-# =============================================================================
-st.markdown("""
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-/* COMPLETELY DISABLE ZOOM */
-html, body {
-    zoom: 1 !important;
-    transform: scale(1) !important;
-    overflow-x: hidden !important;
-}
-
-.stApp, .block-container, .main, [data-testid="stAppViewContainer"] {
-    zoom: 1 !important;
-    transform: none !important;
-}
-
-* {
-    transform: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =============================================================================
 # Small helpers
 # =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
@@ -634,7 +610,7 @@ with left:
     css("<div id='compact-form'>")
 
     # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
-    c1, c2, c3 = st.columns([1, 1, 1], gap="small")  # Changed from "large" to "small"
+    c1, c2, c3 = st.columns([1, 1, 1], gap="large")
 
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
@@ -975,34 +951,3 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-# =============================================================================
-# FINAL: Add JavaScript to completely disable zooming
-# =============================================================================
-st.components.v1.html("""
-<script>
-// COMPLETELY DISABLE ALL ZOOMING METHODS
-document.addEventListener('wheel', function(e) {
-    if (e.ctrlKey) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-    }
-}, { passive: false });
-
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && 
-        (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-    }
-});
-
-// Force viewport to prevent zooming
-const meta = document.createElement('meta');
-meta.name = 'viewport';
-meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-document.head.appendChild(meta);
-</script>
-""", height=0)
