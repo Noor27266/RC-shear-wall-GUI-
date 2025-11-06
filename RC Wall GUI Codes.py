@@ -179,9 +179,7 @@ css(f"""
 
   /* Select font sizes are tied to FS_SELECT */
   .stSelectbox [role="combobox"],
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-  div[data-testid="stSelectbox"] div[role="listbox"],
-  div[data-testid="stSelectbox"] div[role="option"] {{
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{
       font-size:{FS_SELECT}px !important;
   }}
 
@@ -249,7 +247,6 @@ css(f"""
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """, unsafe_allow_html=True)
-
 
 # Keep header area slim
 st.markdown("""
@@ -374,31 +371,6 @@ html, body, .stApp {
 }
 </style>
 """)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -983,6 +955,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
