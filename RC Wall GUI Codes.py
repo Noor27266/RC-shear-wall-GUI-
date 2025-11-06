@@ -338,42 +338,6 @@ section.main > div.block-container {
 </style>
 """, unsafe_allow_html=True)
 
-css("""
-<style>
-/* Remove ALL scrolling */
-html, body, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Ensure content fits within viewport */
-.stApp > div {
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Prevent any element from causing overflow */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Constrain your specific components */
-.page-header-outer {
-    max-width: 100% !important;
-    transform: none !important;
-}
-
-/* Make sure columns and containers don't overflow */
-[data-testid="column"], [data-testid="stHorizontalBlock"] {
-    max-width: 100% !important;
-    overflow: hidden !important;
-}
-</style>
-""")
-
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
@@ -951,3 +915,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
+
