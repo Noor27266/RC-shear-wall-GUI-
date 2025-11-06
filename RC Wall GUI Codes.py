@@ -29,12 +29,11 @@ try:
 except Exception:
     _tf_load_model = None
 try:
-    from keras.models import load_model as _k3_load_model   # works when keras==3 is present
+    from keras.models import load_model as _k3_load_model
 except Exception:
     _k3_load_model = None
 
 def _load_keras_model(path):
-    """Try tf.keras first, then keras (Keras 3)."""
     errs = []
     if _tf_load_model is not None:
         try:
@@ -48,7 +47,6 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
-# --- session defaults (prevents AttributeError on first run) ---
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
@@ -58,7 +56,6 @@ css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
-# ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
     for c in candidates:
@@ -98,23 +95,20 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
-SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
-
+SCALE_UI = 0.36
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(100)  # page title
-FS_SECTION = s(60)  # section headers
-FS_LABEL   = s(50)  # input & select labels (katex included)
-FS_UNITS   = s(30)  # math units in labels
-FS_INPUT   = s(30)  # number input value
-FS_SELECT  = s(35)  # dropdown value/options
-FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
-FS_BADGE   = s(30)  # predicted badge
-FS_RECENT  = s(20)  # small chips
+FS_TITLE   = s(100)
+FS_SECTION = s(60)
+FS_LABEL   = s(50)
+FS_UNITS   = s(30)
+FS_INPUT   = s(30)
+FS_SELECT  = s(35)
+FS_BUTTON  = s(20)
+FS_BADGE   = s(30)
+FS_RECENT  = s(20)
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
-# header logo default height (can still be changed by URL param "logo")
 DEFAULT_LOGO_H = 60
 
 PRIMARY   = "#8E44AD"
@@ -177,7 +171,6 @@ css(f"""
   }}
   div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
 
-  /* Select font sizes are tied to FS_SELECT */
   .stSelectbox [role="combobox"],
   div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
   div[data-testid="stSelectbox"] div[role="listbox"],
@@ -185,7 +178,6 @@ css(f"""
       font-size:{FS_SELECT}px !important;
   }}
 
-  /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
     height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
@@ -244,13 +236,11 @@ css(f"""
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
-  /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
 
-# Keep header area slim
 st.markdown("""
 <style>
 html, body{ margin:0 !important; padding:0 !important; }
@@ -258,16 +248,12 @@ header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; backg
 header[data-testid="stHeader"] *{ display:none !important; }
 div.stApp{ margin-top:-4rem !important; }
 section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-/* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Hide Streamlit's small +/- buttons on number inputs */
 div[data-testid="stNumberInput"] button { display: none !important; }
-
-/* Also hide browser numeric spinners for consistency */
 div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
 div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
@@ -275,13 +261,10 @@ div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield
 """, unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Decrease the width and increase the height of the model selection box */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 110% !important;  /* keep your current styling */
+    width: 110% !important;
     height: 30px !important;
 }
-
-/* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
     height: 110px !important;
     line-height: 30px !important;
@@ -289,67 +272,36 @@ div[data-testid="stSelectbox"] > div > div {
 </style>
 """, unsafe_allow_html=True)
 
-
 st.markdown("""
 <style>
-/* Adjust the header to eliminate any space at the top */
-header[data-testid="stHeader"] {
-    height: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-}
-
-/* Remove the extra space at the top of the app */
-div.stApp {
-    margin-top: -8rem !important; /* Adjust this value if needed */
-}
-
-/* Adjust the margins and padding for the block container */
-section.main > div.block-container {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
+header[data-testid="stHeader"] { height: 0 !important; padding: 0 !important; background: transparent !important; }
+div.stApp { margin-top: -8rem !important; }
+section.main > div.block-container { padding-top: 0 !important; margin-top: 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 css("""
 <style>
-/* Remove ALL scrolling */
-html, body, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
+html, body, .stApp { overflow: hidden !important; max-height: 100vh !important; max-width: 100vw !important; }
+.stApp > div { max-height: 100vh !important; max-width: 100vw !important; }
+.block-container, .main, section[data-testid="stAppViewContainer"] { overflow: hidden !important; max-height: 100vh !important; max-width: 100vw !important; }
+.page-header-outer { max-width: 100% !important; transform: none !important; }
+[data-testid="column"], [data-testid="stHorizontalBlock"] { max-width: 100% !important; overflow: hidden !important; }
 
-/* Ensure content fits within viewport */
-.stApp > div {
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Prevent any element from causing overflow */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Constrain your specific components */
-.page-header-outer {
-    max-width: 100% !important;
-    transform: none !important;
-}
-
-/* Make sure columns and containers don't overflow */
-[data-testid="column"], [data-testid="stHorizontalBlock"] {
-    max-width: 100% !important;
-    overflow: hidden !important;
-}
-
-/* Keep dark tooltip styling for Altair when rendered via st.altair_chart */
+/* Keep Altair tooltip style */
 .vega-embed .vega-tooltip, .vega-embed .vega-tooltip * {
   font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important;
 }
+</style>
+""")
+
+# --- NEW: gentle shift of the entire interface to the right ---
+APP_LEFT = 80  # <== adjust if you want a bit more/less right shift
+css(f"""
+<style>
+section.main > div.block-container {{
+    padding-left: {APP_LEFT}px !important;
+}}
 </style>
 """)
 
@@ -370,8 +322,7 @@ except Exception:
     except Exception:
         pass
 
-# Defaults (used when sidebar tuning is hidden)
-# (Changed: right_offset now 0 to remove forced empty space; others unchanged)
+# Defaults
 right_offset = 0
 HEADER_X   = 0
 TITLE_LEFT = 35
@@ -386,7 +337,7 @@ if SHOW_TUNING:
         right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
     with st.sidebar:
         st.markdown("### Header position (title & logo)")
-        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
+        HEADER_X = st.number_input("Header X (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
         TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
         TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
         LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
@@ -395,7 +346,7 @@ if SHOW_TUNING:
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
 # =============================================================================
-# Step #3: Title + adjustable logo position and size (HEADER ONLY)
+# Step #3: Title + adjustable logo
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -418,7 +369,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# Step #4: Model loading (robust; tolerates different names/paths)
+# Step #4: Model loading
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -589,7 +540,6 @@ with left:
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
 
-    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="large")
 
     with c1:
@@ -608,20 +558,19 @@ with left:
     css("</div>")
     css("</div>")
 
-
 # =============================================================================
 # Step #6: Right panel
 # =============================================================================
-# (Changed: remove horizontal push on the hero image)
-HERO_X, HERO_Y, HERO_W = 0, 5, 300
+# keep logo but ensure it's not hidden (z-index and slight top offset)
+HERO_X, HERO_Y, HERO_W = 0, 12, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 460  # used as height; width will expand to container
+CHART_W = 360  # smaller chart (both width & height driven by this)
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
+        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left; z-index: 5;">
             <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
         </div>
         """,
@@ -676,9 +625,10 @@ with right:
         dl_slot = st.empty()
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
+                                mime="text/csv", use_container_width=False, key="dl_csv_main")
 
-    col1, col2 = st.columns([0.01, 20])
+    col1, col2 = st.columns([0.01, 12])  # smaller chart column
     with col2:
         chart_slot = st.empty()
 
@@ -750,7 +700,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     return pd.DataFrame(rows)
 
 def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
-                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
+                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 360):
     import altair as alt
     selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
     AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
@@ -767,23 +717,20 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5], labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
                                   labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
                                   labelFlush=True, labelFlushOffset=0)),
-        ).properties(width='container', height=size)
+        ).properties(width=size, height=size)
     )
 
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width='container', height=size)
+    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
 
     k = 3
-    if not curve.empty:
-        curve_points = curve.iloc[::k].copy()
-    else:
-        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
+    curve_points = curve.iloc[::k].copy() if not curve.empty else pd.DataFrame({"θ": [], "Predicted_DI": []})
 
     points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
         x="θ:Q", y="Predicted_DI:Q",
         tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                  alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
-    ).add_params(selection).properties(width='container', height=size)
+    ).add_params(selection).properties(width=size, height=size)
 
     rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
     text_layer = alt.Chart(curve).mark_text(align='left', dx=8, dy=-8, fontSize=14, fontWeight='bold', color='red').encode(
@@ -795,8 +742,8 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
              .configure_axis(domain=True, ticks=True)
              .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
 
-    # (Changed) Let Streamlit handle responsive width so the chart fills the right column
-    st.altair_chart(chart, use_container_width=True)
+    # fixed small chart (no container width)
+    st.altair_chart(chart, use_container_width=False)
 
 # =============================================================================
 # Step #8: Predict on click; always render curve
