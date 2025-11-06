@@ -382,27 +382,22 @@ html, body, .stApp {
 
 
 
-# Add this at the end of your script
-st.components.v1.html("""
-<script>
-// Disable zooming
-document.addEventListener('wheel', function(e) {
-    if (e.ctrlKey) {
-        e.preventDefault();
-        return false;
-    }
-}, { passive: false });
 
-// Disable keyboard zoom
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) {
-        e.preventDefault();
-        return false;
-    }
-});
-</script>
+css("""
+<style>
+/* Keep everything exactly in place when zooming */
+.stApp, .block-container, section.main, .main .block-container {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Prevent any element from moving */
+* {
+    position: relative !important;
+    transform: none !important;
+}
+</style>
 """)
-
 
 
 
@@ -998,6 +993,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
