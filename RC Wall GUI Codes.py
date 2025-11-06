@@ -94,174 +94,153 @@ def pfind(candidates):
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
-# Step #2: Page config + COLORS + font knobs
-# =============================================================================
-st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
-
-# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
-SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
-
-s = lambda v: int(round(v * SCALE_UI))
-
-FS_TITLE   = s(100)  # page title
-FS_SECTION = s(60)  # section headers
-FS_LABEL   = s(50)  # input & select labels (katex included)
-FS_UNITS   = s(30)  # math units in labels
-FS_INPUT   = s(30)  # number input value
-FS_SELECT  = s(35)  # dropdown value/options
-FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
-FS_BADGE   = s(30)  # predicted badge
-FS_RECENT  = s(20)  # small chips
-INPUT_H    = max(32, int(FS_INPUT * 2.0))
-
-# header logo default height (can still be changed by URL param "logo")
-DEFAULT_LOGO_H = 60
-
-PRIMARY   = "#8E44AD"
-SECONDARY = "#f9f9f9"
-INPUT_BG     = "#ffffff"
-INPUT_BORDER = "#e6e9f2"
-LEFT_BG      = "#e0e4ec"
-
-# =============================================================================
 # Step #2.1: Global UI CSS (layout, fonts, inputs, theme)
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0rem; }}
-  h1 {{ font-size:{FS_TITLE}vw !important; margin:0 rem 0 !important; }}
+  /* Global styles for responsiveness */
+  html, body {{
+    margin: 0;
+    padding: 0;
+    font-size: 16px;  /* Base font size */
+  }}
+
+  /* Make the form and other elements scale */
+  .block-container {{
+    padding-top: 0rem;
+    max-width: 100% !important;
+    overflow-x: hidden;
+  }}
+
+  h1 {{
+    font-size: 6vw;  /* Responsive font size for title */
+    margin: 0 !important;
+  }}
 
   .section-header {{
-    font-size:{FS_SECTION}vw !important;
-    font-weight:700; margin:.35rem 0;
+    font-size: 4vw;  /* Responsive font size for section headers */
+    font-weight: 700;
+    margin: .35rem 0;
   }}
 
   .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}vw !important; font-weight:700;
+    font-size: 3vw;  /* Scalable font for labels */
+    font-weight: 700;
   }}
-  .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}vw !important; line-height:1.2 !important; }}
-  .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
-  .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}vw !important; }}
+  .stNumberInput label .katex, .stSelectbox label .katex {{
+    font-size: 3vw;
+    line-height: 1.2 !important;
+  }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}vw !important;
-      height:{INPUT_H}vh !important;
-      line-height:{INPUT_H - 8}vh !important;
-      font-weight:600 !important;
-      padding:10px 12px !important;
+      font-size: 3.5vw;
+      height: 10vh;
+      padding: 10px 12px !important;
   }}
 
   div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
-      background:{INPUT_BG} !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-      transition:border-color .15s ease, box-shadow .15s ease !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-      border-color:{PRIMARY} !important;
-      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
+      background: #ffffff !important;
+      border: 1px solid #e6e9f2 !important;
+      border-radius: 12px !important;
+      box-shadow: 0 1px 2px rgba(16,24,40,.06) !important;
   }}
 
   div[data-testid="stNumberInput"] button {{
-      background:#ffffff !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:10px !important;
-      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
-  }}
-  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
-
-  /* Select font sizes are tied to FS_SELECT */
-  .stSelectbox [role="combobox"],
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-  div[data-testid="stSelectbox"] div[role="listbox"],
-  div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}vw !important;
+      background: #ffffff !important;
+      border: 1px solid #e6e9f2 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 1px 1px rgba(16,24,40,.05) !important;
   }}
 
-  /* Buttons use FS_BUTTON, no wrapping */
+  /* Scale dropdown inputs */
+  .stSelectbox [role="combobox"], div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{
+      font-size: 3vw !important;
+  }}
+
+  /* Adjust buttons with proper sizing */
   div.stButton > button {{
-    font-size:{FS_BUTTON}vw !important;
-    height:{max(42, int(round(FS_BUTTON*1.45)))}vh !important;
-    line-height:{max(36, int(round(FS_BUTTON*1.15)))}vh !important;
-    white-space:nowrap !important;
-    color:#fff !important;
-    font-weight:700; border:none !important; border-radius:8px !important;
-    background:#4CAF50 !important;
+    font-size: 3vw;
+    height: 8vh;
+    line-height: 7vh;
+    white-space: nowrap !important;
+    color: #fff !important;
+    font-weight: 700;
+    border: none !important;
+    border-radius: 8px !important;
+    background: #4CAF50 !important;
   }}
-  div.stButton > button:hover {{ filter: brightness(0.95); }}
 
-  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-  button[key="reset_btn"] {{ background:#2196F3 !important; }}
-  button[key="clear_btn"] {{ background:#f44336 !important; }}
+  div.stButton > button:hover {{
+    filter: brightness(0.95);
+  }}
 
   .form-banner {{
-    text-align:center;
+    text-align: center;
     background: linear-gradient(90deg, #0E9F6E, #84CC16);
     color: #fff;
-    padding:.45rem .75rem;
-    border-radius:10px;
-    font-weight:800;
-    font-size:{FS_SECTION + 4}vw;
-    margin:.1rem 0 !important;
+    padding: .45rem .75rem;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 4vw;
+    margin: .1rem 0 !important;
     transform: translateY(-10px);
   }}
 
   .prediction-result {{
-    font-size:{FS_BADGE}vw !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
+    font-size: 3vw !important;
+    font-weight: 700;
+    color: #2e86ab;
+    background: #f1f3f4;
+    padding: .6rem;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: .6rem;
   }}
+
   .recent-box {{
-    font-size:{FS_RECENT}vw !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+    font-size: 2vw !important;
+    background: #f8f9fa;
+    padding: .5rem;
+    margin: .25rem 0;
+    border-radius: 5px;
+    border-left: 4px solid #4CAF50;
+    font-weight: 600;
+    display: inline-block;
   }}
 
-  #compact-form{{ max-width:900px; margin:0 auto; }}
-  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
-  #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
-  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
-
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
+  /* Ensure the form fields and button row are displayed properly */
+  #compact-form {{
+    max-width: 100% !important;
+    margin: 0 auto;
   }}
 
-  [data-baseweb="popover"], [data-baseweb="tooltip"],
-  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background:#000 !important; color:#fff !important; border-radius:8px !important;
-      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}vw !important; font-weight:500 !important;
+  /* Adjust chart and other components to scale */
+  .vega-embed, .vega-embed .chart-wrapper {{
+    max-width: 100% !important;
   }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
-  /* Keep consistent sizes for model select label and buttons */
-  label[for="model_select_compact"] {{ font-size:{FS_LABEL}vw !important; font-weight:bold !important; }}
-  #action-row {{ display:flex; align-items:center; gap:10px; }}
-</style>
-""")
+  /* Adjust layout for model selection and buttons */
+  #action-row {{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }}
 
-# Keep header area slim
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+  /* Adjust inputs to make sure they don't overflow */
+  div[data-testid="stNumberInput"] input[type="number"] {{
+    max-width: 100% !important;
+  }}
+
+  /* For the logo in the header, adjust its size */
+  .page-header__logo {{
+    height: 8vh !important;
+    width: auto;
+  }}
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -959,4 +938,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
