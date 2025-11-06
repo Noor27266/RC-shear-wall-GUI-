@@ -124,16 +124,27 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
-# Step #2.1: Global UI CSS (layout, fonts, inputs, theme)
+# Step #2.1: Global UI CSS (layout, fonts, inputs, theme) - FIXED FOR FULL PAGE
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0rem; }}
+  .block-container {{ 
+    padding-top: 0rem !important; 
+    padding-bottom: 0rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+  }}
+  
+  .stApp {{
+    margin-top: -2rem !important;
+  }}
+
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
     font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
+    font-weight:700; margin:.2rem 0 !important;
   }}
 
   .stNumberInput label, .stSelectbox label {{
@@ -209,8 +220,8 @@ css(f"""
     border-radius:10px;
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
-    margin:.1rem 0 !important;
-    transform: translateY(-10px);
+    margin:.5rem 0 !important;
+    transform: none !important;
   }}
 
   .prediction-result {{
@@ -222,19 +233,54 @@ css(f"""
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
   }}
 
-  #compact-form{{ max-width:900px; margin:0 auto; }}
-  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  /* FIXED: Make form use full width and remove constraints */
+  #compact-form{{ 
+    max-width: none !important; 
+    width: 100% !important;
+    margin:0 !important;
+  }}
+  
+  #compact-form [data-testid="stHorizontalBlock"]{{ 
+    gap:.5rem !important; 
+    flex-wrap:nowrap !important;
+    justify-content: space-between !important;
+  }}
+  
+  #compact-form [data-testid="column"]{{ 
+    width: auto !important; 
+    max-width: none !important; 
+    flex: 1 !important; 
+    padding:0 0.5rem !important;
+  }}
+  
   #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
-  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+  #compact-form [data-testid="stNumberInput"] *{{ 
+    max-width:none !important; 
+    box-sizing:border-box !important;
+    width: 100% !important;
+  }}
+  
+  #compact-form [data-testid="stNumberInput"]{{ 
+    display:inline-flex !important; 
+    width:100% !important; 
+    min-width:0 !important; 
+    flex:1 !important; 
+    margin-bottom:.2rem !important;
+  }}
+  
+  #button-row {{ 
+    display:flex !important; 
+    gap:30px !important; 
+    margin:10px 0 6px 0 !important; 
+    align-items:center !important;
+  }}
 
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
+      margin: 0.5rem 0 !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -247,6 +293,74 @@ css(f"""
   /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
+
+  /* FIXED: Remove header transforms and positioning that create gaps */
+  .page-header-outer, .page-header, .page-header__title, .page-header__logo {{
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+  }}
+
+  .page-header {{ 
+    display:flex !important; 
+    align-items:center !important; 
+    justify-content:flex-start !important; 
+    gap:20px !important; 
+    margin:0.5rem 0 !important; 
+    padding:0 !important;
+  }}
+  
+  .page-header__title {{ 
+    font-size:{FS_TITLE}px !important; 
+    font-weight:800 !important; 
+    margin:0 !important;
+    transform: none !important;
+  }}
+  
+  .page-header__logo {{ 
+    height:{int(DEFAULT_LOGO_H)}px !important; 
+    width:auto !important; 
+    display:block !important;
+    transform: none !important;
+  }}
+
+  /* FIXED: Remove all scrolling constraints */
+  html, body, .stApp {{
+      overflow: auto !important;
+      max-height: none !important;
+      max-width: none !important;
+  }}
+
+  /* Ensure content fits within viewport */
+  .stApp > div {{
+      max-height: none !important;
+      max-width: none !important;
+  }}
+
+  /* Prevent any element from causing overflow */
+  .block-container, .main, section[data-testid="stAppViewContainer"] {{
+      overflow: visible !important;
+      max-height: none !important;
+      max-width: none !important;
+  }}
+
+  /* Make sure columns and containers don't overflow */
+  [data-testid="column"], [data-testid="stHorizontalBlock"] {{
+      max-width: none !important;
+      overflow: visible !important;
+  }}
+
+  /* FIXED: Compact the input layout */
+  .stNumberInput, .stSelectbox {{
+    margin-bottom: 0.3rem !important;
+  }}
+
+  /* FIXED: Remove the artificial spacing in right panel */
+  div[data-testid="column"]:nth-child(2) {{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }}
 </style>
 """)
 
@@ -262,6 +376,8 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
+
+# Hide number input spinners
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -273,49 +389,52 @@ div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appe
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
 </style>
 """, unsafe_allow_html=True)
+
+# Compact styling for prediction result and download button
 st.markdown("""
 <style>
 /* Increase the width of the Predicted Damage Index (DI) box */
 .prediction-result {
-  width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 250px !important;  /* Slightly increase the width */
-  padding: 4px 12px !important;  /* Maintain compact padding */
-  font-size: 0.9em !important;  /* Smaller text inside DI box */
-  white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+  width: auto !important;
+  max-width: 250px !important;
+  padding: 4px 12px !important;
+  font-size: 0.9em !important;
+  white-space: nowrap !important;
+  margin-right: 15px !important;
 }
 /* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left:-100px !important;  /* Move it slightly to the left */
+  margin-left: -100px !important;
 }
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
-  padding: 3px 8px !important;  /* Smaller button padding */
-  font-size: 8px !important;  /* Smaller font size */
-  height: auto !important;  /* Adjust height according to content */
-  line-height: 1.1 !important;  /* Adjust line height */
+  padding: 3px 8px !important;
+  font-size: 8px !important;
+  height: auto !important;
+  line-height: 1.1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
+# Compact model selection box
 st.markdown("""
 <style>
 /* Decrease the width and increase the height of the model selection box */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
-    height: 30px !important;  /* Increase the height (length) of the select box */
+    width: 100% !important;
+    height: 30px !important;
 }
 
 /* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
-    height: 110px !important;  /* Set the height of the dropdown items */
-    line-height: 30px !important;  /* Make the items vertically centered */
+    height: 110px !important;
+    line-height: 30px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-
+# Remove extra top space
 st.markdown("""
 <style>
 /* Adjust the header to eliminate any space at the top */
@@ -327,7 +446,7 @@ header[data-testid="stHeader"] {
 
 /* Remove the extra space at the top of the app */
 div.stApp {
-    margin-top: -8rem !important; /* Adjust this value if needed */
+    margin-top: -8rem !important;
 }
 
 /* Adjust the margins and padding for the block container */
@@ -338,41 +457,50 @@ section.main > div.block-container {
 </style>
 """, unsafe_allow_html=True)
 
+# FIXED: Remove scrolling constraints and allow natural flow
 css("""
 <style>
-/* Remove ALL scrolling */
+/* Allow natural scrolling */
 html, body, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
+    overflow: auto !important;
+    max-height: none !important;
+    max-width: none !important;
 }
 
 /* Ensure content fits within viewport */
 .stApp > div {
-    max-height: 100vh !important;
-    max-width: 100vw !important;
+    max-height: none !important;
+    max-width: none !important;
 }
 
 /* Prevent any element from causing overflow */
 .block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
+    overflow: visible !important;
+    max-height: none !important;
+    max-width: none !important;
 }
 
-/* Constrain your specific components */
+/* Make sure columns and containers use available space */
+[data-testid="column"], [data-testid="stHorizontalBlock"] {
+    max-width: none !important;
+    overflow: visible !important;
+}
+
+/* Ensure the page header doesn't create gaps */
 .page-header-outer {
     max-width: 100% !important;
     transform: none !important;
-}
-
-/* Make sure columns and containers don't overflow */
-[data-testid="column"], [data-testid="stHorizontalBlock"] {
-    max-width: 100% !important;
-    overflow: hidden !important;
+    margin: 0.5rem 0 !important;
 }
 </style>
 """)
+
+
+
+
+
+
+
 
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
@@ -951,3 +1079,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
