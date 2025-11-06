@@ -601,7 +601,7 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-left, right = st.columns([1, 2.5], gap="medium")
+left, right = st.columns([1, 2.8], gap="small")
 
 with left:
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -632,13 +632,13 @@ with left:
 # =============================================================================
 # Step #6: Right panel
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 300
-MODEL_X, MODEL_Y = 100, -2
-CHART_W = 500  # Increased from 300 to fill more space
+HERO_X, HERO_Y, HERO_W = 10, 5, 250  # Reduced HERO_X from 100 to 10, smaller logo
+MODEL_X, MODEL_Y = 10, -2
+CHART_W = 450  # Increased to fill space
 
 with right:
-    # Remove or minimize the empty space - CHANGED THIS LINE
-    st.markdown(f"<div style='height:5px'></div>", unsafe_allow_html=True)
+    # COMPLETELY REMOVE the empty space - this was the main problem
+    # st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     
     st.markdown(
         f"""
@@ -651,21 +651,78 @@ with right:
 
     st.markdown(""" 
     <style>
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
+    /* Make right panel use all available space */
+    div[data-testid="column"]:nth-child(2) {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
     }
-    [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-    div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }
-    div[role="option"] { color: black !important; font-size: {FS_SELECT}px !important; }
-    div.stButton > button { height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }
-    #action-row { display:flex; align-items:center; gap: 1px; }
+    
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: 1px solid #e6e9f2 !important; 
+        box-shadow: none !important; 
+        background: #fff !important;
+        width: 100% !important;
+    }
+    
+    [data-baseweb="popover"], [data-baseweb="popover"] > div { 
+        background: transparent !important; 
+        box-shadow: none !important; 
+        border: none !important; 
+    }
+    
+    div[data-testid="stSelectbox"] > div > div { 
+        height: 40px !important; 
+        display:flex !important; 
+        align-items:center !important; 
+        margin-top: 0px !important;
+    }
+    
+    div[data-testid="stSelectbox"] label p { 
+        font-size: {FS_LABEL}px !important; 
+        color: black !important; 
+        font-weight: bold !important; 
+        margin-bottom: 5px !important;
+    }
+    
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { 
+        color: black !important; 
+        background-color: #D3D3D3 !important; 
+        font-size: {FS_SELECT}px !important; 
+    }
+    
+    div[role="option"] { 
+        color: black !important; 
+        font-size: {FS_SELECT}px !important; 
+    }
+    
+    div.stButton > button { 
+        height: {max(35, int(round(FS_BUTTON*1.3)))}px !important; 
+        display:flex !important; 
+        align-items:center !important; 
+        justify-content:center !important;
+        margin: 2px 0 !important;
+    }
+    
+    #action-row { 
+        display:flex !important; 
+        align-items:center !important; 
+        gap: 5px !important;
+        margin: 5px 0 !important;
+    }
+    
+    /* Make chart container use full width */
+    .vega-embed {
+        width: 100% !important;
+        max-width: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
-    row = st.columns([0.8, 2.1, 2.1, 2.1], gap="small")
+    
+    # More compact column layout
+    row = st.columns([1, 1.2, 1.2, 1.2], gap="small")
 
     with row[0]:
         available = set(model_registry.keys())
@@ -677,8 +734,8 @@ with right:
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
     with row[1]:
-        st.markdown("<div id='three-btns' style='margin-top:35px;'>", unsafe_allow_html=True)
-        b1, b2, b3 = st.columns([1, 1, 1.2], gap="small")
+        st.markdown("<div id='three-btns' style='margin-top:25px;'>", unsafe_allow_html=True)
+        b1, b2, b3 = st.columns([1, 1, 1], gap="small")
         with b1:
             submit = st.button("Calculate", key="calc_btn")
         with b2:
@@ -690,18 +747,19 @@ with right:
                 st.success("All predictions cleared.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
+    # More compact result area
+    badge_col, dl_col, _spacer = st.columns([4, 3, 5], gap="small")
     with badge_col:
         pred_banner = st.empty()
     with dl_col:
         dl_slot = st.empty()
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+        dl_slot.download_button("📂 Download CSV", data=csv, file_name="di_predictions.csv", 
+                               mime="text/csv", use_container_width=False, key="dl_csv_main")
 
-    col1, col2 = st.columns([0.01, 20])
-    with col2:
-        chart_slot = st.empty()
+    # Chart area - use full width
+    chart_slot = st.empty()
 
 # =============================================================================
 # Step #7: Prediction utilities & curve helpers
@@ -953,6 +1011,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
