@@ -77,7 +77,7 @@ def pfind(candidates):
         if not root.exists():
             continue
         for sub in root.iterdir():
-            if sub is_dir():
+            if sub.is_dir():
                 for c in candidates:
                     p = sub / c
                     if p.exists():
@@ -262,7 +262,6 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
-
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -274,22 +273,48 @@ div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appe
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Increase the width of the Predicted Damage Index (DI) box */
+.prediction-result {
+  width: auto !important;  /* Ensure the width is not stretched */
+  max-width: 250px !important;  /* Slightly increase the width */
+  padding: 4px 12px !important;  /* Maintain compact padding */
+  font-size: 0.9em !important;  /* Smaller text inside DI box */
+  white-space: nowrap !important;  /* Prevent wrapping of text */
+  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+}
+/* Move the Download CSV button closer to the DI box */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left:-100px !important;  /* Move it slightly to the left */
+}
+div[data-testid="stDownloadButton"] button {
+  white-space: nowrap !important;
+  padding: 3px 8px !important;  /* Smaller button padding */
+  font-size: 8px !important;  /* Smaller font size */
+  height: auto !important;  /* Adjust height according to content */
+  line-height: 1.1 !important;  /* Adjust line height */
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
 /* Decrease the width and increase the height of the model selection box */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 110% !important;
-    height: 30px !important;
+    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
+    height: 30px !important;  /* Increase the height (length) of the select box */
 }
 
 /* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
-    height: 110px !important;
-    line-height: 30px !important;
+    height: 110px !important;  /* Set the height of the dropdown items */
+    line-height: 30px !important;  /* Make the items vertically centered */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 st.markdown("""
 <style>
@@ -332,7 +357,7 @@ html, body, .stApp {
 .block-container, .main, section[data-testid="stAppViewContainer"] {
     overflow: hidden !important;
     max-height: 100vh !important;
-    /* IMPORTANT: removed max-width:100vw here so centering can work */
+    max-width: 100vw !important;
 }
 
 /* Constrain your specific components */
@@ -925,16 +950,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
-
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-# ===== Final: Center the whole interface (must be last to win specificity) =====
-css("""
-<style>
-section.main > div.block-container {
-    max-width: 1280px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-</style>
-""")
