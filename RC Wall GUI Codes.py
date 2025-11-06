@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Keep these notes internal (Streamlit won't render variables)
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
-- Loaders, inputs, chart, predictions, CSV, tooltips, logo controls
-- Chart rendered after prediction via placeholder
-- Bigger number inputs
-- θ widget defaults to maximum
-- DI–θ curve sampled every 0.1 across [0, θ_max] + recent prediction points
 """
 
 # =============================================================================
@@ -15,14 +9,13 @@ RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 # =============================================================================
 import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
-# Optional force CPU if GPU/CUDA slows things down:
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import streamlit as st
 import pandas as pd
 import numpy as np
 import base64, json
 from pathlib import Path
+from glob import glob
 
 # ML libs
 import xgboost as xgb
@@ -30,57 +23,102 @@ import joblib
 import catboost
 import lightgbm as lgb
 
-# --- Lazy TensorFlow/Keras import helper (avoid heavy import on startup) ---
-def _lazy_tf_load_model(path: str):
-    """
-    Import TensorFlow Keras only when needed and load a .keras/.h5 model.
-    Keeps startup light and avoids TF native init issues if ANN models aren't used.
-    """
-    from importlib import import_module
-    load_model = import_module("tensorflow.keras.models").load_model
-    return load_model(path)
+# --- Keras compatibility loader (PS/MLP only) ---
+try:
+    from tensorflow.keras.models import load_model as _tf_load_model
+except Exception:
+    _tf_load_model = None
+try:
+    from keras.models import load_model as _k3_load_model   # works when keras==3 is present
+except Exception:
+    _k3_load_model = None
+
+def _load_keras_model(path):
+    """Try tf.keras first, then keras (Keras 3)."""
+    errs = []
+    if _tf_load_model is not None:
+        try:
+            return _tf_load_model(path)
+        except Exception as e:
+            errs.append(f"tf.keras: {e}")
+    if _k3_load_model is not None:
+        try:
+            return _k3_load_model(path)
+        except Exception as e:
+            errs.append(f"keras: {e}")
+    raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
+
+# --- session defaults (prevents AttributeError on first run) ---
+st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
 # Small helpers
 # =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
+def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
+def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
-def b64(path: Path) -> str:
-    return base64.b64encode(path.read_bytes()).decode("ascii")
-
-def b64_safe(path: Path) -> str:
-    """Return base64 of file if it exists; otherwise empty string (prevents FileNotFoundError)."""
-    try:
-        if path.exists():
-            return base64.b64encode(path.read_bytes()).decode("ascii")
-    except Exception:
-        pass
-    return ""
-
-def dv(R, key, proposed):
-    lo, hi = R[key]
-    return float(max(lo, min(proposed, hi)))
+# ---------- path helper ----------
+BASE_DIR = Path(__file__).resolve().parent
+def pfind(candidates):
+    for c in candidates:
+        p = Path(c)
+        if p.exists():
+            return p
+    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
+    for root in roots:
+        if not root.exists():
+            continue
+        for c in candidates:
+            p = root / c
+            if p.exists():
+                return p
+    for root in [BASE_DIR, Path("/mnt/data")]:
+        if not root.exists():
+            continue
+        for sub in root.iterdir():
+            if sub.is_dir():
+                for c in candidates:
+                    p = sub / c
+                    if p.exists():
+                        return p
+    pats = []
+    for c in candidates:
+        for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
+            if root.exists():
+                pats.append(str(root / "**" / c))
+    for pat in pats:
+        matches = glob(pat, recursive=True)
+        if matches:
+            return Path(matches[0])
+    raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
 # Step #2: Page config + COLORS + font knobs
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# ---------- simple knobs ----------
-FS_TITLE   = 50
-FS_SECTION = 35
-FS_LABEL   = 30
-FS_UNITS   = 18
-FS_INPUT   = 20
-FS_SELECT  = 50
-FS_BUTTON  = 55
-FS_BADGE   = 25
-FS_RECENT  = 16
-INPUT_H    = max(32, int(FS_INPUT * 2.1))
+# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
+
+s = lambda v: int(round(v * SCALE_UI))
+
+FS_TITLE   = s(100)  # page title
+FS_SECTION = s(60)  # section headers
+FS_LABEL   = s(50)  # input & select labels (katex included)
+FS_UNITS   = s(30)  # math units in labels
+FS_INPUT   = s(30)  # number input value
+FS_SELECT  = s(35)  # dropdown value/options
+FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
+FS_BADGE   = s(30)  # predicted badge
+FS_RECENT  = s(20)  # small chips
+INPUT_H    = max(32, int(FS_INPUT * 2.0))
+
+# header logo default height (can still be changed by URL param "logo")
+DEFAULT_LOGO_H = 60
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
-
 INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
@@ -98,7 +136,6 @@ css(f"""
     font-weight:700; margin:.35rem 0;
   }}
 
-  /* labels (plain + math) */
   .stNumberInput label, .stSelectbox label {{
     font-size:{FS_LABEL}px !important; font-weight:700;
   }}
@@ -107,11 +144,9 @@ css(f"""
   .stNumberInput label .katex .fontsize-ensurer,
   .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
-  /* units only */
   .stNumberInput label .katex .mathrm,
   .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
-  /* input sizing */
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
       font-size:{FS_INPUT}px !important;
@@ -121,7 +156,6 @@ css(f"""
       padding:10px 12px !important;
   }}
 
-  /* clean input boxes */
   div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
       background:{INPUT_BG} !important;
       border:1px solid {INPUT_BORDER} !important;
@@ -129,55 +163,44 @@ css(f"""
       box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
       transition:border-color .15s ease, box-shadow .15s ease !important;
   }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{
-      border-color:#d6dced !important;
-  }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
   div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
       border-color:{PRIMARY} !important;
       box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
   }}
 
-  /* + / - buttons */
   div[data-testid="stNumberInput"] button {{
       background:#ffffff !important;
       border:1px solid {INPUT_BORDER} !important;
       border-radius:10px !important;
       box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
   }}
-  div[data-testid="stNumberInput"] button:hover {{
-      border-color:#cbd3e5 !important;
+  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
+
+  /* Select font sizes are tied to FS_SELECT */
+  .stSelectbox [role="combobox"],
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
+  div[data-testid="stSelectbox"] div[role="listbox"],
+  div[data-testid="stSelectbox"] div[role="option"] {{
+      font-size:{FS_SELECT}px !important;
   }}
 
-  .stSelectbox [role="combobox"] {{ font-size:{FS_SELECT}px !important; }}
-
-  /* =============================================================================
-     Step #2.1.a: BASE BUTTON STYLES
-     ============================================================================= */
+  /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
-    height:40px !important;
+    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+    white-space:nowrap !important;
     color:#fff !important;
     font-weight:700; border:none !important; border-radius:8px !important;
-    background: #4CAF50 !important; /* Default green */
+    background:#4CAF50 !important;
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
-  /* =============================================================================
-     Step #2.1.b: SPECIFIC BUTTON COLORS
-     ============================================================================= */
-  button[key="calc_btn"] {{
-    background: #4CAF50 !important; /* Green */
-  }}
-  button[key="reset_btn"] {{
-    background: #2196F3 !important; /* Blue */
-  }}
-  button[key="clear_btn"] {{
-    background: #f44336 !important; /* Red */
-  }}
+  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
+  button[key="reset_btn"] {{ background:#2196F3 !important; }}
+  button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-  /* =============================================================================
-     Step #2.1.c: Banner, badges, and recent-predictions chips
-     ============================================================================= */
   .form-banner {{
     text-align:center;
     background: linear-gradient(90deg, #0E9F6E, #84CC16);
@@ -199,9 +222,6 @@ css(f"""
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
   }}
 
-  /* =============================================================================
-     Step #2.1.d: Compact inputs grid sizing
-     ============================================================================= */
   #compact-form{{ max-width:900px; margin:0 auto; }}
   #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
   #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
@@ -210,246 +230,215 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* =============================================================================
-     Step #2.1.e: Panel backgrounds and shadows
-     ============================================================================= */
-  .block-container [data-testid="stHorizontalBlock"] > div {{
-      background: transparent !important;
-      box-shadow: none !important;
-  }}
-
-  /* LEFT panel background */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
   }}
-  .block-container [data-testid="stHorizontalBlock"]:has(.form-banner) > div:not(:has(.form-banner)) > div {{
-      padding-top:16px !important;
-  }}
 
-  /* =============================================================================
-     Step #2.1.f: Tooltips style
-     ============================================================================= */
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background: #000 !important;
-      color: #fff !important;
-      border-radius: 8px !important;
-      padding: 6px 10px !important;
-      font-size: 24px !important;
-      font-weight: 500 !important;
+      background:#000 !important; color:#fff !important; border-radius:8px !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
   }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{
-      color: #fff !important;
-  }}
+  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
-  /* =============================================================================
-     Step #2.1.g: Model select sizing (label, values, options)
-     ============================================================================= */
-  label[for="model_select_compact"] {{
-    font-size: 50px !important;
-    font-weight: bold !important;
-  }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child {{
-    font-size: 40px !important;
-  }}
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] {{
-    font-size: 35px !important;
-  }}
-
-  /* =============================================================================
-     Step #2.1.h: Global button sizing + action row
-     ============================================================================= */
-  div.stButton > button {{
-    font-size: 35px !important;
-    font-weight: bold !important;
-    height: 50px !important;
-  }}
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
-  .stSelectbox, .stButton {{ font-size:35px !important; }}
 </style>
 """)
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# =============================================================================
-# Step #2.2: Left inputs wrapper vertical offset (fine tuning position)
-# =============================================================================
-css("""
+# Keep header area slim
+st.markdown("""
 <style>
-#leftwrap {
-  position: relative;
-  top: -80px;
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Hide Streamlit's small +/- buttons on number inputs */
+div[data-testid="stNumberInput"] button { display: none !important; }
+
+/* Also hide browser numeric spinners for consistency */
+div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Increase the width of the Predicted Damage Index (DI) box */
+.prediction-result {
+  width: auto !important;  /* Ensure the width is not stretched */
+  max-width: 250px !important;  /* Slightly increase the width */
+  padding: 4px 12px !important;  /* Maintain compact padding */
+  font-size: 0.9em !important;  /* Smaller text inside DI box */
+  white-space: nowrap !important;  /* Prevent wrapping of text */
+  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
 }
-</style>
-""")
-
-# =============================================================================
-# Step #2.3: Move only the inputs grid (not the purple banner)
-# =============================================================================
-css("""
-<style>
-/* Move only the inputs grid (not the purple banner) */
-.block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner)
-  [data-testid="stHorizontalBlock"] {
-    position: relative !important;
-    top: -60px !important;
-}
-</style>
-""")
-
-# =============================================================================
-# Step #2.4: Keep DI badge on one line (align with buttons)
-# =============================================================================
-css("""
-<style>
-.prediction-result{
-  white-space: nowrap !important;
+/* Move the Download CSV button closer to the DI box */
+div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  width: auto !important;
-  line-height: 1.2 !important;
-  margin-top: 0 !important;
+  margin-left:-100px !important;  /* Move it slightly to the left */
+}
+div[data-testid="stDownloadButton"] button {
+  white-space: nowrap !important;
+  padding: 3px 8px !important;  /* Smaller button padding */
+  font-size: 8px !important;  /* Smaller font size */
+  height: auto !important;  /* Adjust height according to content */
+  line-height: 1.1 !important;  /* Adjust line height */
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+/* Decrease the width and increase the height of the model selection box */
+div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
+    height: 30px !important;  /* Increase the height (length) of the select box */
+}
+
+/* Ensure the options inside are also displayed nicely */
+div[data-testid="stSelectbox"] > div > div {
+    height: 110px !important;  /* Set the height of the dropdown items */
+    line-height: 30px !important;  /* Make the items vertically centered */
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<style>
+/* Adjust the header to eliminate any space at the top */
+header[data-testid="stHeader"] {
+    height: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* Remove the extra space at the top of the app */
+div.stApp {
+    margin-top: -8rem !important; /* Adjust this value if needed */
+}
+
+/* Adjust the margins and padding for the block container */
+section.main > div.block-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+css("""
+<style>
+/* Remove ALL scrolling */
+html, body, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Ensure content fits within viewport */
+.stApp > div {
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Prevent any element from causing overflow */
+.block-container, .main, section[data-testid="stAppViewContainer"] {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Constrain your specific components */
+.page-header-outer {
+    max-width: 100% !important;
+    transform: none !important;
+}
+
+/* Make sure columns and containers don't overflow */
+[data-testid="column"], [data-testid="stHorizontalBlock"] {
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 </style>
 """)
 
 # =============================================================================
-# Step #2.5: Right panel vertical offset (slider)
-#          Positive = move down, Negative = move up
+# NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
-with st.sidebar:
-    right_offset = st.slider(
-        "Right panel vertical offset (px)",
-        min_value=-200, max_value=1000, value=50, step=2,
-        help="Move the entire right side up/down"
-    )
+def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
+SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
+try:
+    qp = st.query_params
+    if "tune" in qp:
+        SHOW_TUNING = _is_on(qp.get("tune"))
+except Exception:
+    try:
+        qp = st.experimental_get_query_params()
+        if "tune" in qp:
+            SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
+    except Exception:
+        pass
+
+# Defaults (used when sidebar tuning is hidden)
+right_offset = 80
+HEADER_X   = 0
+TITLE_LEFT = 35
+TITLE_TOP  = 60
+LOGO_LEFT  = 80
+LOGO_TOP   = 60
+LOGO_SIZE  = 50
+_show_recent = False
+
+if SHOW_TUNING:
+    with st.sidebar:
+        right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
+    with st.sidebar:
+        st.markdown("### Header position (title & logo)")
+        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
+        TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
+        TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
+        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
+        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
+        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
+        _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
 # =============================================================================
 # Step #3: Title + adjustable logo position and size (HEADER ONLY)
 # =============================================================================
-
-# Load logo (exact file name: TJU logo.png in same folder)
 try:
-    _logo_path = Path(__file__).resolve().parent / "TJU logo.png"
-    _b64_logo = b64_safe(_logo_path)  # safe (no crash if missing)
+    _logo_path = BASE_DIR / "TJU logo.png"
+    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
-    _b64_logo = ""
+    _b64 = ""
 
-# Header-only position controls (move ONLY the title & the logo)
-with st.sidebar:
-    st.markdown("### Header position (title & logo)")
-    # Move the whole header row to the RIGHT (increase to go further right)
-    HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=0, step=20)
-    # Fine positioning for each element (relative to the header row)
-    TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=180, step=10)
-    TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=40,  step=2)
-    LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=340, step=10)
-    LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=60,  step=2)
-    LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=80, step=2)
-
-# =============================================================================
-# Step #3.1: Header (title & logo) positioning — FORCE right shift with transform
-# =============================================================================
 st.markdown(f"""
 <style>
-  .page-header {{
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-    margin: 0;
-    padding: 0;
-  }}
-
-  .page-header__title {{
-    font-size: {FS_TITLE}px;
-    font-weight: 800;
-    margin: 0;
-    transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px);
-  }}
-
-  .page-header__logo {{
-    height: {int(LOGO_SIZE)}px;
-    width: auto;
-    display: block;
-    transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px);
-  }}
+  .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
+  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
+  .page-header__logo {{ height:{int(LOGO_SIZE)}px; width:auto; display:block; transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px); }}
 </style>
-
-<!--
-  IMPORTANT:
-  We shift ONLY the header row using transform: translateX(...)
-  This ignores container paddings/margins and just moves it right.
--->
-<div class="page-header-outer"
-     style="width:100%;
-            transform: translateX({int(HEADER_X)}px) !important;
-            will-change: transform;">
+<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
   <div class="page-header">
     <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64_logo}" />' if _b64_logo else ''}
+    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
   </div>
 </div>
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# Step #3.2: Remove Streamlit default top spacing & header
-# =============================================================================
-st.markdown("""
-<style>
-/* 1) remove browser default margin/padding */
-html, body{
-  margin:0 !important;
-  padding:0 !important;
-}
-
-/* 2) collapse Streamlit header spacer */
-header[data-testid="stHeader"]{
-  height:0 !important;
-  padding:0 !important;
-  background:transparent !important;
-}
-header[data-testid="stHeader"] *{ display:none !important; }
-
-/* 3) pull the entire app up; make more negative to go higher */
-div.stApp{
-  margin-top:-4rem !important;
-}
-
-/* fallback for different DOMs */
-section.main > div.block-container{
-  padding-top:0 !important;
-  margin-top:0 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =========================
-# STEP 5 — shift everything right (ONLY CHANGE)
-# =========================
-# =============================================================================
-# Step #3.3: Horizontal shift of whole app (slider)
-# =============================================================================
-with st.sidebar:
-    app_x = st.slider(
-        "Global horizontal offset (px)",
-        min_value=0, max_value=1600, value=800, step=10,
-        help="Push the whole UI to the right"
-    )
-
-st.markdown(f"""
-<style>
-:root {{ --shift-right: {int(app_x)}px; }}
-/* Shift the entire app by adding left padding to the outer view container */
-[data-testid="stAppViewContainer"]{{
-  padding-left: var(--shift-right) !important;
-}}
-</style>
-""", unsafe_allow_html=True)
-
-# =============================================================================
-# Step #4: Model loading (same as before; tolerant of missing files)
+# Step #4: Model loading (robust; tolerates different names/paths)
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -469,52 +458,72 @@ class _ScalerShim:
 
 ann_ps_model = None; ann_ps_proc = None
 try:
-    # Lazy import TF only when loading this ANN
-    ann_ps_model = _lazy_tf_load_model("ANN_PS_Model.keras")
-    import joblib as _jb
-    ann_ps_proc = _ScalerShim(_jb.load("ANN_PS_Scaler_X.save"), _jb.load("ANN_PS_Scaler_y.save"))
-    record_health("PS (ANN)", True, "loaded via .keras + joblib scalers")
+    ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
+    ann_ps_model = _load_keras_model(ps_model_path)
+    sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
+    sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
+    ann_ps_proc = _ScalerShim(sx, sy)
+    record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
 ann_mlp_model = None; ann_mlp_proc = None
 try:
-    # Lazy import TF only when loading this ANN
-    ann_mlp_model = _lazy_tf_load_model("ANN_MLP_Model.keras")
-    import joblib as _jb
-    ann_mlp_proc = _ScalerShim(_jb.load("ANN_MLP_Scaler_X.save"), _jb.load("ANN_MLP_Scaler_y.save"))
-    record_health("MLP (ANN)", True, "loaded via .keras + joblib scalers")
+    mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
+    ann_mlp_model = _load_keras_model(mlp_model_path)
+    sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
+    sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
+    ann_mlp_proc = _ScalerShim(sx, sy)
+    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
+rf_model = None
 try:
-    rf_model = joblib.load("random_forest_model.pkl")
-    record_health("Random Forest", True, "loaded")
+    rf_path = pfind([
+        "random_forest_model.pkl", "random_forest_model.joblib",
+        "rf_model.pkl", "RF_model.pkl",
+        "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
+    ])
+    try:
+        rf_model = joblib.load(rf_path)
+        record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
+    except Exception as e_joblib:
+        try:
+            import skops.io as sio
+            rf_model = sio.load(rf_path, trusted=True)
+            record_health("Random Forest", True, f"loaded via skops from {rf_path}")
+        except Exception as e_skops:
+            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})")
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
+xgb_model = None
 try:
-    xgb_model = xgb.XGBRegressor(); xgb_model.load_model("XGBoost_trained_model_for_DI.json")
-    record_health("XGBoost", True, "loaded")
+    xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
+    xgb_model = xgb.XGBRegressor(); xgb_model.load_model(xgb_path)
+    record_health("XGBoost", True, f"loaded from {xgb_path}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
+cat_model = None
 try:
-    cat_model = catboost.CatBoostRegressor(); cat_model.load_model("CatBoost.cbm")
-    record_health("CatBoost", True, "loaded")
+    cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
+    cat_model = catboost.CatBoostRegressor(); cat_model.load_model(cat_path)
+    record_health("CatBoost", True, f"loaded from {cat_path}")
 except Exception as e:
-    cat_model = None; record_health("CatBoost", False, str(e))
+    record_health("CatBoost", False, f"{e}")
 
 def load_lightgbm_flex():
-    cand = ["LightGBM_model", "LightGBM_model.txt", "LightGBM_model.bin",
-            "LightGBM_model.pkl", "LightGBM_model.joblib"]
-    for p in cand:
-        if not Path(p).exists(): continue
-        try: return lgb.Booster(model_file=p), "booster", p
-        except Exception:
-            try: return joblib.load(p), "sklearn", p
-            except Exception: pass
-    raise FileNotFoundError("No LightGBM_model file found.")
+    try:
+        p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
+    except Exception:
+        raise FileNotFoundError("No LightGBM model file found.")
+    try: return lgb.Booster(model_file=str(p)), "booster", p
+    except Exception:
+        try: return joblib.load(p), "sklearn", p
+        except Exception as e:
+            raise e
 
 try:
     lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
@@ -525,27 +534,24 @@ except Exception as e:
 model_registry = {}
 for name, ok, *_ in health:
     if not ok: continue
-    if name == "XGBoost": model_registry["XGBoost"] = xgb_model
+    if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
     elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
     elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
     elif name == "PS (ANN)" and ann_ps_model is not None: model_registry["PS"] = ann_ps_model
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
-    elif name == "Random Forest": model_registry["Random Forest"] = rf_model
+    elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
-with st.sidebar:
-    st.header("Model Health")
-    for name, ok, msg, cls in health:
-        st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
-    for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
-        try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
-        except Exception: pass
+if SHOW_TUNING:
+    with st.sidebar:
+        st.header("Model Health")
+        for name, ok, msg, cls in health:
+            st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
+        for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
+            try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
+            except Exception: pass
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
-
-# >>> SAFETY: ensure curve df exists even before any model is ready <<<
-if "_curve_df" not in locals():
-    _curve_df = pd.DataFrame(columns=["θ", "Predicted_DI"])
 
 # =============================================================================
 # Step #5: Ranges, inputs, layout
@@ -558,7 +564,6 @@ R = {
     "AR":(0.388889,5.833333), "M_Vlw":(0.388889,4.1), "theta":(0.0275,4.85),
 }
 THETA_MAX = R["theta"][1]
-
 U = lambda s: rf"\;(\mathrm{{{s}}})"
 
 GEOM = [
@@ -575,8 +580,8 @@ MATS = [
     (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
     (rf"$f_{{ysh}}{U('MPa')}$",   "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
-    (rf"$f_{{yl}}{U('MPa')}$",    "fyl",  400.0, 1.0, None, "Vertical web yield strength"),
-    (rf"$f_{{ybl}}{U('MPa')}$",   "fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
+    (rf"$f_{{yl}}{U('MPa')}$","fyl",  400.0, 1.0, None, "Vertical web yield strength"),
+    (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
 
 REINF = [
@@ -596,80 +601,52 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-# Top-level layout: Right is twice Left
 left, right = st.columns([1.5, 2], gap="large")
 
 with left:
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
+    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
+    css("<div id='leftwrap'>")
+    css("<div id='compact-form'>")
 
-    # Tighten vertical space: move the whole form up a bit and shrink header gaps
-    st.markdown(
-        "<style>.section-header{margin:.2rem 0 !important;}</style>",
-        unsafe_allow_html=True
-    )
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
+    c1, c2, c3 = st.columns([1, 1, 1], gap="large")
 
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    # Wrap the entire inputs block so we can move it with CSS
-    css("<div id='leftwrap'>")                 # OPEN WRAPPER (new)
-    css("<div id='compact-form'>")             # original container (no inline margin-top)
-
-    c1, _gap, c2 = st.columns([1, 0.08, 1], gap="large")  # adds a ~12% spacer between the columns
-
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    # ---- Column 1: Geometry + first half of Material Strengths ----
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
-
-    # ---- Column 2: Remaining Material Strengths + small spacer + Reinforcement ----
     with c2:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fyl, fybl = [num(*row) for row in MATS[3:]]
-
-        # Slight push so "Reinf. Ratios" starts a bit lower, but overall top gap is reduced
-        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
-
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
-    # Close containers
-    css("</div>")  # close #compact-form
-    css("</div>")  # close #leftwrap
+    with c3:
+        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
+        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
+        fyl, fybl = [num(*row) for row in MATS[3:]]
+
+    css("</div>")
+    css("</div>")
+
 
 # =============================================================================
-# Step #6: Right panel as ONE section (picture + model + buttons + plot)
+# Step #6: Right panel
 # =============================================================================
-
-# ===== EDIT ONLY THESE KNOBS =====
-HERO_X, HERO_Y, HERO_W = 100, 5, 550
+HERO_X, HERO_Y, HERO_W = 100, 5, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 550
-# =================================
+CHART_W = 300
 
 with right:
-    # --- Spacer pushes the whole right column down (reliable) ---
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
-    # -------------------------------------------------------------
-
-    # 6.1: Picture (safe: only render if file exists)
-    hero_path = Path("logo2-01.png")
-    hero_b64 = b64_safe(hero_path)
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
-            {f"<img src='data:image/png;base64,{hero_b64}' width='{int(HERO_W)}'/>" if hero_b64 else ""}
+            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # =============================================================================
-    # Step #6.1: Model select & action buttons styling (right column)
-    # =============================================================================
     st.markdown(""" 
     <style>
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
@@ -677,37 +654,29 @@ with right:
     }
     [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
     div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: 18px !important; color: black !important; font-weight: bold !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child { font-size: 30px !important; }
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] div[role="listbox"] div[role="option"] { font-size: 30px !important; color: black !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: 30px !important; }
-    div[data-testid="stButton"] button p { font-size: 30px !important; color: black !important; font-weight: normal !important; }
-    div[role="option"] { color: black !important; font-size: 16px !important; }
-    div.stButton > button { height: 50px !important; display:flex; align-items:center; justify-content:center; }
+    div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }
+    div[role="option"] { color: black !important; font-size: {FS_SELECT}px !important; }
+    div.stButton > button { height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }
     #action-row { display:flex; align-items:center; gap: 1px; }
-    .stAltairChart { transform: translate(100px, 50px) !important; }  /* Optional: tweak or remove to avoid double shift */
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
+    row = st.columns([0.8, 2.1, 2.1, 2.1], gap="small")
 
-    row = st.columns([0.8, 2.1, 2.1,2.1], gap="small")
-
-    # Column 1: Model Select
     with row[0]:
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
         ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
         _label_to_key = {"RF": "Random Forest"}
-
         model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Column 2: Three buttons
     with row[1]:
         st.markdown("<div id='three-btns' style='margin-top:35px;'>", unsafe_allow_html=True)
-        b1, b2, b3 = st.columns([1, 1, 1.2], gap="small") 
+        b1, b2, b3 = st.columns([1, 1, 1.2], gap="small")
         with b1:
             submit = st.button("Calculate", key="calc_btn")
         with b2:
@@ -719,26 +688,15 @@ with right:
                 st.success("All predictions cleared.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Row: DI badge + Download CSV
     badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
-
     with badge_col:
         pred_banner = st.empty()
     with dl_col:
         dl_slot = st.empty()
-
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button(
-            "📂 Download All Results as CSV",
-            data=csv,
-            file_name="di_predictions.csv",
-            mime="text/csv",
-            use_container_width=False,
-            key="dl_csv_main"
-        )
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
 
-    # 6.3: DI–θ plot
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
@@ -760,24 +718,18 @@ def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
 
 def predict_di(choice, _unused_array, input_df):
     df_trees = _df_in_train_order(input_df)
+    df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
         mdl = model_registry["LightGBM"]
-        try:
-            prediction = float(mdl.predict(X)[0])
-        except Exception:
-            prediction = float(mdl.predict(X)[0])
-
+        prediction = float(mdl.predict(X)[0])
     if choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
-
     if choice == "CatBoost":
         prediction = float(model_registry["CatBoost"].predict(X)[0])
-
     if choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
-
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
         try:
@@ -786,7 +738,6 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["PS"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
         try:
@@ -796,7 +747,6 @@ def predict_di(choice, _unused_array, input_df):
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
 
-    # Apply the limits (0.035, 1.5) to the prediction
     prediction = max(0.035, min(prediction, 1.5))
     return prediction
 
@@ -821,122 +771,51 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
 def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
-
-    selection = alt.selection_point(
-        name='select',
-        fields=['θ', 'Predicted_DI'],
-        nearest=True,
-        on='mouseover',
-        empty=False,
-        clear='mouseout'
-    )
-
-    AXIS_LABEL_FS = 20
-    AXIS_TITLE_FS = 24
-    TICK_SIZE = 8
-    TITLE_PAD = 12
-    LABEL_PAD = 8
-
+    selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
+    AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
-
-    # constant number of x-axis ticks
-    N_X_TICKS = 5
-    x_ticks = np.linspace(0.0, theta_max, N_X_TICKS).round(2)
+    x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0).encode(
-            x=alt.X(
-                "θ:Q",
-                title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
-                axis=alt.Axis(
-                    values=list(x_ticks),
-                    labelFontSize=AXIS_LABEL_FS,
-                    titleFontSize=AXIS_TITLE_FS,
-                    labelPadding=LABEL_PAD,
-                    titlePadding=TITLE_PAD,
-                    tickSize=TICK_SIZE,
-                    labelLimit=1000,
-                    labelFlush=True,
-                    labelFlushOffset=0,
-                ),
-            ),
-            y=alt.Y(
-                "Predicted_DI:Q",
-                title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
-                axis=alt.Axis(
-                    values=[0.0, 0.2, 0.5, 1.0, 1.5],
-                    labelFontSize=AXIS_LABEL_FS,
-                    titleFontSize=AXIS_TITLE_FS,
-                    labelPadding=LABEL_PAD,
-                    titlePadding=TITLE_PAD,
-                    tickSize=TICK_SIZE,
-                    labelLimit=1000,
-                    labelFlush=True,
-                    labelFlushOffset=0,
-                ),
-            ),
+            x=alt.X("θ:Q", title="Drift Ratio (θ)", scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
+                    axis=alt.Axis(values=list(x_ticks), labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
+                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
+                                  labelFlush=True, labelFlushOffset=0)),
+            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)", scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+                    axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5], labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
+                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
+                                  labelFlush=True, labelFlushOffset=0)),
         ).properties(width=size, height=size)
     )
 
-    # full curve for smooth line
     curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
+    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
 
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=3).encode(
-        x="θ:Q",
-        y="Predicted_DI:Q"
-    ).properties(width=size, height=size)
-
-    # spaced points (every k samples)
     k = 3
     if not curve.empty:
         curve_points = curve.iloc[::k].copy()
-        if not curve_points.empty and (curve_points.iloc[-1]["θ"] != curve.iloc[-1]["θ"]):
-            curve_points = pd.concat([curve_points, curve.tail(1)], ignore_index=True)
     else:
         curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
-    points_layer = alt.Chart(curve_points).mark_circle(size=100, opacity=0.7).encode(
-        x="θ:Q",
-        y="Predicted_DI:Q",
-        tooltip=[
-            alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
-            alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")
-        ]
+    points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
+        x="θ:Q", y="Predicted_DI:Q",
+        tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
+                 alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
     ).add_params(selection)
 
-    rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(
-        x="θ:Q",
-        y="Predicted_DI:Q"
+    rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
+    text_layer = alt.Chart(curve).mark_text(align='left', dx=8, dy=-8, fontSize=14, fontWeight='bold', color='red').encode(
+        x="θ:Q", y="Predicted_DI:Q", text=alt.Text("Predicted_DI:Q", format=".4f")
     ).transform_filter(selection)
 
-    text_layer = alt.Chart(curve).mark_text(
-        align='left',
-        dx=10,
-        dy=-10,
-        fontSize=20,
-        fontWeight='bold',
-        color='red'
-    ).encode(
-        x="θ:Q",
-        y="Predicted_DI:Q",
-        text=alt.Text("Predicted_DI:Q", format=".4f")
-    ).transform_filter(selection)
-
-    chart = (
-        alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
-        .configure_view(strokeWidth=0)
-        .configure_axis(domain=True, ticks=True)
-        .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
-    )
-
+    chart = (alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
+             .configure_view(strokeWidth=0)
+             .configure_axis(domain=True, ticks=True)
+             .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
     chart_html = chart.to_html()
-    chart_html = chart_html.replace(
-        '</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 32px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 20px !important; }</style>'
-    )
-
+    chart_html = chart_html.replace('</style>',
+        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
     st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
@@ -963,35 +842,19 @@ if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
     if 'submit' in locals() and submit:
-        xdf = _make_input_df(
-            lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-            rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta
-        )
+        xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
         try:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(
-                f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>",
-                unsafe_allow_html=True
-            )
-            # Show/refresh the Download CSV button on the same row
+            pred_banner.markdown(f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
             csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button(
-                "📂 Download All Results as CSV",
-                data=csv,
-                file_name="di_predictions.csv",
-                mime="text/csv",
-                use_container_width=False,
-                key="dl_csv_after_submit"
-            )
+            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
+                                    mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-    _base_xdf = _make_input_df(
-        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-        rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta
-    )
+    _base_xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
     _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
 
 try:
@@ -1001,20 +864,29 @@ except NameError:
 
 with right:
     with _slot:
-        render_di_chart(
-            st.session_state.results_df,
-            _curve_df,
-            theta_max=THETA_MAX,
-            di_max=1.5,
-            size=CHART_W
-        )
+        render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
-# Step #9: Optional "Recent Predictions" (hidden by default)
+# FINAL: Bring back banner color and drop it slightly (override placed last)
 # =============================================================================
-show_recent = st.sidebar.checkbox("Show Recent Predictions", value=False)
+st.markdown("""
+<style>
+.form-banner{
+  background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
+  color: #fff !important;
+  text-align: center !important;
+  border-radius: 10px !important;
+  padding: .45rem .75rem !important;
+  margin-top: 65px !important;
+  transform: translateY(0) !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-if show_recent and not st.session_state.results_df.empty:
+# =============================================================================
+# Step #9: Optional "Recent Predictions"
+# =============================================================================
+if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
     right_predictions = st.empty()
     with right_predictions:
         st.markdown("### 🧾 Recent Predictions")
@@ -1024,3 +896,58 @@ if show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
+# ==============================  LATE PER-COMPONENT FONT & LOGO OVERRIDES ==============================
+def _get_qp():
+    try:
+        return st.query_params
+    except Exception:
+        try:
+            return st.experimental_get_query_params()
+        except Exception:
+            return {}
+
+_qp = _get_qp()
+
+def _get_int(name):
+    try:
+        v = _qp.get(name)
+        if isinstance(v, list): v = v[0]
+        return int(v) if v not in (None, "", []) else None
+    except Exception:
+        return None
+
+_FS_TITLE   = _get_int("fs_title")
+_FS_SECTION = _get_int("fs_section")
+_FS_LABEL   = _get_int("fs_label")
+_FS_UNITS   = _get_int("fs_units")
+_FS_INPUT   = _get_int("fs_input")
+_FS_SELECT  = _get_int("fs_select")
+_FS_BUTTON  = _get_int("fs_button")
+_FS_BADGE   = _get_int("fs_badge")
+_FS_RECENT  = _get_int("fs_recent")
+_LOGO_H     = _get_int("logo")
+
+_rules = []
+if _FS_TITLE   is not None: _rules.append(f".page-header__title{{font-size:{_FS_TITLE}px !important;}}")
+if _FS_SECTION is not None: _rules.append(f".section-header{{font-size:{_FS_SECTION}px !important;}}")
+if _FS_LABEL   is not None: _rules.append(f".stNumberInput label, .stSelectbox label{{font-size:{_FS_LABEL}px !important;}}")
+if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm{{font-size:{_FS_UNITS}px !important;}}")
+if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
+if _FS_SELECT  is not None:
+    _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
+    _rules.append(f"div[data-testid='stSelectbox'] div[role='listbox'], div[data-testid='stSelectbox'] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
+if _FS_BUTTON  is not None:
+    _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
+    _btn_lh = max(36, int(round(_FS_BUTTON * 1.15)))
+    _rules.append(f"div.stButton > button{{font-size:{_FS_BUTTON}px !important;height:{_btn_h}px !important;line-height:{_btn_lh}px !important;white-space:nowrap !important;}}")
+else:
+    _rules.append("div.stButton > button{white-space:nowrap !important;}")
+
+if _FS_BADGE  is not None: _rules.append(f".prediction-result{{font-size:{_FS_BADGE}px !important;}}")
+if _FS_RECENT is not None: _rules.append(f".recent-box{{font-size:{_FS_RECENT}px !important;}}")
+if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}px !important;}}")
+
+if _rules:
+    css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
+# ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
