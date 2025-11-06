@@ -381,23 +381,16 @@ html, body, .stApp {
 
 
 
-
-
 css("""
 <style>
-/* Keep everything exactly in place when zooming */
-.stApp, .block-container, section.main, .main .block-container {
+/* PREVENT MOVING ON ZOOM - KEEP EVERYTHING FIXED */
+html, body, .stApp, .block-container {
     zoom: 1 !important;
-    transform: scale(1) !important;
-}
-
-/* Prevent any element from moving */
-* {
-    position: relative !important;
     transform: none !important;
 }
 </style>
 """)
+
 
 
 
@@ -993,6 +986,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
