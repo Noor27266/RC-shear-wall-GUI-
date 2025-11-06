@@ -637,7 +637,7 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='height:5px'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -951,3 +951,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
