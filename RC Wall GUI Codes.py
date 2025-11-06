@@ -248,7 +248,8 @@ css(f"""
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
-""")
+""", unsafe_allow_html=True)
+
 
 # Keep header area slim
 st.markdown("""
@@ -373,73 +374,6 @@ html, body, .stApp {
 }
 </style>
 """)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Make the whole app fill the screen
-st.markdown("""
-<style>
-html, body, .stApp {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 100vh !important;  /* Full viewport height */
-    width: 100vw !important;  /* Full viewport width */
-    overflow: hidden !important;  /* Prevent any overflow */
-}
-
-.stApp {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    justify-content: flex-start;
-}
-
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    flex: 1 0 auto;
-    height: 100vh !important;
-    overflow: hidden !important;
-    max-width: 100vw !important;
-}
-
-/* Ensure the content inside the form or containers stays responsive */
-#compact-form {
-    max-width: 100vw !important;
-    padding: 0 !important;
-}
-
-.stButton > button, .stNumberInput input, .stSelectbox [role="combobox"] {
-    font-size: 2vw !important;  /* Make buttons, inputs, and select boxes scale with viewport */
-    min-width: 100px !important;
-}
-
-.page-header__title {
-    font-size: 5vw !important; /* Make title scale with viewport width */
-}
-
-.page-header__logo {
-    height: 10vh !important;  /* Set logo height relative to viewport height */
-    width: auto !important;
-}
-
-.stSelectbox [role="combobox"] {
-    height: 5vh !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
 
 
 
@@ -1049,4 +983,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
