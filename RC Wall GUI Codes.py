@@ -455,15 +455,15 @@ st.markdown(f"""
 <style>
   /* Move the entire header (title and logo) slightly to the right */
   .page-header {{
-    transform: translateX(20px);  /* Adjust this value to move more or less */
+    transform: translateX(5px);  /* Move only 5px to the right */
   }}
   
   .page-header__title {{
-    transform: translateX(20px);  /* Move title right */
+    transform: translateX(5px);  /* Move title right */
   }}
 
   .page-header__logo {{
-    transform: translateX(20px);  /* Move logo right */
+    transform: translateX(5px);  /* Move logo right */
   }}
 
   /* Ensure the header sticks to the top of the page */
@@ -480,6 +480,7 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -997,6 +998,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
