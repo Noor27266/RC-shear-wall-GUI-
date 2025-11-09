@@ -314,8 +314,8 @@ except Exception:
 
 # Logo positioning variables
 LOGO_SIZE = 60
-LOGO_MARGIN_TOP = 50  # Increase this to move logo further down
-LOGO_MARGIN_RIGHT = -5 # DECREASE this to move logo to the right
+LOGO_MARGIN_TOP = 70  # Increase this to move logo further down
+LOGO_MARGIN_RIGHT = -3 # DECREASE this to move logo to the right
 
 # REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
@@ -887,6 +887,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
