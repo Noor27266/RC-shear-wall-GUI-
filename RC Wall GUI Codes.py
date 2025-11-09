@@ -551,8 +551,8 @@ with left:
         </div>
     """, unsafe_allow_html=True)
     
-    # MOVE INPUT FEATURES AND COLUMNS UP SLIGHTLY
-    st.markdown("<div style='margin-top: -15px;'>", unsafe_allow_html=True)
+    # MOVE INPUT FEATURES AND COLUMNS UP MUCH MORE
+    st.markdown("<div style='margin-top: -40px;'>", unsafe_allow_html=True)
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
     
     css("<div id='leftwrap'>")
@@ -578,7 +578,6 @@ with left:
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the upward movement div
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
-
 
 
 # =============================================================================
@@ -1075,6 +1074,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
