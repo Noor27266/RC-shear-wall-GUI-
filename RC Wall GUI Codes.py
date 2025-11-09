@@ -377,71 +377,6 @@ html, body, .stApp {
 
 
 
-st.markdown("""
-<style>
-    /* Make sure the entire layout takes up the full screen */
-    html, body, .stApp {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-    }
-
-    /* The main container should take up the full height of the viewport */
-    .block-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        height: 100vh;
-        width: 100%;
-        padding: 20px;
-        overflow-y: auto; /* Allow scrolling if needed */
-    }
-
-    /* Adjust form inputs to be responsive */
-    .stNumberInput, .stSelectbox, .stButton {
-        width: 100%; /* Ensure all form inputs take up full width */
-        max-width: 500px; /* Set a max-width for larger screens */
-        margin-bottom: 10px;
-    }
-
-    /* Ensure the title and inputs are aligned properly */
-    h1 {
-        font-size: 5vw; /* Scale title based on viewport width */
-    }
-
-    /* Adjust logo position */
-    .page-header__logo {
-        position: fixed;
-        top: 20px;
-        left: 20px; /* Move logo a bit to the left */
-        height: 5vh; /* Adjust logo size to fit better */
-        z-index: 1000; /* Keep the logo on top */
-    }
-
-    /* Adjust layout for smaller screens */
-    @media (max-width: 768px) {
-        .stButton {
-            font-size: 14px; /* Make buttons smaller on small screens */
-        }
-        .page-header__logo {
-            left: 10px; /* Keep logo more centered on small screens */
-            height: 4vh; /* Smaller logo on small screens */
-        }
-        .block-container {
-            padding: 10px; /* Reduce padding for better space usage */
-        }
-    }
-</style>
-""", unsafe_allow_html=True)
-
-
-
-
-
-
 
 
 
@@ -1058,6 +993,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
