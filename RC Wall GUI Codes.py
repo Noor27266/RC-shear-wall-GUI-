@@ -262,6 +262,7 @@ section.main > div.block-container{ padding-top:0 !important; margin-top:0 !impo
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -273,6 +274,7 @@ div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appe
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
 </style>
 """, unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 /* Increase the width of the Predicted Damage Index (DI) box */
@@ -372,6 +374,7 @@ html, body, .stApp {
 }
 </style>
 """)
+
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -964,3 +967,4 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
