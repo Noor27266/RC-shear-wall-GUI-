@@ -491,6 +491,8 @@ if SHOW_TUNING:
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
+
+
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
@@ -559,7 +561,7 @@ with left:
     <style>
     /* Remove all spacing around the input columns */
     #compact-form {
-        margin-top: -20px !important;
+        margin-top: -250px !important;
         padding-top: 0px !important;
     }
     #leftwrap {
@@ -1097,6 +1099,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
