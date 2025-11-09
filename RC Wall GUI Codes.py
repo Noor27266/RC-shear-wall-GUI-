@@ -513,14 +513,14 @@ with left:
     # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
     <div style="background:#e0e4ec; border-radius:0px; padding:0px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:-20px;">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:5px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Move the "Inputs Features" banner closer to the title with more aggressive margin adjustment
-    st.markdown("<div class='form-banner' style='margin-top: 50px;'>Inputs Features</div>", unsafe_allow_html=True)
+    # **Adjusted margin for the "Inputs Features" banner** to make it closer to the title
+    st.markdown("<div class='form-banner' style='margin-top: 5px;'>Inputs Features</div>", unsafe_allow_html=True)
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
@@ -544,6 +544,7 @@ with left:
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+
 
 
 
@@ -872,6 +873,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
