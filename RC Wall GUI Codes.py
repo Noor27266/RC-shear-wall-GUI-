@@ -542,21 +542,21 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 1], gap="large")
 
 with left:
-    # MOVE THE TITLE INSIDE THE GREY AREA
+    # MOVE THE TITLE INSIDE THE GREY AREA - REDUCED PADDING
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:10px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:2px 5px 0px 5px; margin-bottom:2px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:5px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
     
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
+    st.markdown("<style>.section-header{margin:.1rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
 
-    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
-    c1, c2, c3 = st.columns([1, 1, 1], gap="large")
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths - TIGHTER SPACING
+    c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
@@ -1070,6 +1070,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
