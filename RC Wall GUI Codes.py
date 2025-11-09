@@ -282,7 +282,7 @@ right_offset = 80
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
-LOGO_LEFT  = 80
+LOGO_LEFT  = 00
 LOGO_TOP   = 60
 LOGO_SIZE  = 50
 _show_recent = False
@@ -874,6 +874,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
