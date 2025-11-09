@@ -510,18 +510,18 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1, 1], gap="large")
 
 with left:
-    # COMBINE TITLE AND INPUTS FEATURES IN THE SAME GREY AREA
+    # **Title and Banner Styling**
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:15px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0 0 5px 0; padding:0;">
+    <div style="background:#e0e4ec; border-radius:0px; padding:0px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:0px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
-        <div style="text-align:center; font-size:18px; font-weight:500; color:#555; margin:0 0 15px 0; padding:0;">
-            Inputs Features
-        </div>
+    </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
+    # **Banner moved closer with reduced margin-top and padding**
+    st.markdown("<div class='form-banner' style='margin-top: -10px; padding: 0px;'>Inputs Features</div>", unsafe_allow_html=True)
+    st.markdown("<style>.section-header{margin:0px 0 !important; padding: 0px;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
 
@@ -529,21 +529,22 @@ with left:
     c1, c2, c3 = st.columns([1, 1, 1], gap="large")
 
     with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header' style='margin-top:0px;'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
     with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header' style='margin-top:0px;'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
     with c3:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header' style='margin-top:0px;'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+
 
 
 
@@ -874,6 +875,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
