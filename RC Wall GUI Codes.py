@@ -139,7 +139,20 @@ css(f"""
       transform: none !important;
   }}
 
-  .block-container {{ padding-top: 0rem; }}
+  .block-container {{ 
+    padding-top: 0rem; 
+    margin-left: 250px !important;
+    position: relative !important;
+    left: 0 !important;
+    transform: none !important;
+  }}
+
+  .stApp {{
+    position: relative !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }}
+
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
@@ -258,20 +271,6 @@ css(f"""
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 
-  /* Fixed positioning - prevents shifting on zoom */
-  .main .block-container {{
-    margin-left: 250px !important;
-    position: relative !important;
-    left: 0 !important;
-    transform: none !important;
-  }}
-
-  .stApp {{
-    position: relative !important;
-    transform: none !important;
-    overflow: hidden !important;
-  }}
-
   /* Ensure all containers have stable positioning */
   [data-testid="stAppViewContainer"], 
   [data-testid="stAppViewContainer"] > div,
@@ -304,7 +303,7 @@ st.markdown("""
 html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
+div.stApp{ margin-top:0rem !important; }
 section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
@@ -363,28 +362,6 @@ div[data-testid="stSelectbox"] > div > div {
 </style>
 """, unsafe_allow_html=True)
 
-
-st.markdown("""
-<style>
-/* Adjust the header to eliminate any space at the top */
-header[data-testid="stHeader"] {
-    height: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-}
-
-/* Remove the extra space at the top of the app */
-div.stApp {
-    margin-top: -8rem !important; /* Adjust this value if needed */
-}
-
-/* Adjust the margins and padding for the block container */
-section.main > div.block-container {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 css("""
 <style>
@@ -449,9 +426,9 @@ except Exception:
 right_offset = 80
 HEADER_X   = 0
 TITLE_LEFT = 35
-TITLE_TOP  = 60
+TITLE_TOP  = 10
 LOGO_LEFT  = 80
-LOGO_TOP   = 60
+LOGO_TOP   = 10
 LOGO_SIZE  = 50
 _show_recent = False
 
@@ -966,7 +943,7 @@ st.markdown("""
   text-align: center !important;
   border-radius: 10px !important;
   padding: .45rem .75rem !important;
-  margin-top: 65px !important;
+  margin-top: 10px !important;
   transform: translateY(0) !important;
 }
 </style>
