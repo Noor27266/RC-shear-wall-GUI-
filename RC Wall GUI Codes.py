@@ -126,8 +126,19 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
+
+# Add viewport meta tag for zoom stability first
+st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
+""", unsafe_allow_html=True)
+
 css(f"""
 <style>
+  /* Prevent all transforms that cause shifting */
+  * {{
+      transform: none !important;
+  }}
+
   .block-container {{ padding-top: 0rem; }}
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
@@ -210,7 +221,6 @@ css(f"""
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
     margin:.1rem 0 !important;
-    transform: translateY(-10px);
   }}
 
   .prediction-result {{
@@ -247,6 +257,44 @@ css(f"""
   /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
+
+  /* Fixed positioning - prevents shifting on zoom */
+  .main .block-container {{
+    margin-left: 250px !important;
+    position: relative !important;
+    left: 0 !important;
+    transform: none !important;
+  }}
+
+  .stApp {{
+    position: relative !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }}
+
+  /* Ensure all containers have stable positioning */
+  [data-testid="stAppViewContainer"], 
+  [data-testid="stAppViewContainer"] > div,
+  section.main {{
+    position: relative !important;
+    transform: none !important;
+  }}
+
+  /* Stable container sizing */
+  .block-container {{
+    min-width: 1200px !important;
+    max-width: 1400px !important;
+  }}
+
+  /* Prevent any element from moving on zoom */
+  [data-testid="column"], 
+  [data-testid="stHorizontalBlock"],
+  .stNumberInput,
+  .stSelectbox {{
+    position: relative !important;
+    left: 0 !important;
+    transform: none !important;
+  }}
 </style>
 """)
 
@@ -378,18 +426,7 @@ html, body, .stApp {
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
 
-st.markdown("""
-<style>
-/* Move the entire interface to the right using container margin instead of transform */
-.main .block-container {
-    margin-left: 250px !important;
-    transform: none !important;
-}
-.stApp {
-    transform: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
+# This is now handled in the main CSS above
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -450,6 +487,8 @@ st.markdown(f"""
     padding: 0 2rem;
     width: 100%;
     position: relative;
+    left: 0 !important;
+    transform: none !important;
   }}
   
   .page-header__title {{
@@ -457,7 +496,9 @@ st.markdown(f"""
     font-weight:800; 
     margin:0;
     flex: 1;
-    transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px);
+    margin-left: {int(TITLE_LEFT)}px !important;
+    margin-top: {int(TITLE_TOP)}px !important;
+    transform: none !important;
   }}
 
   .page-header__logo {{
@@ -467,11 +508,13 @@ st.markdown(f"""
     right: {int(LOGO_LEFT)}px;
     top: {int(LOGO_TOP)}px;
     z-index: 1000;
+    transform: none !important;
   }}
 
   .page-header-outer {{
     width: 100%;
-    transform: translateX({int(HEADER_X)}px);
+    margin-left: {int(HEADER_X)}px !important;
+    transform: none !important;
     position: relative;
   }}
 </style>
@@ -683,7 +726,7 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='height:{int(right_offset)}px; position:relative; left:0; transform:none;'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
