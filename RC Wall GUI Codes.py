@@ -512,7 +512,7 @@ with left:
     # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
     <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:-20px;">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:-50px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
