@@ -373,6 +373,79 @@ html, body, .stApp {
 }
 </style>
 """)
+# =============================================================================
+# 🎯 Css
+# =============================================================================
+st.markdown("""
+<style>
+/* Ensure the body and HTML take full height */
+html, body, .stApp {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Ensure the main block container takes full height */
+section.main > div.block-container {
+    height: 100% !important;
+    max-height: 100% !important;
+}
+
+/* Set the left panel and right panel to stretch across the screen */
+#compact-form, .stButton, .stSelectbox, .stNumberInput {
+    width: 100% !important;
+}
+
+/* Adjust form elements to take full width */
+#compact-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto;
+}
+
+/* Set the header and footer to use full width */
+.page-header__title, .form-banner {
+    width: 100% !important;
+}
+
+/* Adjust the layout for different screen sizes */
+@media (max-width: 1200px) {
+    .stApp {
+        transform: none;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 800px) {
+    .stApp {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Adjust the form and text sizes for smaller screens */
+    .stNumberInput input, .stSelectbox, .stButton {
+        font-size: 14px !important;
+    }
+}
+
+/* For small screen sizes, adjust the number input and labels to be more compact */
+.stNumberInput label, .stSelectbox label {
+    font-size: 12px !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
 
 # =============================================================================
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
@@ -986,6 +1059,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
