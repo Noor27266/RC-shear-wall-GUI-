@@ -597,6 +597,77 @@ with right:
 
     st.markdown(""" 
     <style>
+    /* Remove borders from the dropdown select box */
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: none !important; /* Remove border */
+        box-shadow: none !important; /* Remove shadow */
+        background: #D3D3D3 !important; /* Background color */
+        height: 50px !important;
+        border-radius: 8px !important; /* Rounded corners */
+        outline: none !important; /* Remove outline */
+        padding: 0px 12px !important;
+    }
+    
+    /* Remove borders from dropdown menu options */
+    div[data-testid="stSelectbox"] > div > div {
+        height: 50px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        margin-top: 0px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        outline: none !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove border from the input element inside the dropdown */
+    div[data-testid="stSelectbox"] input {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove focus borders */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the border around the popover */
+    [data-baseweb="popover"] {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the borders from the menu options */
+    [data-baseweb="menu"] {
+        border: none !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Remove borders around the options in the dropdown */
+    div[role="option"] {
+        color: #888888 !important;
+        font-size: 16px !important;
+        background-color: #D3D3D3 !important;
+        padding: 12px 16px !important;
+        border: none !important;
+    }
+    
+    /* Remove the last item border in the dropdown */
+    div[role="option"]:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* Make dropdown hover effect also grey */
+    div[role="option"]:hover {
+        background-color: #B8B8B8 !important;
+        color: #888888 !important;
+    }
+
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
@@ -1035,6 +1106,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
