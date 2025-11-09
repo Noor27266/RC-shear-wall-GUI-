@@ -303,48 +303,7 @@ if SHOW_TUNING:
         LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
-# =============================================================================
-# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
-# =============================================================================
-try:
-    _logo_path = BASE_DIR / "TJU logo.png"
-    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
-except Exception:
-    _b64 = ""
 
-st.markdown(f"""
-<style>
-  .page-header {{ 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    margin: 0; 
-    padding: 3.0rem  -1.5rem 0;
-    width: 100%;
-  }}
-  .page-header__title {{ 
-    font-size:{FS_TITLE}px; 
-    font-weight:800; 
-    margin:0;
-    flex: 1;
-    padding-top: 3.0rem;
-  }}
-
-  .page-header__logo {{
-    height:{int(LOGO_SIZE)}px; 
-    width:auto; 
-    display:block;
-    margin-left: 1rem;
-    padding-top: 0.5rem;
-  }}
-</style>
-<div class="page-header-outer">
-  <div class="page-header">
-    <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
-</div>
-""", unsafe_allow_html=True)
 
 
 
@@ -907,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
