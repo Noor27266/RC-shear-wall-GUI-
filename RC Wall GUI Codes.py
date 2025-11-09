@@ -144,6 +144,9 @@ css(f"""
   .stNumberInput label .katex .fontsize-ensurer,
   .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
+  .stNumberInput label .katex .mathrm,
+  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
+
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
       font-size:{FS_INPUT}px !important;
@@ -153,101 +156,112 @@ css(f"""
       padding:10px 12px !important;
   }}
 
-  /* SELECT BOX STYLES - REMOVE BLACK BORDER */
-  div[data-testid="stSelectbox"] [data-baseweb="select"] {{
-      border: none !important; 
-      box-shadow: none !important; 
-      background: #D3D3D3 !important;
-      height: 50px !important;
-      border-radius: 8px !important; 
-      padding: 0px 12px !important;
-      outline: none !important; 
+  div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
+      background:{INPUT_BG} !important;
+      border:1px solid {INPUT_BORDER} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
+      transition:border-color .15s ease, box-shadow .15s ease !important;
   }}
-  div[data-testid="stSelectbox"] > div > div { 
-      height: 50px !important; 
-      display: flex !important; 
-      align-items:center !important; 
-      margin-top: 0px !important;
-      border-radius: 8px !important;
-      border: none !important;
-      outline: none !important;
-      color: #888888 !important;
-  }
-
-  div[data-testid="stSelectbox"] input {{
-      border: none !important;
-      outline: none !important;
-      background: transparent !important;
-      color: #888888 !important;
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
+      border-color:{PRIMARY} !important;
+      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
   }}
 
-  div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-  div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {{
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-      background-color: #D3D3D3 !important; 
+  div[data-testid="stNumberInput"] button {{
+      background:#ffffff !important;
+      border:1px solid {INPUT_BORDER} !important;
+      border-radius:10px !important;
+      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
+  }}
+  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
+
+  /* Select font sizes are tied to FS_SELECT */
+  .stSelectbox [role="combobox"],
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
+  div[data-testid="stSelectbox"] div[role="listbox"],
+  div[data-testid="stSelectbox"] div[role="option"] {{
+      font-size:{FS_SELECT}px !important;
   }}
 
-  /* DROPDOWN ARROW COLOR */
-  div[data-testid="stSelectbox"] svg {{
-      fill: #888888 !important;
-      color: #888888 !important;
-      stroke: #888888 !important;
-  }}
-
-  div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-  div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {{
-      fill: #888888 !important;
-      color: #888888 !important;
-      stroke: #888888 !important;
-  }}
-
-  /* LABEL STYLING */
-  div[data-testid="stSelectbox"] label p {{ 
-      font-size: {FS_LABEL}px !important; 
-      color: #666666 !important;
-      font-weight: bold !important; 
-      margin-bottom: 5px !important;
-  }}
-
-  /* BUTTON STYLES */
+  /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
-      height: 50px !important; 
-      width: 90% !important;
-      display:flex !important; 
-      align-items:center !important; 
-      justify-content:center !important;
-      font-size: {FS_BUTTON}px !important;
-      margin: 0 auto !important;
-      white-space: nowrap !important;
-      margin-top: 30px !important;
-      border-radius: 8px !important;
-      border: none !important;
-      font-weight: 700 !important;
-      outline: none !important;
+    font-size:{FS_BUTTON}px !important;
+    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+    white-space:nowrap !important;
+    color:#fff !important;
+    font-weight:700; border:none !important; border-radius:8px !important;
+    background:#4CAF50 !important;
   }}
+  div.stButton > button:hover {{ filter: brightness(0.95); }}
+
   button[key="calc_btn"] {{ background:#4CAF50 !important; }}
   button[key="reset_btn"] {{ background:#2196F3 !important; }}
   button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-  /* REMOVE BUTTON FOCUS BORDERS */
-  div.stButton > button:focus {{
-      outline: none !important;
-      box-shadow: none !important;
+  .form-banner {{
+    text-align:center;
+    background: linear-gradient(90deg, #0E9F6E, #84CC16);
+    color: #fff;
+    padding:.45rem .75rem;
+    border-radius:10px;
+    font-weight:800;
+    font-size:{FS_SECTION + 4}px;
+    margin:.1rem 0 !important;
+    transform: translateY(-10px);
   }}
 
-  /* ADDING MORE PADDING FOR COMFORT */
-  #three-btns {{
-      margin-top: 0 !important;
-      display: flex !important;
-      gap: 8px !important;
-      width: 100% !important;
+  .prediction-result {{
+    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
+    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
   }}
+  .recent-box {{
+    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
+    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+  }}
+
+  #compact-form{{ max-width:900px; margin:0 auto; }}
+  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
+  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  #compact-form [data-testid="stNumberInput"],
+  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
+  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
+  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:{LEFT_BG} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
+  }}
+
+  [data-baseweb="popover"], [data-baseweb="tooltip"],
+  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
+      background:#000 !important; color:#fff !important; border-radius:8px !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
+  }}
+  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+  #action-row {{ display:flex; align-items:center; gap:10px; }}
+</style>
+""")
+
+# Keep header area slim - REDUCED TOP SPACE
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
-
-
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -590,7 +604,7 @@ with right:
         width: 100% !important;
         margin-top: 10px !important;
     }
-
+    
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important; /* Remove border */
@@ -601,7 +615,7 @@ with right:
         padding: 0px 12px !important;
         outline: none !important; /* Remove outline */
     }
-
+    
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
@@ -611,55 +625,59 @@ with right:
     div[data-testid="stSelectbox"] > div > div { 
         height: 50px !important; 
         display: flex !important; 
-        align-items:center !important; 
+        align-items: center !important; 
         margin-top: 0px !important;
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
         color: #888888 !important;
     }
-
+    
+    /* Remove border from the input element inside */
     div[data-testid="stSelectbox"] input {
         border: none !important;
         outline: none !important;
         background: transparent !important;
         color: #888888 !important;
     }
-
+    
+    /* Remove ALL focus borders and black outlines */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
         background-color: #D3D3D3 !important; /* Keep light grey */
     }
-
-    /* REMOVE BLACK FROM DROPDOWN ARROW */
+    
+    /* Remove black from dropdown arrow */
     div[data-testid="stSelectbox"] svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
-
+    
+    /* Remove black from dropdown arrow on hover/focus */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
-
+    
     /* MOVE MODEL SELECTION DROPDOWN DOWN */
     div[data-testid="stSelectbox"] > div:first-child {
         margin-top: 30px !important;
     }
-
+    
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
     }
-
+    
     /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
@@ -671,8 +689,8 @@ with right:
         outline: none !important;
         box-shadow: none !important;
     }
-
-    /* REMOVE BORDER FROM POPOVER - NO BLACK BORDERS */
+    
+    /* Remove border from popover - NO BLACK BORDERS */
     [data-baseweb="popover"] {
         border-radius: 8px !important;
         overflow: hidden !important;
@@ -680,14 +698,14 @@ with right:
         box-shadow: none !important;
         background-color: #D3D3D3 !important; /* Keep light grey */
     }
-
-    /* REMOVE BORDERS FROM DROPDOWN MENU */
+    
+    /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
         background-color: #D3D3D3 !important; /* Keep light grey */
     }
-
+    
     div[role="option"] { 
         color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
@@ -696,22 +714,57 @@ with right:
         border: none !important;
         border-bottom: none !important;
     }
-
-    /* REMOVE THE LAST ITEM BORDER */
+    
+    /* Remove the last item border */
     div[role="option"]:last-child {
         border-bottom: none !important;
     }
-
-    /* REMOVE ANY SEPARATOR LINES BETWEEN OPTIONS */
+    
+    /* Remove any separator lines between options */
     div[role="option"]:not(:last-child) {
         border-bottom: none !important;
     }
-
-    /* MAKE DROPDOWN HOVER EFFECT GREY */
+    
+    /* Make dropdown hover effect grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important; /* Darker grey hover */
         color: #888888 !important;
         border: none !important;
+    }
+    
+    /* Make buttons smaller in width */
+    div.stButton > button { 
+        height: 50px !important; 
+        width: 90% !important;
+        display:flex !important; 
+        align-items:center !important; 
+        justify-content:center !important;
+        font-size: {FS_BUTTON}px !important;
+        margin: 0 auto !important;
+        white-space: nowrap !important;
+        margin-top: 30px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        font-weight: 700 !important;
+        outline: none !important;
+    }
+    
+    button[key="calc_btn"] { background:#4CAF50 !important; }
+    button[key="reset_btn"] { background:#2196F3 !important; }
+    button[key="clear_btn"] { background:#f44336 !important; }
+    
+    /* Remove button focus borders */
+    div.stButton > button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the margin from the three-btns container */
+    #three-btns {
+        margin-top: 0 !important;
+        display: flex !important;
+        gap: 8px !important;
+        width: 100% !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -719,6 +772,7 @@ with right:
     # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
+    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
@@ -744,7 +798,18 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
+    with badge_col:
+        pred_banner = st.empty()
+    with dl_col:
+        dl_slot = st.empty()
+    if not st.session_state.results_df.empty:
+        csv = st.session_state.results_df.to_csv(index=False)
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
 
+    col1, col2 = st.columns([0.01, 20])
+    with col2:
+        chart_slot = st.empty()
 
 
 
@@ -1005,81 +1070,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
