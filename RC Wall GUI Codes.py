@@ -312,10 +312,12 @@ try:
 except Exception:
     _b64 = ""
 
-# SIMPLIFIED LOGO POSITIONING - JUST USE MARGIN
+# Logo positioning variables
 LOGO_SIZE = 60
-LOGO_MARGIN_TOP = 50  # Increase this to move logo down
+LOGO_MARGIN_TOP = 50  # Increase this to move logo further down
+LOGO_MARGIN_RIGHT = 4  # DECREASE this to move logo to the right
 
+# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
 <style>
   .page-header {{ 
@@ -325,14 +327,19 @@ st.markdown(f"""
     margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
+    position: relative;
   }}
 
   .page-header__logo {{
     height:{int(LOGO_SIZE)}px !important; 
     width:auto !important; 
-    display:block;
-    margin-right: 2rem !important;
-    margin-top: {int(LOGO_MARGIN_TOP)}px !important;  /* This will move it down */
+    display:block !important;
+    margin-right: {int(LOGO_MARGIN_RIGHT)}rem !important;  /* Change this to move left/right */
+    margin-top: {int(LOGO_MARGIN_TOP)}px !important;  /* This moves the logo down */
+  }}
+  
+  .page-header-outer {{
+    margin-bottom: 20px !important;
   }}
 </style>
 <div class="page-header-outer">
@@ -341,6 +348,11 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+# In the Feature Flags & Sidebar Tuning Controls (Step 5), this remains as it was:
+HEADER_X   = 0
+TITLE_LEFT = 35
+TITLE_TOP  = 60
 
 
 
@@ -875,6 +887,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
