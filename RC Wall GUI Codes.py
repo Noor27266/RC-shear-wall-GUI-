@@ -374,6 +374,35 @@ html, body, .stApp {
 </style>
 """)
 
+
+
+
+
+# =============================================================================
+# Move the interface to the right side
+# =============================================================================
+
+<style>
+/* Move the entire interface to the right */
+.stApp {
+    transform: translateX(100px);  /* Adjust the value as needed */
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # =============================================================================
 # NEW: Feature flag to hide/show sidebar tuning widgets
 # =============================================================================
@@ -951,4 +980,5 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
