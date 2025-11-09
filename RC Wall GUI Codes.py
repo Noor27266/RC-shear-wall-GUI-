@@ -510,17 +510,17 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1, 1], gap="large")
 
 with left:
-    # **Title and Banner Styling**
+    # **Title and Banner Styling (with controlled margins)**
     st.markdown("""
     <div style="background:#e0e4ec; border-radius:0px; padding:0px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:0px;">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:0px; padding-bottom:0px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # **Banner moved closer with reduced margin-top and padding**
-    st.markdown("<div class='form-banner' style='margin-top: -10px; padding: 0px; margin-bottom: 0px;'>Inputs Features</div>", unsafe_allow_html=True)
+    # **Inputs Features Banner with reduced margin**
+    st.markdown("<div class='form-banner' style='margin-top: -15px; padding: 10px 0px;'>Inputs Features</div>", unsafe_allow_html=True)
     st.markdown("<style>.section-header{margin:0px 0 !important; padding: 0px;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
@@ -544,6 +544,7 @@ with left:
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+
 
 
 
@@ -876,6 +877,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
