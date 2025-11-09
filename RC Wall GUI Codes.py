@@ -492,7 +492,6 @@ if SHOW_TUNING:
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
-
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
@@ -546,33 +545,15 @@ left, right = st.columns([1.5, 1], gap="large")
 with left:
     # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:5px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:10px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
     
-    # ONLY MOVE INPUT FEATURES AND COLUMNS UP - TARGETED APPROACH
-    st.markdown("<div style='margin-top: -20px;'>", unsafe_allow_html=True)
+    # MOVE INPUT FEATURES AND COLUMNS UP SLIGHTLY
+    st.markdown("<div style='margin-top: -15px;'>", unsafe_allow_html=True)
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-    
-    # Add CSS that ONLY affects the left side elements
-    st.markdown("""
-    <style>
-    /* ONLY target elements inside the left column */
-    div[data-testid="column"]:first-child,
-    div[data-testid="column"]:nth-child(2),
-    div[data-testid="column"]:nth-child(3) {
-        padding-top: 0px !important;
-        margin-top: -10px !important;
-    }
-    
-    /* Only reduce spacing for inputs in the left columns */
-    .stNumberInput {
-        margin-bottom: 0.2rem !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
     
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
@@ -1094,6 +1075,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
