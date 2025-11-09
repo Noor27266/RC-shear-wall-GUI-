@@ -616,13 +616,14 @@ with right:
 
 with left:
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:0;">
-            Predict Damage index (DI) for RC Shear Walls
-        </div>
-        <div style="text-align:center; margin:2px 0 8px 0; font-weight:500; color:#555;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:10px; margin-bottom:10px;">
+        <h1 style="text-align:center; font-size:24px; font-weight:600; color:#333; margin:0 0 5px 0; padding:0;">
+            Predict Damage Index (DI) for RC Shear Walls
+        </h1>
+        <h2 style="text-align:center; font-size:18px; font-weight:500; color:#555; margin:0; padding:0;">
             Inputs Features
-        </div>
+        </h2>
+    </div>
     """, unsafe_allow_html=True)
 
 # =============================================================================
@@ -878,6 +879,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
