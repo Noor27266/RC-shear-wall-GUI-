@@ -561,11 +561,11 @@ with left:
     <style>
     /* Remove all spacing around the input columns */
     #compact-form {
-        margin-top: -35px !important;
+        margin-top: -50px !important;
         padding-top: 0px !important;
     }
     #leftwrap {
-        margin-top: -30px !important;
+        margin-top: -35px !important;
         padding-top: 0px !important;
     }
     /* Reduce spacing in columns */
@@ -1103,6 +1103,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
