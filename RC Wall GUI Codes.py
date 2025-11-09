@@ -453,42 +453,74 @@ except Exception:
 
 st.markdown(f"""
 <style>
-  .page-header {{ 
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-start; 
-    gap: 20px; 
-    margin: 0; 
+  /* Ensure the body and html take full width and height */
+  html, body {{
+    width: 100%;
+    height: 100%;
+    margin: 0;
     padding: 0;
   }}
-  .page-header__title {{ 
-    font-size: {FS_TITLE}px; 
-    font-weight: 800; 
-    margin: 0; 
-    transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px);
+
+  /* Fix the logo at the top right, regardless of zoom level */
+  .page-header__logo {{
+    position: fixed;
+    top: 20px;  /* Keep it slightly from the top */
+    right: 20px;  /* Stick to the right of the page */
+    z-index: 1000;
+    height: auto;
+    max-height: 60px;  /* Max height to maintain consistency */
+    width: auto;
   }}
 
-  /* Move the logo to the right and fix it on the page */
-  .page-header__logo {{
-    height: {int(LOGO_SIZE)}px; 
-    width: auto; 
-    display: block; 
-    position: fixed;  /* Fix the logo to the page */
-    top: {int(LOGO_TOP)}px;  /* Adjust the top position */
-    right: 0px;  /* Move logo to the right */
-    z-index: 1000;  /* Ensure the logo stays on top of other elements */
-    margin-left: 0;  /* Ensure no left margin */
-    margin-top: 0;  /* Ensure no top margin */
-    transform: none;  /* Reset transform */
+  /* Move the title to the left with dynamic margin */
+  .page-header__title {{
+    font-size: {FS_TITLE}px;
+    font-weight: 800;
+    margin: 0;
+    padding: 20px;
+  }}
+
+  /* Keep the page header aligned */
+  .page-header {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }}
+  
+  /* Adjust the inputs and other elements for responsiveness */
+  .block-container {{
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }}
+
+  /* Make input fields responsive */
+  .stNumberInput input {{
+    width: 100%;  /* Use full width of the container */
+    height: 40px;  /* Set a consistent height */
+  }}
+
+  /* Adjust margins and paddings for spacing */
+  .stButton > button {{
+    padding: 10px 20px;
+    font-size: 16px;
+  }}
+
+  /* Ensure the layout is fluid when zooming */
+  .form-banner {{
+    text-align: center;
+    background: linear-gradient(90deg, #0E9F6E, #84CC16);
+    color: #fff;
+    padding: .45rem .75rem;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: {FS_SECTION + 4}px;
+    margin: 0 !important;
   }}
 </style>
-<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
-  <div class="page-header">
-    <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
-</div>
 """, unsafe_allow_html=True)
+
 
 
 
@@ -1008,6 +1040,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
