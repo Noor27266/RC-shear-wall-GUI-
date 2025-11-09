@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
@@ -13,28 +11,26 @@ os.environ.setdefault("KERAS_BACKEND", "tensorflow")
 import streamlit as st
 import pandas as pd
 import numpy as np
-import base64, json
+import base64
 from pathlib import Path
 from glob import glob
 
-# ML libs
 import xgboost as xgb
 import joblib
 import catboost
 import lightgbm as lgb
 
-# --- Keras compatibility loader (PS/MLP only) ---
+# --- Keras compatibility loader ---
 try:
     from tensorflow.keras.models import load_model as _tf_load_model
 except Exception:
     _tf_load_model = None
 try:
-    from keras.models import load_model as _k3_load_model   # works when keras==3 is present
+    from keras.models import load_model as _k3_load_model
 except Exception:
     _k3_load_model = None
 
 def _load_keras_model(path):
-    """Try tf.keras first, then keras (Keras 3)."""
     errs = []
     if _tf_load_model is not None:
         try:
@@ -48,49 +44,35 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
-# --- session defaults (prevents AttributeError on first run) ---
+# --- session defaults ---
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
 # 🔧 STEP 2: UTILITY FUNCTIONS & HELPER TOOLS
 # =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
-def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
-def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
+
+def b64(path: Path) -> str: 
+    return base64.b64encode(path.read_bytes()).decode("ascii")
+
+def dv(R, key, proposed): 
+    lo, hi = R[key]
+    return float(max(lo, min(proposed, hi)))
 
 # ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
+
 def pfind(candidates):
     for c in candidates:
         p = Path(c)
         if p.exists():
             return p
-    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
-    for root in roots:
-        if not root.exists():
-            continue
-        for c in candidates:
-            p = root / c
-            if p.exists():
-                return p
-    for root in [BASE_DIR, Path("/mnt/data")]:
-        if not root.exists():
-            continue
-        for sub in root.iterdir():
-            if sub.is_dir():
-                for c in candidates:
-                    p = sub / c
-                    if p.exists():
-                        return p
-    pats = []
-    for c in candidates:
-        for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
-            if root.exists():
-                pats.append(str(root / "**" / c))
-    for pat in pats:
-        matches = glob(pat, recursive=True)
-        if matches:
-            return Path(matches[0])
+    for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
+        if root.exists():
+            for c in candidates:
+                p = root / c
+                if p.exists():
+                    return p
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
@@ -98,30 +80,28 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
-SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
-
+# Font and UI scaling
+SCALE_UI = 0.36
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(20)  # page title
-FS_SECTION = s(40)  # section headers
-FS_LABEL   = s(40)  # input & select labels (katex included)
-FS_UNITS   = s(30)  # math units in labels
-FS_INPUT   = s(30)  # number input value
-FS_SELECT  = s(35)  # dropdown value/options
-FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
-FS_BADGE   = s(30)  # predicted badge
-FS_RECENT  = s(20)  # small chips
-INPUT_H    = max(32, int(FS_INPUT * 2.0))
+FS_TITLE = s(20)
+FS_SECTION = s(40)
+FS_LABEL = s(40)
+FS_UNITS = s(30)
+FS_INPUT = s(30)
+FS_SELECT = s(35)
+FS_BUTTON = s(20)
+FS_BADGE = s(30)
+FS_RECENT = s(20)
+INPUT_H = max(32, int(FS_INPUT * 2.0))
 
-# header logo default height (can still be changed by URL param "logo")
 DEFAULT_LOGO_H = 60
 
-PRIMARY   = "#8E44AD"
+PRIMARY = "#8E44AD"
 SECONDARY = "#f9f9f9"
-INPUT_BG     = "#ffffff"
+INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
-LEFT_BG      = "#e0e4ec"
+LEFT_BG = "#e0e4ec"
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -139,87 +119,28 @@ css(f"""
     .stNumberInput label, .stSelectbox label {{
         font-size:{FS_LABEL}px !important; font-weight:700;
     }}
-    .stNumberInput label .katex,
-    .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
-    .stNumberInput label .katex .fontsize-ensurer,
-    .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
-
-    .stNumberInput label .katex .mathrm,
-    .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
-
-    div[data-testid="stNumberInput"] input[type="number"],
-    div[data-testid="stNumberInput"] input[type="text"] {{
+    .stNumberInput label .katex, .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; }}
+    div[data-testid="stNumberInput"] input[type="number"], div[data-testid="stNumberInput"] input[type="text"] {{
         font-size:{FS_INPUT}px !important;
         height:{INPUT_H}px !important;
         line-height:{INPUT_H - 8}px !important;
         font-weight:600 !important;
         padding:10px 12px !important;
     }}
-
-    div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
-        background:{INPUT_BG} !important;
-        border:1px solid {INPUT_BORDER} !important;
-        border-radius:12px !important;
-        box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-        transition:border-color .15s ease, box-shadow .15s ease !important;
-    }}
-    div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
-    div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-        border-color:{PRIMARY} !important;
-        box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
-    }}
-
-    div[data-testid="stNumberInput"] button {{
-        background:#ffffff !important;
-        border:1px solid {INPUT_BORDER} !important;
-        border-radius:10px !important;
-        box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
-    }}
-    div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
-
-    /* Select font sizes are tied to FS_SELECT */
-    .stSelectbox [role="combobox"],
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-    div[data-testid="stSelectbox"] div[role="listbox"],
-    div[data-testid="stSelectbox"] div[role="option"] {{
-        font-size:{FS_SELECT}px !important;
-    }}
-
-    /* Buttons use FS_BUTTON, no wrapping */
-    div.stButton > button {{
-        font-size:{FS_BUTTON}px !important;
-        height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-        line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-        white-space:nowrap !important;
-        color:#fff !important;
-        font-weight:700; border:none !important; border-radius:8px !important;
-        background:#4CAF50 !important;
-    }}
-    div.stButton > button:hover {{ filter: brightness(0.95); }}
-
-    button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-    button[key="reset_btn"] {{ background:#2196F3 !important; }}
-    button[key="clear_btn"] {{ background:#f44336 !important; }}
-
-    /* Move form banner even higher */
-    .form-banner {{
-        margin-top: -25px !important;
-        margin-bottom: -5px !important;
-        padding: 5px 0px !important;
-    }}
-
-    /* Remove margin/padding between input fields */
     .stNumberInput, .stSelectbox {{
         margin-top: 0px !important;
         margin-bottom: 0px !important;
     }}
-
-    /* Adjust the section headers further */
-    .section-header {{
-        margin-top: 0px !important;
-        padding-top: 0px !important;
+    .form-banner {{
+        margin-top: -25px !important;
+        padding: 5px 0px !important;
     }}
-
+    .stButton > button {{
+        font-size:{FS_BUTTON}px !important;
+        height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+        line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+        background:#4CAF50 !important;
+    }}
     .prediction-result {{
         font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
         background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
@@ -228,63 +149,22 @@ css(f"""
         font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
         border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
     }}
-
-    #compact-form{{ max-width:900px; margin:0 auto; }}
-    #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-    #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
-    #compact-form [data-testid="stNumberInput"],
-    #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
-    #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-    #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
-
-    .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-        background:{LEFT_BG} !important;
-        border-radius:12px !important;
-        box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-        padding:16px !important;
-    }}
-
-    [data-baseweb="popover"], [data-baseweb="tooltip"],
-    [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-        background:#000 !important; color:#fff !important; border-radius:8px !important;
-        padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
-    }}
-    [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
-
-    /* Keep consistent sizes for model select label and buttons */
-    label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
-    #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
-
-
-
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
-try:
-    qp = st.query_params
-    if "tune" in qp:
-        SHOW_TUNING = _is_on(qp.get("tune"))
-except Exception:
-    try:
-        qp = st.experimental_get_query_params()
-        if "tune" in qp:
-            SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
-    except Exception:
-        pass
 
-# Defaults (used when sidebar tuning is hidden)
 right_offset = 80
-HEADER_X   = 0
+HEADER_X = 0
 TITLE_LEFT = 35
-TITLE_TOP  = 60
-LOGO_LEFT  = 00
-LOGO_TOP   = 60
-LOGO_SIZE  = 50
+TITLE_TOP = 60
+LOGO_LEFT = 0
+LOGO_TOP = 60
+LOGO_SIZE = 50
 _show_recent = False
 
 if SHOW_TUNING:
@@ -300,11 +180,6 @@ if SHOW_TUNING:
         LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
-
-
-
-
-
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
@@ -314,14 +189,13 @@ try:
 except Exception:
     _b64 = ""
 
-# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
 <style>
-  .page-header {{ 
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-end; 
-    margin: 0; 
+  .page-header {{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    margin: 0;
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
   }}
@@ -330,7 +204,6 @@ st.markdown(f"""
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block;
-    margin-right: 2rem;
     position: absolute;
     left: {LOGO_LEFT}px;
     top: {LOGO_TOP}px;
@@ -880,6 +753,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
