@@ -605,29 +605,23 @@ with right:
         margin-top: 10px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BLACK BORDERS FROM DROPDOWN */
-    
-    /* Target the main select box container */
+    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;
+        border: none !important; /* Remove border */
         box-shadow: none !important; 
-        background: #D3D3D3 !important;
+        background: #D3D3D3 !important; /* Light grey background */
         height: 50px !important;
-        border-radius: 8px !important;
+        border-radius: 8px !important; /* Rounded corners */
         padding: 0px 12px !important;
-        outline: none !important;
+        outline: none !important; /* Remove outline */
     }
     
-    /* Remove borders from all parent containers */
-    div[data-testid="stSelectbox"] > div,
-    div[data-testid="stSelectbox"] > div > div {
+    div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
-        background: transparent !important;
     }
 
-    /* Style the inner dropdown div */
     div[data-testid="stSelectbox"] > div > div { 
         height: 50px !important; 
         display: flex !important; 
@@ -639,7 +633,7 @@ with right:
         color: #888888 !important;
     }
     
-    /* Remove border from input element */
+    /* Remove border from the input element inside */
     div[data-testid="stSelectbox"] input {
         border: none !important;
         outline: none !important;
@@ -647,29 +641,36 @@ with right:
         color: #888888 !important;
     }
     
-    /* Remove ALL focus/hover borders */
+    /* Remove ALL focus borders and black outlines */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Keep light grey */
     }
     
-    /* Style dropdown arrow */
+    /* Remove black from dropdown arrow */
     div[data-testid="stSelectbox"] svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
     
-    /* Position the dropdown */
+    /* Remove black from dropdown arrow on hover/focus */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
+        fill: #888888 !important;
+        color: #888888 !important;
+        stroke: #888888 !important;
+    }
+    
+    /* MOVE MODEL SELECTION DROPDOWN DOWN */
     div[data-testid="stSelectbox"] > div:first-child {
         margin-top: 30px !important;
     }
     
-    /* Style the label */
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
@@ -677,51 +678,58 @@ with right:
         margin-bottom: 5px !important;
     }
     
-    /* COMPLETELY REMOVE BLACK FROM DROPDOWN POPUP - THIS IS KEY */
-    [data-baseweb="popover"] {
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
+    [data-baseweb="select"] *, 
+    [data-baseweb="popover"] *, 
+    [data-baseweb="menu"] * { 
+        color: #888888 !important;
+        background-color: #D3D3D3 !important; /* Light grey */
+        font-size: {FS_SELECT}px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important;
+    }
+    
+    /* Remove border from popover - NO BLACK BORDERS */
+    [data-baseweb="popover"] {
         border-radius: 8px !important;
+        overflow: hidden !important;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important; /* Keep light grey */
     }
     
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Keep light grey */
     }
     
-    /* Style dropdown options - NO BORDERS */
     div[role="option"] { 
         color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Light grey */
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
     }
     
-    /* Remove separator lines between options */
+    /* Remove the last item border */
+    div[role="option"]:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* Remove any separator lines between options */
     div[role="option"]:not(:last-child) {
         border-bottom: none !important;
     }
     
-    /* Hover effect for options */
+    /* Make dropdown hover effect grey */
     div[role="option"]:hover {
-        background-color: #B8B8B8 !important;
+        background-color: #B8B8B8 !important; /* Darker grey hover */
         color: #888888 !important;
         border: none !important;
-    }
-    
-    /* OVERRIDE ANY STREAMLIT DEFAULT BLACK BORDERS */
-    [data-baseweb="select"] *,
-    [data-baseweb="popover"] *,
-    [data-baseweb="menu"] * {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
     }
     
     /* Make buttons smaller in width */
@@ -802,6 +810,7 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
+
 
 
 
@@ -1061,4 +1070,80 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
