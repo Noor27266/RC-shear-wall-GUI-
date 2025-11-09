@@ -99,7 +99,7 @@ def pfind(candidates):
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
-SCALE_UI = 0.10  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
+SCALE_UI = 0.30  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
 
 s = lambda v: int(round(v * SCALE_UI))
 
@@ -986,4 +986,5 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
