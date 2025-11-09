@@ -545,10 +545,10 @@ with left:
     # METHOD 1: Remove all empty space first
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
-    # MOVE THE TITLE INSIDE THE GREY AREA
+    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:2px; margin:20; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:2px 0; padding:0;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-10px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
@@ -1075,6 +1075,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
