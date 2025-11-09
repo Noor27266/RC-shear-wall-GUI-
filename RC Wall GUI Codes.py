@@ -129,28 +129,50 @@ LEFT_BG      = "#e0e4ec"
 
 # Add viewport meta tag for zoom stability first
 st.markdown("""
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 """, unsafe_allow_html=True)
 
 css(f"""
 <style>
-  /* Prevent all transforms that cause shifting */
-  * {{
-      transform: none !important;
-  }}
-
-  .block-container {{ 
-    padding-top: 0rem; 
-    margin-left: 250px !important;
-    position: relative !important;
-    left: 0 !important;
-    transform: none !important;
-  }}
-
-  .stApp {{
-    position: relative !important;
-    transform: none !important;
+  /* COMPLETELY LOCK THE INTERFACE IN PLACE */
+  html, body, .stApp {{
     overflow: hidden !important;
+    position: fixed !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: none !important;
+    left: 0 !important;
+    top: 0 !important;
+    zoom: 1 !important;
+  }}
+
+  /* FORCE ENTIRE INTERFACE TO THE RIGHT */
+  .main .block-container {{
+    position: absolute !important;
+    left: 300px !important;
+    top: 0 !important;
+    width: calc(100vw - 300px) !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    transform: none !important;
+    overflow: auto !important;
+  }}
+
+  /* Remove all Streamlit default centering */
+  .stApp {{
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+  }}
+
+  /* Lock all containers in place */
+  [data-testid="stAppViewContainer"],
+  [data-testid="stAppViewContainer"] > div,
+  section.main {{
+    position: static !important;
+    transform: none !important;
+    left: 0 !important;
+    top: 0 !important;
   }}
 
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
@@ -271,20 +293,6 @@ css(f"""
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 
-  /* Ensure all containers have stable positioning */
-  [data-testid="stAppViewContainer"], 
-  [data-testid="stAppViewContainer"] > div,
-  section.main {{
-    position: relative !important;
-    transform: none !important;
-  }}
-
-  /* Stable container sizing */
-  .block-container {{
-    min-width: 1200px !important;
-    max-width: 1400px !important;
-  }}
-
   /* Prevent any element from moving on zoom */
   [data-testid="column"], 
   [data-testid="stHorizontalBlock"],
@@ -297,130 +305,78 @@ css(f"""
 </style>
 """)
 
-# Keep header area slim
+# Additional CSS to remove all default Streamlit spacing
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:0rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
+/* Remove ALL Streamlit default spacing and centering */
+header[data-testid="stHeader"] { 
+    display: none !important; 
+}
+
+div.stApp { 
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+section.main > div.block-container { 
+    padding-top: 0 !important; 
+    margin-top: 0 !important;
+}
+
 /* Hide Streamlit's small +/- buttons on number inputs */
 div[data-testid="stNumberInput"] button { display: none !important; }
 
 /* Also hide browser numeric spinners for consistency */
 div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
-div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
-</style>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
+div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+div[data-testid="stNumberInput"] input[type=number] { 
+    -moz-appearance: textfield; 
+}
+
 /* Increase the width of the Predicted Damage Index (DI) box */
 .prediction-result {
-  width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 250px !important;  /* Slightly increase the width */
-  padding: 4px 12px !important;  /* Maintain compact padding */
-  font-size: 0.9em !important;  /* Smaller text inside DI box */
-  white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+  width: auto !important;
+  max-width: 250px !important;
+  padding: 4px 12px !important;
+  font-size: 0.9em !important;
+  white-space: nowrap !important;
+  margin-right: 15px !important;
 }
+
 /* Move the Download CSV button closer to the DI box */
 div[data-testid="stDownloadButton"] {
   display: inline-block !important;
-  margin-left:-100px !important;  /* Move it slightly to the left */
+  margin-left:-100px !important;
 }
 div[data-testid="stDownloadButton"] button {
   white-space: nowrap !important;
-  padding: 3px 8px !important;  /* Smaller button padding */
-  font-size: 8px !important;  /* Smaller font size */
-  height: auto !important;  /* Adjust height according to content */
-  line-height: 1.1 !important;  /* Adjust line height */
+  padding: 3px 8px !important;
+  font-size: 8px !important;
+  height: auto !important;
+  line-height: 1.1 !important;
 }
-</style>
-""", unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-/* Decrease the width and increase the height of the model selection box */
+/* Model selection box styling */
 div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
-    height: 30px !important;  /* Increase the height (length) of the select box */
+    width: 110% !important;
+    height: 30px !important;
 }
 
-/* Ensure the options inside are also displayed nicely */
 div[data-testid="stSelectbox"] > div > div {
-    height: 110px !important;  /* Set the height of the dropdown items */
-    line-height: 30px !important;  /* Make the items vertically centered */
+    height: 110px !important;
+    line-height: 30px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-css("""
-<style>
-/* Remove ALL scrolling */
-html, body, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Ensure content fits within viewport */
-.stApp > div {
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Prevent any element from causing overflow */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Constrain your specific components */
-.page-header-outer {
-    max-width: 100% !important;
-    transform: none !important;
-}
-
-/* Make sure columns and containers don't overflow */
-[data-testid="column"], [data-testid="stHorizontalBlock"] {
-    max-width: 100% !important;
-    overflow: hidden !important;
-}
-</style>
-""")
-
 # =============================================================================
-# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
-# =============================================================================
-
-# This is now handled in the main CSS above
-
-# =============================================================================
-# ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
+# ⚙️ STEP 4: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
-try:
-    qp = st.query_params
-    if "tune" in qp:
-        SHOW_TUNING = _is_on(qp.get("tune"))
-except Exception:
-    try:
-        qp = st.experimental_get_query_params()
-        if "tune" in qp:
-            SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
-    except Exception:
-        pass
 
 # Defaults (used when sidebar tuning is hidden)
 right_offset = 80
@@ -432,21 +388,8 @@ LOGO_TOP   = 10
 LOGO_SIZE  = 50
 _show_recent = False
 
-if SHOW_TUNING:
-    with st.sidebar:
-        right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
-    with st.sidebar:
-        st.markdown("### Header position (title & logo)")
-        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
-        TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
-        TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
-        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
-        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
-        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
-        _show_recent = st.checkbox("Show Recent Predictions", value=False)
-
 # =============================================================================
-# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
+# 🏷️ STEP 5: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -505,7 +448,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
+# 🤖 STEP 6: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -608,20 +551,11 @@ for name, ok, *_ in health:
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
-if SHOW_TUNING:
-    with st.sidebar:
-        st.header("Model Health")
-        for name, ok, msg, cls in health:
-            st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
-        for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
-            try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
-            except Exception: pass
-
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
-# 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
+# 📊 STEP 7: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
@@ -696,7 +630,7 @@ with left:
     css("</div>")
 
 # =============================================================================
-# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# 🎮 STEP 8: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 5, 300
 MODEL_X, MODEL_Y = 100, -2
@@ -768,7 +702,7 @@ with right:
         chart_slot = st.empty()
 
 # =============================================================================
-# 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
+# 🔮 STEP 9: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
 _TRAIN_NAME_MAP = {
     'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
@@ -885,7 +819,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
-# ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
+# ⚡ STEP 10: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
@@ -933,7 +867,7 @@ with right:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
-# 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
+# 🎨 STEP 11: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
 st.markdown("""
 <style>
@@ -949,75 +883,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# =============================================================================
-# 📋 STEP 13: RECENT PREDICTIONS DISPLAY (OPTIONAL)
-# =============================================================================
-if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
-    right_predictions = st.empty()
-    with right_predictions:
-        st.markdown("### 🧾 Recent Predictions")
-        for i, row in st.session_state.results_df.tail(5).reset_index(drop=True).iterrows():
-            st.markdown(
-                f"<div class='recent-box' style='display:inline-block; width:auto; padding:4px 10px;'>"
-                f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
-                unsafe_allow_html=True
-            )
-
-# =============================================================================
-# 🎛️ STEP 14: DYNAMIC STYLE OVERRIDES VIA QUERY PARAMETERS
-# =============================================================================
-def _get_qp():
-    try:
-        return st.query_params
-    except Exception:
-        try:
-            return st.experimental_get_query_params()
-        except Exception:
-            return {}
-
-_qp = _get_qp()
-
-def _get_int(name):
-    try:
-        v = _qp.get(name)
-        if isinstance(v, list): v = v[0]
-        return int(v) if v not in (None, "", []) else None
-    except Exception:
-        return None
-
-_FS_TITLE   = _get_int("fs_title")
-_FS_SECTION = _get_int("fs_section")
-_FS_LABEL   = _get_int("fs_label")
-_FS_UNITS   = _get_int("fs_units")
-_FS_INPUT   = _get_int("fs_input")
-_FS_SELECT  = _get_int("fs_select")
-_FS_BUTTON  = _get_int("fs_button")
-_FS_BADGE   = _get_int("fs_badge")
-_FS_RECENT  = _get_int("fs_recent")
-_LOGO_H     = _get_int("logo")
-
-_rules = []
-if _FS_TITLE   is not None: _rules.append(f".page-header__title{{font-size:{_FS_TITLE}px !important;}}")
-if _FS_SECTION is not None: _rules.append(f".section-header{{font-size:{_FS_SECTION}px !important;}}")
-if _FS_LABEL   is not None: _rules.append(f".stNumberInput label, .stSelectbox label{{font-size:{_FS_LABEL}px !important;}}")
-if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm{{font-size:{_FS_UNITS}px !important;}}")
-if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
-if _FS_SELECT  is not None:
-    _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
-    _rules.append(f"div[data-testid='stSelectbox'] div[role='listbox'], div[data-testid='stSelectbox'] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
-if _FS_BUTTON  is not None:
-    _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
-    _btn_lh = max(36, int(round(_FS_BUTTON * 1.15)))
-    _rules.append(f"div.stButton > button{{font-size:{_FS_BUTTON}px !important;height:{_btn_h}px !important;line-height:{_btn_lh}px !important;white-space:nowrap !important;}}")
-else:
-    _rules.append("div.stButton > button{white-space:nowrap !important;}")
-
-if _FS_BADGE  is not None: _rules.append(f".prediction-result{{font-size:{_FS_BADGE}px !important;}}")
-if _FS_RECENT is not None: _rules.append(f".recent-box{{font-size:{_FS_RECENT}px !important;}}")
-if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}px !important;}}")
-
-if _rules:
-    css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
