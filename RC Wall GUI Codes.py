@@ -177,14 +177,6 @@ css(f"""
   }}
   div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
 
-  /* Select font sizes are tied to FS_SELECT */
-  .stSelectbox [role="combobox"],
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-  div[data-testid="stSelectbox"] div[role="listbox"],
-  div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}px !important;
-  }}
-
   /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
@@ -250,18 +242,6 @@ css(f"""
 </style>
 """)
 
-# Keep header area slim - REDUCED TOP SPACE
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -817,6 +797,7 @@ with right:
 
 
 
+
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
@@ -1070,6 +1051,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
