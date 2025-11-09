@@ -105,7 +105,7 @@ s = lambda v: int(round(v * SCALE_UI))
 
 FS_TITLE   = s(20)  # page title
 FS_SECTION = s(60)  # section headers
-FS_LABEL   = s(50)  # input & select labels (katex included)
+FS_LABEL   = s(30)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
 FS_INPUT   = s(30)  # number input value
 FS_SELECT  = s(35)  # dropdown value/options
@@ -512,7 +512,7 @@ with left:
     # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
     <div style="background:#e0e4ec; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:70px; font-weight:800; color:#333; margin-bottom:20px;">
+        <div style="text-align:center; font-size:40px; font-weight:800; color:#333; margin-bottom:20px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
