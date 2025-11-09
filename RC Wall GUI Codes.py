@@ -544,39 +544,43 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 1], gap="large")
 
 with left:
-    # MOVE THE TITLE INSIDE THE GREY AREA
+    # MOVE THE TITLE INSIDE THE GREY AREA - REDUCED PADDING
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:5px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:2px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
     
-    # AGGRESSIVE UPWARD MOVEMENT FOR INPUT FEATURES AND COLUMNS
-    st.markdown("<div style='margin-top: -35px; padding-top: 0px;'>", unsafe_allow_html=True)
-    st.markdown("<div class='form-banner' style='margin-top: 0px; margin-bottom: 5px;'>Inputs Features</div>", unsafe_allow_html=True)
+    # EXTREMELY AGGRESSIVE UPWARD MOVEMENT FOR INPUT FEATURES AND COLUMNS
+    st.markdown("<div style='margin-top: -50px; padding-top: 0px;'>", unsafe_allow_html=True)
+    st.markdown("<div class='form-banner' style='margin-top: 0px; margin-bottom: 2px; padding: 0.3rem 0.75rem;'>Inputs Features</div>", unsafe_allow_html=True)
     
     # Add CSS to remove all spacing around the columns
     st.markdown("""
     <style>
     /* Remove all spacing around the input columns */
     #compact-form {
-        margin-top: -25px !important;
+        margin-top: -35px !important;
         padding-top: 0px !important;
     }
     #leftwrap {
-        margin-top: -20px !important;
+        margin-top: -30px !important;
         padding-top: 0px !important;
     }
     /* Reduce spacing in columns */
     [data-testid="column"] {
         padding-top: 0px !important;
         padding-bottom: 0px !important;
-        margin-top: -15px !important;
+        margin-top: -25px !important;
     }
     /* Reduce spacing between inputs */
     div[data-testid="stNumberInput"] {
-        margin-bottom: 0.1rem !important;
+        margin-bottom: 0.05rem !important;
+    }
+    /* Reduce section header spacing */
+    .section-header {
+        margin: 1px 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -588,15 +592,15 @@ with left:
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
-        st.markdown("<div class='section-header' style='margin: 2px 0 !important;'>Geometry </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header' style='margin: 1px 0 !important;'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
     with c2:
-        st.markdown("<div class='section-header' style='margin: 2px 0 !important;'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header' style='margin: 1px 0 !important;'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
     with c3:
-        st.markdown("<div class='section-header' style='margin: 2px 0 !important;'>Material Strengths</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header' style='margin: 1px 0 !important;'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
@@ -1099,6 +1103,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
