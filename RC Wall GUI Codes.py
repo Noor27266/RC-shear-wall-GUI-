@@ -104,10 +104,10 @@ SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% 
 s = lambda v: int(round(v * SCALE_UI))
 
 FS_TITLE   = s(20)  # page title
-FS_SECTION = s(60)  # section headers
-FS_LABEL   = s(30)  # input & select labels (katex included)
+FS_SECTION = s(40)  # section headers
+FS_LABEL   = s(40)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
-FS_INPUT   = s(50)  # number input value
+FS_INPUT   = s(30)  # number input value
 FS_SELECT  = s(35)  # dropdown value/options
 FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
 FS_BADGE   = s(30)  # predicted badge
@@ -865,6 +865,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
