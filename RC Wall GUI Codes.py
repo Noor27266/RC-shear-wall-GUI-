@@ -210,6 +210,7 @@ css(f"""
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
     margin:.1rem 0 !important;
+    transform: translateY(-10px);
   }}
 
   .prediction-result {{
@@ -248,6 +249,19 @@ css(f"""
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
+
+# Keep header area slim - REDUCED TOP SPACE
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -477,8 +491,6 @@ if SHOW_TUNING:
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
-
-
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
@@ -530,17 +542,21 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 1], gap="large")
 
 with left:
-    # MOVE THE TITLE INSIDE THE GREY AREA - FIXED VERSION
+    # MOVE THE TITLE INSIDE THE GREY AREA - KEEP THIS NORMAL
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:8px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:8px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:10px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
     
+    # ONLY MOVE INPUT FEATURES LABEL AND COLUMNS UP
+    st.markdown("<div style='margin-top: -15px;'>", unsafe_allow_html=True)
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    
     css("<div id='leftwrap'>")
-    css("<div id='compact-form'>")
+    css("<div id='compact-form' style='margin-top: -10px;'>")  # Move columns up
 
     # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
@@ -1057,83 +1073,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
