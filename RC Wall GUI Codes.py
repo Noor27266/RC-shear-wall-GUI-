@@ -319,7 +319,7 @@ st.markdown(f"""
     align-items: center; 
     justify-content: space-between; 
     margin: 0; 
-    padding: 0.5rem 0 1rem 0;
+    padding: 1.5rem 0 1rem 0;
     width: 100%;
   }}
   .page-header__title {{ 
@@ -327,13 +327,15 @@ st.markdown(f"""
     font-weight:800; 
     margin:0;
     flex: 1;
+    padding-top: 0.5rem;
   }}
 
   .page-header__logo {{
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block;
-    margin-left: 2rem;
+    margin-left: 1rem;
+    padding-top: 0.5rem;
   }}
 </style>
 <div class="page-header-outer">
@@ -343,7 +345,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
@@ -864,6 +865,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
