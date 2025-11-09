@@ -93,71 +93,35 @@ def pfind(candidates):
             return Path(matches[0])
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
-# Scaling factor to adjust the entire UI
-SCALE_UI = 0.3  # Adjust this value as needed
+# =============================================================================
+# 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
+# =============================================================================
+st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# Function to scale dimensions based on SCALE_UI
+# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
+
 s = lambda v: int(round(v * SCALE_UI))
 
-# Update font sizes and component sizes based on the scaling factor
-FS_TITLE   = s(100)  # Page title size
-FS_SECTION = s(60)   # Section headers
-FS_LABEL   = s(50)   # Input & select labels
-FS_INPUT   = s(30)   # Input field size
-FS_SELECT  = s(35)   # Dropdown size
-FS_BUTTON  = s(20)   # Button size
-FS_BADGE   = s(30)   # Prediction badge size
-FS_RECENT  = s(20)   # Recent predictions size
+FS_TITLE   = s(100)  # page title
+FS_SECTION = s(60)  # section headers
+FS_LABEL   = s(50)  # input & select labels (katex included)
+FS_UNITS   = s(30)  # math units in labels
+FS_INPUT   = s(30)  # number input value
+FS_SELECT  = s(35)  # dropdown value/options
+FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
+FS_BADGE   = s(30)  # predicted badge
+FS_RECENT  = s(20)  # small chips
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
-# Adjust CSS for compact spacing and scaling
-css(f"""
-<style>
-  .block-container {{ padding-top: 0rem; }}
-  h1 {{ font-size:{FS_TITLE}px !important; }}
-  .section-header {{
-    font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
-  }}
-  .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
-  }}
-  div[data-testid="stNumberInput"] input[type="number"],
-  div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
-      height:{INPUT_H}px !important;
-      padding:10px 12px !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
-      background:#fff !important;
-      border:1px solid #e6e9f2 !important;
-      border-radius:12px !important;
-  }}
-  .stSelectbox [role="combobox"] {{
-      font-size:{FS_SELECT}px !important;
-  }}
-  div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:{max(42, int(round(FS_BUTTON * 1.45)))}px !important;
-  }}
-  .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center;
-  }}
-  .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem;
-    border-radius:5px; font-weight:600;
-  }}
-  /* Adjust layout to ensure compact form */
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:#f4f7fa !important;
-      border-radius:12px !important;
-  }}
-  .page-header__title {{
-    font-size:{FS_TITLE}px !important; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px);
-  }}
-</style>
-""")
+# header logo default height (can still be changed by URL param "logo")
+DEFAULT_LOGO_H = 60
+
+PRIMARY   = "#8E44AD"
+SECONDARY = "#f9f9f9"
+INPUT_BG     = "#ffffff"
+INPUT_BORDER = "#e6e9f2"
+LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -1022,6 +986,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
