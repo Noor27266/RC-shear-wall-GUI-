@@ -509,15 +509,12 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1, 1], gap="large")
 
 with left:
+    # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:10px; text-align:center;">
-        <div style="font-size:24px; font-weight:600; color:#333; margin:0;">
-            Predict Damage Index (DI) for RC Shear Walls
+    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:10px;">
+            Predict Damage index (DI) for RC Shear Walls
         </div>
-        <div style="font-size:18px; font-weight:500; color:#555; margin:2px 0 0 0;">
-            Inputs Features
-        </div>
-    </div>
     """, unsafe_allow_html=True)
     
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -544,24 +541,6 @@ with left:
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
-
-
-
-with left:
-    st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:10px; text-align:center;">
-        <div style="font-size:24px; font-weight:600; color:#333; margin:0;">
-            Predict Damage Index (DI) for RC Shear Walls
-        </div>
-        <div style="font-size:18px; font-weight:500; color:#555; margin:2px 0 0 0;">
-            Inputs Features
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-
-
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -633,8 +612,6 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
-
-
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
@@ -889,8 +866,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
 
 
 
