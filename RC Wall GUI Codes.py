@@ -574,6 +574,7 @@ with left:
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+    
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -608,12 +609,14 @@ with right:
         min-width: 0 !important;
     }
     
-    /* Style the model selection to match button height */
+    /* Style the model selection to match button height and shape - WITH GREY BACKGROUND */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: 1px solid #e6e9f2 !important; 
         box-shadow: none !important; 
-        background: #fff !important;
+        background: #D3D3D3 !important;  /* GREY BACKGROUND */
         height: 50px !important;
+        border-radius: 8px !important;  /* SAME ROUNDED CORNERS AS BUTTONS */
+        padding: 0px 12px !important;
     }
     
     div[data-testid="stSelectbox"] > div > div { 
@@ -621,34 +624,46 @@ with right:
         display:flex !important; 
         align-items:center !important; 
         margin-top: 0px !important;
+        border-radius: 8px !important;  /* SAME ROUNDED CORNERS */
+    }
+    
+    /* MOVE MODEL SELECTION DROPDOWN DOWN */
+    div[data-testid="stSelectbox"] > div:first-child {
+        margin-top: 30px !important;  /* This moves the dropdown down */
     }
     
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
-        color: black !important; 
+        color: #666666 !important;  /* Dark grey instead of black */
         font-weight: bold !important; 
         margin-bottom: 5px !important;
     }
     
+    /* MAKE ENTIRE DROPDOWN GREY - REMOVED BLACK COLORS */
     [data-baseweb="select"] *, 
-[data-baseweb="popover"] *, 
-[data-baseweb="menu"] * { 
-    color: black !important; 
-    background-color: #D3D3D3 !important;  /* Changed to grey */
-    font-size: {FS_SELECT}px !important; 
-}
-
-/* Also make the main select box background grey */
-div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    border: 1px solid #e6e9f2 !important; 
-    box-shadow: none !important; 
-    background: #D3D3D3 !important;  /* Changed to grey */
-    height: 50px !important;
-}
+    [data-baseweb="popover"] *, 
+    [data-baseweb="menu"] * { 
+        color: #333333 !important;  /* Dark grey instead of black */
+        background-color: #D3D3D3 !important;  /* GREY BACKGROUND */
+        font-size: {FS_SELECT}px !important; 
+    }
+    
+    /* Style the dropdown menu to match button shape */
+    [data-baseweb="popover"] {
+        border-radius: 8px !important;  /* ROUNDED CORNERS FOR DROPDOWN MENU */
+        overflow: hidden !important;
+    }
     
     div[role="option"] { 
-        color: black !important; 
+        color: #333333 !important;  /* Dark grey instead of black */
         font-size: {FS_SELECT}px !important; 
+        background-color: #D3D3D3 !important;  /* GREY BACKGROUND FOR OPTIONS */
+        padding: 12px 16px !important;
+    }
+    
+    /* Make dropdown hover effect also grey */
+    div[role="option"]:hover {
+        background-color: #B8B8B8 !important;  /* Slightly darker grey on hover */
     }
     
     /* Make buttons equal height and width - MOVED DOWN */
@@ -662,6 +677,9 @@ div[data-testid="stSelectbox"] [data-baseweb="select"] {
         margin: 0 !important;
         white-space: nowrap !important;
         margin-top: 30px !important;  /* THIS MOVES BUTTONS DOWN */
+        border-radius: 8px !important;  /* ROUNDED CORNERS */
+        border: none !important;
+        font-weight: 700 !important;
     }
     
     button[key="calc_btn"] { background:#4CAF50 !important; }
@@ -972,6 +990,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
