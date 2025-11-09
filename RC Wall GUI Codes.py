@@ -304,6 +304,9 @@ if SHOW_TUNING:
 
 
 
+# Define LOGO_SIZE before using it in the CSS
+LOGO_SIZE = 100  # Set logo size, adjust this value to your preference
+
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
@@ -331,8 +334,8 @@ st.markdown(f"""
     display:block;
     margin-right: 2rem;
     position: relative;
-    left: {int(LOGO_LEFT)}px;  # Move the logo slightly to the left
-    top: {int(LOGO_TOP)}px;   # Move the logo slightly down
+    left: {int(LOGO_LEFT)}px;  # Move logo slightly to the left
+    top: {int(LOGO_TOP)}px;   # Move logo slightly down
   }}
 </style>
 <div class="page-header-outer">
@@ -874,6 +877,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
