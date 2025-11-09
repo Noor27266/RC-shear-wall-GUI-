@@ -519,8 +519,8 @@ with left:
     </div>
     """, unsafe_allow_html=True)
 
-    # Move the "Inputs Features" banner closer to the title
-    st.markdown("<div class='form-banner' style='margin-top: -10px;'>Inputs Features</div>", unsafe_allow_html=True)
+    # Move the "Inputs Features" banner closer to the title with more aggressive margin adjustment
+    st.markdown("<div class='form-banner' style='margin-top: -30px;'>Inputs Features</div>", unsafe_allow_html=True)
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
@@ -544,6 +544,7 @@ with left:
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -870,6 +871,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
