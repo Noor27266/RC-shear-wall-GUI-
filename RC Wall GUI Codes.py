@@ -575,6 +575,26 @@ with left:
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
     
+
+
+# =============================================================================
+# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# =============================================================================
+HERO_X, HERO_Y, HERO_W = 100, 5, 300
+MODEL_X, MODEL_Y = 100, -2
+CHART_W = 300
+
+with right:
+    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
+            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.markdown(""" 
     <style>
     /* Make all elements in the action row equal width and same line */
@@ -677,6 +697,51 @@ with left:
     }
     </style>
     """, unsafe_allow_html=True)
+
+    # SINGLE ROW WITH EQUAL WIDTH COLUMNS - ALL IN ONE LINE
+    st.markdown("<div id='action-row'>", unsafe_allow_html=True)
+    
+    # Use equal weights for all four elements
+    model_col, calc_col, reset_col, clear_col = st.columns([1, 1, 1, 1], gap="small")
+
+    with model_col:
+        available = set(model_registry.keys())
+        order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
+        ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
+        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+        _label_to_key = {"RF": "Random Forest"}
+        model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
+        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
+
+    with calc_col:
+        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+
+    with reset_col:
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            st.rerun()
+
+    with clear_col:
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
+            st.session_state.results_df = pd.DataFrame()
+            st.success("All predictions cleared.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
+    with badge_col:
+        pred_banner = st.empty()
+    with dl_col:
+        dl_slot = st.empty()
+    if not st.session_state.results_df.empty:
+        csv = st.session_state.results_df.to_csv(index=False)
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+
+    col1, col2 = st.columns([0.01, 20])
+    with col2:
+        chart_slot = st.empty()
+
+
+
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
@@ -930,6 +995,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
