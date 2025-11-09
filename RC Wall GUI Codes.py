@@ -374,6 +374,39 @@ html, body, .stApp {
 </style>
 """)
 
+@media (max-width: 768px) {
+  /* Apply these styles for small screens */
+  .form-container {
+    width: 100%;
+    padding: 10px;
+  }
+  .prediction-container {
+    width: 100%;
+  }
+  .header-logo {
+    width: 50px; /* Smaller logo for small screens */
+  }
+}
+
+@media (min-width: 769px) {
+  /* Apply these styles for larger screens */
+  .form-container {
+    width: 70%;
+  }
+  .header-logo {
+    width: 100px; /* Larger logo for larger screens */
+  }
+}
+
+
+
+
+
+
+
+
+
+
 # =============================================================================
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
@@ -986,6 +1019,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
