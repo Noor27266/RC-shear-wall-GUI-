@@ -374,19 +374,42 @@ html, body, .stApp {
 </style>
 """)
 
+
+  /* === ZOOM-PROOF FIXES === */
+  .stApp {
+      transform: none !important;
+      position: relative !important;
+  }
+  
+  .main .block-container {
+      position: relative !important;
+      transform: none !important;
+  }
+  
+  /* Prevent any layout shifting */
+  [data-testid="column"] {
+      position: relative !important;
+  }
+  
+  /* Keep buttons in place */
+  .stButton {
+      position: relative !important;
+  }
+
+
+
 # =============================================================================
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
 
 st.markdown("""
 <style>
-/* Move the entire interface to the right */
-.stApp {
-    transform: translateX(250px);  /* Adjust the value as needed */
+/* Move the entire interface to the right using flexbox instead of transform */
+.main .block-container {
+    margin-left: 250px !important;
 }
 </style>
 """, unsafe_allow_html=True)
-
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
@@ -428,7 +451,7 @@ if SHOW_TUNING:
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
 # =============================================================================
-# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
+# 🏷️ STEP 6: ZOOM-PROOF HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -438,24 +461,39 @@ except Exception:
 
 st.markdown(f"""
 <style>
-  .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
-  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
+  .page-header {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0 2rem;
+    width: 100%;
+    position: relative;
+  }}
+  
+  .page-header__title {{
+    font-size:{FS_TITLE}px;
+    font-weight:800; 
+    margin:0;
+    flex: 1;
+  }}
 
-  /* Move the logo to the right and fix it on the page */
+  /* Logo positioning - fixed to the right side using flexbox */
   .page-header__logo {{
     height:{int(LOGO_SIZE)}px; 
-    width:auto; 
-    display:block; 
-    position: fixed;  /* Fix the logo to the page */
-    top: {int(LOGO_TOP)}px;  /* Adjust the top position */
-    left: 950px;  /* Move logo to the right */
-    z-index: 1000;  /* Ensure the logo stays on top of other elements */
-    margin-left: 0;  /* Ensure no left margin */
-    margin-top: 0;  /* Ensure no top margin */
-    transform: none;  /* Reset transform */
+    width: auto; 
+    position: absolute;
+    right: 50px;
+    top: {int(LOGO_TOP)}px;
+  }}
+
+  .page-header-outer {{
+    width: 100%;
+    padding: 0 2rem;
   }}
 </style>
-<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
+
+<div class="page-header-outer">
   <div class="page-header">
     <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
@@ -665,11 +703,12 @@ with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
+        <div style="margin-left:{int(HERO_X)}px; margin-top:{int(HERO_Y)}px; text-align:left;">
             <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
         </div>
         """,
         unsafe_allow_html=True,
+    )
     )
 
     st.markdown(""" 
@@ -980,4 +1019,5 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
