@@ -309,29 +309,34 @@ if SHOW_TUNING:
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 
-# Add dynamic controls for logo positioning
+# Add controls in the sidebar to move the logo
+if SHOW_TUNING:
+    with st.sidebar:
+        st.markdown("### Logo Position and Size Controls")
+        
+        # Adjust this number to move the logo left/right (positive for right, negative for left)
+        LOGO_LEFT = st.number_input("Logo Left Position (px)", value=0, min_value=-500, max_value=500, step=10)
+        
+        # Adjust this number to move the logo up (positive for up, negative for down)
+        LOGO_TOP = st.number_input("Logo Top Position (px)", value=-50, min_value=-500, max_value=500, step=10)  # Negative value to move logo above
+        
+        # Adjust logo size here
+        LOGO_SIZE = st.number_input("Logo Size (px)", value=50, min_value=20, max_value=400, step=5)
+
+# Try loading the logo
 try:
-    # Try to read logo from file path
-    _logo_path = BASE_DIR / "TJU logo.png"
+    _logo_path = BASE_DIR / "TJU logo.png"  # Adjust path to your logo image file
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
     _b64 = ""
 
-# Allow dynamic controls for logo position (left and top) and size
-if SHOW_TUNING:
-    with st.sidebar:
-        st.markdown("### Logo Position and Size Controls")
-        LOGO_LEFT = st.number_input("Logo Left Position (px)", value=50, min_value=-500, max_value=500, step=10)
-        LOGO_TOP = st.number_input("Logo Top Position (px)", value=60, min_value=-500, max_value=500, step=10)
-        LOGO_SIZE = st.number_input("Logo Size (px)", value=50, min_value=20, max_value=400, step=5)
-
-# Adjust the CSS to dynamically position the logo
+# Place logo at the top of the page
 st.markdown(f"""
 <style>
   .page-header {{ 
     display: flex; 
     align-items: center; 
-    justify-content: flex-start; /* Keep the logo aligned to the left */
+    justify-content: flex-end; 
     margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
@@ -341,8 +346,8 @@ st.markdown(f"""
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block;
-    margin-left: 650px;   /* Move logo horizontally */
-    margin-top: 50px;     /* Move logo vertically */
+    margin-left: {LOGO_LEFT}px;   /* Horizontal movement (left/right) */
+    margin-top: {LOGO_TOP}px;     /* Vertical movement (up/down) */
   }}
 </style>
 <div class="page-header-outer">
@@ -351,6 +356,8 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+
 
 
 # =============================================================================
@@ -887,6 +894,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
