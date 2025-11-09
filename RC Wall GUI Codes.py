@@ -126,7 +126,6 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
-# Step 3.1: Comprehensive CSS Styling & Theme Setup
 css(f"""
 <style>
   .block-container {{ padding-top: 0rem; }}
@@ -244,17 +243,31 @@ css(f"""
       padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+  #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
-# Step 4: Interface Positioning & Layout Adjustments
-st.markdown("""<style> .stApp { transform: translateX(250px); } </style>""", unsafe_allow_html=True)
 
+# =============================================================================
+# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
+# =============================================================================
 
-
+# Full layout adjustments
+st.markdown("""
+<style>
+/* Move the entire interface to the right */
+.stApp {
+    transform: translateX(250px);  /* Adjust the value as needed */
+}
+</style>
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
+
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
 try:
@@ -268,33 +281,10 @@ except Exception:
             SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
     except Exception:
         pass
-
-# Defaults (used when sidebar tuning is hidden)
-right_offset = 80
-HEADER_X   = 0
-TITLE_LEFT = 35
-TITLE_TOP  = 60
-LOGO_LEFT  = 80
-LOGO_TOP   = 60
-LOGO_SIZE  = 50
-_show_recent = False
-
-if SHOW_TUNING:
-    with st.sidebar:
-        right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
-    with st.sidebar:
-        st.markdown("### Header position (title & logo)")
-        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
-        TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
-        TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
-        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
-        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
-        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
-        _show_recent = st.checkbox("Show Recent Predictions", value=False)
-
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
+
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
@@ -327,9 +317,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
-
-
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -522,7 +509,6 @@ with left:
     css("</div>")
     css("</div>")
 
-
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -541,22 +527,20 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # Step 9: Right Panel - Controls & Interaction Elements
-st.markdown(""" 
-<style>
-div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
-}
-[data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
-[data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }
-div[role="option"] { color: black !important; font-size: {FS_SELECT}px !important; }
-div.stButton > button { height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }
-#action-row { display:flex; align-items:center; gap: 1px; }
-</style>
-""", unsafe_allow_html=True)
-
+    st.markdown(""" 
+    <style>
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
+    }
+    [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
+    div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
+    div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
+    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }
+    div[role="option"] { color: black !important; font-size: {FS_SELECT}px !important; }
+    div.stButton > button { height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }
+    #action-row { display:flex; align-items:center; gap: 1px; }
+    </style>
+    """, unsafe_allow_html=True)
 
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
     row = st.columns([0.8, 2.1, 2.1, 2.1], gap="small")
@@ -765,8 +749,7 @@ with right:
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
-# Step 12: Final UI Polish & Banner Styling
-st.markdown("""
+st.markdown(""" 
 <style>
 .form-banner{
   background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
@@ -779,7 +762,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # =============================================================================
 # 📋 STEP 13: RECENT PREDICTIONS DISPLAY (OPTIONAL)
@@ -850,6 +832,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
+
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
