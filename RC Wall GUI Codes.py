@@ -5,7 +5,7 @@ RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
 
 # =============================================================================
-# Step #1: Core imports and TensorFlow backend guard
+# 🚀 STEP 1: CORE IMPORTS & TENSORFLOW BACKEND SETUP
 # =============================================================================
 import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
@@ -52,7 +52,7 @@ def _load_keras_model(path):
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
-# Small helpers
+# 🔧 STEP 2: UTILITY FUNCTIONS & HELPER TOOLS
 # =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
@@ -94,7 +94,7 @@ def pfind(candidates):
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
-# Step #2: Page config + COLORS + font knobs
+# 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
@@ -124,7 +124,7 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
-# Step #2.1: Global UI CSS (layout, fonts, inputs, theme)
+# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
 css(f"""
 <style>
@@ -375,7 +375,7 @@ html, body, .stApp {
 """)
 
 # =============================================================================
-# Move the interface to the right side
+# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
 
 st.markdown("""
@@ -403,7 +403,7 @@ st.markdown("""
 
 
 # =============================================================================
-# NEW: Feature flag to hide/show sidebar tuning widgets
+# ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
@@ -443,7 +443,7 @@ if SHOW_TUNING:
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
 # =============================================================================
-# Step #3: Title + adjustable logo position and size (HEADER ONLY)
+# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -482,7 +482,7 @@ st.markdown(f"""
 
 
 # =============================================================================
-# Step #4: Model loading (robust; tolerates different names/paths)
+# 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
@@ -598,7 +598,7 @@ if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
-# Step #5: Ranges, inputs, layout
+# 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
@@ -674,7 +674,7 @@ with left:
 
 
 # =============================================================================
-# Step #6: Right panel
+# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 5, 300
 MODEL_X, MODEL_Y = 100, -2
@@ -746,7 +746,7 @@ with right:
         chart_slot = st.empty()
 
 # =============================================================================
-# Step #7: Prediction utilities & curve helpers
+# 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
 _TRAIN_NAME_MAP = {
     'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
@@ -863,7 +863,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
-# Step #8: Predict on click; always render curve
+# ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
@@ -911,7 +911,7 @@ with right:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
-# FINAL: Bring back banner color and drop it slightly (override placed last)
+# 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
 st.markdown("""
 <style>
@@ -928,7 +928,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# Step #9: Optional "Recent Predictions"
+# 📋 STEP 13: RECENT PREDICTIONS DISPLAY (OPTIONAL)
 # =============================================================================
 if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
     right_predictions = st.empty()
@@ -941,7 +941,9 @@ if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
                 unsafe_allow_html=True
             )
 
-# ==============================  LATE PER-COMPONENT FONT & LOGO OVERRIDES ==============================
+# =============================================================================
+# 🎛️ STEP 14: DYNAMIC STYLE OVERRIDES VIA QUERY PARAMETERS
+# =============================================================================
 def _get_qp():
     try:
         return st.query_params
@@ -994,19 +996,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
-# ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# =============================================================================
+# ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
+# =============================================================================
