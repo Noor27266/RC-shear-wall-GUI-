@@ -308,29 +308,13 @@ if SHOW_TUNING:
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
-
-# Add controls in the sidebar to move the logo
-if SHOW_TUNING:
-    with st.sidebar:
-        st.markdown("### Logo Position and Size Controls")
-        
-        # Adjust this number to move the logo left/right (positive for right, negative for left)
-        LOGO_LEFT = st.number_input("Logo Left Position (px)", value=0, min_value=-500, max_value=500, step=10)
-        
-        # Adjust this number to move the logo up (positive for up, negative for down)
-        LOGO_TOP = st.number_input("Logo Top Position (px)", value=-50, min_value=-500, max_value=500, step=10)  # Negative value to move logo above
-        
-        # Adjust logo size here
-        LOGO_SIZE = st.number_input("Logo Size (px)", value=50, min_value=20, max_value=400, step=5)
-
-# Try loading the logo
 try:
-    _logo_path = BASE_DIR / "TJU logo.png"  # Adjust path to your logo image file
+    _logo_path = BASE_DIR / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
     _b64 = ""
 
-# Place logo at the top of the page
+# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
 <style>
   .page-header {{ 
@@ -346,8 +330,10 @@ st.markdown(f"""
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block;
-    margin-left: {LOGO_LEFT}px;   /* Horizontal movement (left/right) */
-    margin-top: {LOGO_TOP}px;     /* Vertical movement (up/down) */
+    margin-right: 2rem;
+    position: absolute;
+    left: {LOGO_LEFT}px;
+    top: {LOGO_TOP}px;
   }}
 </style>
 <div class="page-header-outer">
@@ -894,6 +880,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
