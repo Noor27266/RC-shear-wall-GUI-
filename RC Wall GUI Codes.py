@@ -210,7 +210,6 @@ css(f"""
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
     margin:.1rem 0 !important;
-    transform: translateY(-10px);
   }}
 
   .prediction-result {{
@@ -249,19 +248,6 @@ css(f"""
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
-
-# Keep header area slim - REDUCED TOP SPACE
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -1071,6 +1057,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
