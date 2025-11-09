@@ -327,7 +327,7 @@ st.markdown(f"""
     font-weight:800; 
     margin:0;
     flex: 1;
-    padding-top: 0.0rem;
+    padding-top: 3.0rem;
   }}
 
   .page-header__logo {{
@@ -865,6 +865,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
