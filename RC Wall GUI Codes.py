@@ -305,8 +305,8 @@ if SHOW_TUNING:
 
 # Define LOGO_SIZE and LOGO_TOP before using them
 LOGO_SIZE = 60  # Set logo size (adjust this value as needed)
-LOGO_LEFT = 40  # Keep logo position to the left as is (no horizontal movement)
-LOGO_TOP = 200  # Increase this value to move the logo further down (adjust as needed)
+LOGO_LEFT = 40  # Keep the logo position to the left as is (no horizontal movement)
+LOGO_TOP = 150  # Set this value to move the logo down (increase if needed)
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -320,24 +320,24 @@ except Exception:
 # REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
 <style>
-  .page-header {{ 
+  .page-header {{
     display: flex; 
     align-items: center; 
     justify-content: flex-end; 
     margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
-    position: relative; /* Parent container allows positioning of child elements */
+    position: relative;  /* Ensure that the parent container allows the logo to move down */
   }}
 
   .page-header__logo {{
-    height:{int(LOGO_SIZE)}px !important; 
-    width:auto !important; 
-    display:block;
+    height: {int(LOGO_SIZE)}px !important; 
+    width: auto !important; 
+    display: block;
     margin-right: 2rem !important;
     position: relative !important;  /* Keep relative positioning for downward movement */
-    left: {int(LOGO_LEFT)}px !important;  # Keep the logo's horizontal position as is
-    top: {int(LOGO_TOP)}px !important;   # Increase top value to move logo down
+    left: {int(LOGO_LEFT)}px !important;  # Keep logo in place horizontally (no change here)
+    top: {int(LOGO_TOP)}px !important;   # Only adjust top value to move logo down (increase if needed)
   }}
 </style>
 <div class="page-header-outer">
@@ -348,10 +348,11 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # In the Feature Flags & Sidebar Tuning Controls (Step 5), this remains as it was:
-HEADER_X   = 0
+HEADER_X = 0
 TITLE_LEFT = 35
-TITLE_TOP  = 60
+TITLE_TOP = 60
 # LOGO_LEFT and LOGO_TOP are already defined above
+
 
 
 
@@ -885,6 +886,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
