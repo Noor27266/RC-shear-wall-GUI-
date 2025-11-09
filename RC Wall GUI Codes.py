@@ -608,32 +608,19 @@ with right:
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;
+        border: none !important; /* Remove border */
         box-shadow: none !important; 
-        background: #D3D3D3 !important;
+        background: #D3D3D3 !important; /* Light grey background */
         height: 50px !important;
-        border-radius: 8px !important;
+        border-radius: 8px !important; /* Rounded corners */
         padding: 0px 12px !important;
-        outline: none !important;
-    }
-    
-    /* ADDED: Target the specific border container that holds the border */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] > div:first-child {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* ADDED: Remove borders from the value container */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] > div:first-child > div {
-        border: none !important;
-        outline: none !important;
+        outline: none !important; /* Remove outline */
     }
     
     div[data-testid="stSelectbox"] > div > div { 
         height: 50px !important; 
-        display:flex !important; 
-        align-items:center !important; 
+        display: flex !important; 
+        align-items: center !important; 
         margin-top: 0px !important;
         border-radius: 8px !important;
         border: none !important;
@@ -656,15 +643,7 @@ with right:
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* ADDED: Remove borders from focus state inner elements */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus > div:first-child,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within > div:first-child {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
+        background-color: #D3D3D3 !important; /* Maintain light grey */
     }
     
     /* Remove black from dropdown arrow */
@@ -699,17 +678,11 @@ with right:
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
         color: #888888 !important;
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Light grey background */
         font-size: {FS_SELECT}px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-    }
-    
-    /* ADDED: Specifically target the border element in BaseWeb */
-    [data-baseweb="base-input"] {
-        border: none !important;
-        outline: none !important;
     }
     
     /* Remove border from popover - NO BLACK BORDERS */
@@ -718,20 +691,20 @@ with right:
         overflow: hidden !important;
         border: none !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Light grey */
     }
     
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Light grey */
     }
     
     div[role="option"] { 
         color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important;
+        background-color: #D3D3D3 !important; /* Light grey */
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
@@ -749,7 +722,7 @@ with right:
     
     /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
-        background-color: #B8B8B8 !important;
+        background-color: #B8B8B8 !important; /* Darker grey hover */
         color: #888888 !important;
         border: none !important;
     }
@@ -832,6 +805,7 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
+
 
 
 
@@ -1090,6 +1064,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
