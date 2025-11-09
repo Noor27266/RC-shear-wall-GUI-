@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
@@ -11,26 +13,28 @@ os.environ.setdefault("KERAS_BACKEND", "tensorflow")
 import streamlit as st
 import pandas as pd
 import numpy as np
-import base64
+import base64, json
 from pathlib import Path
 from glob import glob
 
+# ML libs
 import xgboost as xgb
 import joblib
 import catboost
 import lightgbm as lgb
 
-# --- Keras compatibility loader ---
+# --- Keras compatibility loader (PS/MLP only) ---
 try:
     from tensorflow.keras.models import load_model as _tf_load_model
 except Exception:
     _tf_load_model = None
 try:
-    from keras.models import load_model as _k3_load_model
+    from keras.models import load_model as _k3_load_model   # works when keras==3 is present
 except Exception:
     _k3_load_model = None
 
 def _load_keras_model(path):
+    """Try tf.keras first, then keras (Keras 3)."""
     errs = []
     if _tf_load_model is not None:
         try:
@@ -44,35 +48,49 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
-# --- session defaults ---
+# --- session defaults (prevents AttributeError on first run) ---
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
 # 🔧 STEP 2: UTILITY FUNCTIONS & HELPER TOOLS
 # =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
-
-def b64(path: Path) -> str: 
-    return base64.b64encode(path.read_bytes()).decode("ascii")
-
-def dv(R, key, proposed): 
-    lo, hi = R[key]
-    return float(max(lo, min(proposed, hi)))
+def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
+def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
 # ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
-
 def pfind(candidates):
     for c in candidates:
         p = Path(c)
         if p.exists():
             return p
-    for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
-        if root.exists():
-            for c in candidates:
-                p = root / c
-                if p.exists():
-                    return p
+    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
+    for root in roots:
+        if not root.exists():
+            continue
+        for c in candidates:
+            p = root / c
+            if p.exists():
+                return p
+    for root in [BASE_DIR, Path("/mnt/data")]:
+        if not root.exists():
+            continue
+        for sub in root.iterdir():
+            if sub.is_dir():
+                for c in candidates:
+                    p = sub / c
+                    if p.exists():
+                        return p
+    pats = []
+    for c in candidates:
+        for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
+            if root.exists():
+                pats.append(str(root / "**" / c))
+    for pat in pats:
+        matches = glob(pat, recursive=True)
+        if matches:
+            return Path(matches[0])
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 # =============================================================================
@@ -80,136 +98,196 @@ def pfind(candidates):
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# Font and UI scaling
-SCALE_UI = 0.36
+# ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
+
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE = s(20)
-FS_SECTION = s(40)
-FS_LABEL = s(40)
-FS_UNITS = s(30)
-FS_INPUT = s(30)
-FS_SELECT = s(35)
-FS_BUTTON = s(20)
-FS_BADGE = s(30)
-FS_RECENT = s(20)
-INPUT_H = max(32, int(FS_INPUT * 2.0))
+FS_TITLE   = s(20)  # page title
+FS_SECTION = s(60)  # section headers
+FS_LABEL   = s(30)  # input & select labels (katex included)
+FS_UNITS   = s(30)  # math units in labels
+FS_INPUT   = s(30)  # number input value
+FS_SELECT  = s(35)  # dropdown value/options
+FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
+FS_BADGE   = s(30)  # predicted badge
+FS_RECENT  = s(20)  # small chips
+INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
+# header logo default height (can still be changed by URL param "logo")
 DEFAULT_LOGO_H = 60
 
-PRIMARY = "#8E44AD"
+PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
-INPUT_BG = "#ffffff"
+INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
-LEFT_BG = "#e0e4ec"
-
-# -*- coding: utf-8 -*-
-
+LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
 css(f"""
 <style>
-    .block-container {{ padding-top: 0px !important; }}
-    h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
+  .block-container {{ padding-top: 0.5rem !important; }}
+  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
-    .section-header {{
-        font-size:{FS_SECTION}px !important;
-        font-weight:700; margin:.2rem 0 !important; padding:0 !important;
-    }}
+  .section-header {{
+    font-size:{FS_SECTION}px !important;
+    font-weight:700; margin:.35rem 0;
+  }}
 
-    .stNumberInput label, .stSelectbox label {{
-        font-size:{FS_LABEL}px !important; font-weight:700;
-    }}
-    .stNumberInput label .katex, .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; }}
-    div[data-testid="stNumberInput"] input[type="number"], div[data-testid="stNumberInput"] input[type="text"] {{
-        font-size:{FS_INPUT}px !important;
-        height:{INPUT_H}px !important;
-        line-height:{INPUT_H - 8}px !important;
-        font-weight:600 !important;
-        padding:10px 12px !important;
-    }}
-    .stNumberInput, .stSelectbox {{
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-    }}
+  .stNumberInput label, .stSelectbox label {{
+    font-size:{FS_LABEL}px !important; font-weight:700;
+  }}
+  .stNumberInput label .katex,
+  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
+  .stNumberInput label .katex .fontsize-ensurer,
+  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
-    .form-banner {{
-        margin-top: -25px !important;
-        padding: 5px 0px !important;
-    }}
-    .stButton > button {{
-        font-size:{FS_BUTTON}px !important;
-        height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-        line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-        background:#4CAF50 !important;
-    }}
-    .prediction-result {{
-        font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-        background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-    }}
-    .recent-box {{
-        font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-        border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
-    }}
+  .stNumberInput label .katex .mathrm,
+  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
-    /* Ensuring the left container has a grey background */
-    .block-container [data-testid="stHorizontalBlock"] > div {{
-        background:#e0e4ec !important;
-        border-radius:12px !important;
-        box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-        padding:16px !important;
-    }}
+  div[data-testid="stNumberInput"] input[type="number"],
+  div[data-testid="stNumberInput"] input[type="text"] {{
+      font-size:{FS_INPUT}px !important;
+      height:{INPUT_H}px !important;
+      line-height:{INPUT_H - 8}px !important;
+      font-weight:600 !important;
+      padding:10px 12px !important;
+  }}
 
-    /* Page and content centering */
-    .page-container {{
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 0 20px;
-    }}
-    .main-content-container {{
-        display: flex;
-        justify-content: center;
-        flex-direction: row;
-    }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
+      background:{INPUT_BG} !important;
+      border:1px solid {INPUT_BORDER} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
+      transition:border-color .15s ease, box-shadow .15s ease !important;
+  }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
+      border-color:{PRIMARY} !important;
+      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
+  }}
 
-    .page-header {{
-        display: flex;
-        align-items: center;
-        justify-content: flex-start; 
-        margin: 0;
-        padding: 0.5rem 0 0.5rem 0;
-        width: 100%;
-    }}
+  div[data-testid="stNumberInput"] button {{
+      background:#ffffff !important;
+      border:1px solid {INPUT_BORDER} !important;
+      border-radius:10px !important;
+      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
+  }}
+  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
 
-    .page-header__logo {{
-        height:{int(LOGO_SIZE)}px; 
-        width:auto; 
-        display:block;
-        margin-right: 2rem;
-        position: absolute;
-        left: {LOGO_LEFT}px;
-        top: {LOGO_TOP}px;
-    }}
+  /* Select font sizes are tied to FS_SELECT */
+  .stSelectbox [role="combobox"],
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
+  div[data-testid="stSelectbox"] div[role="listbox"],
+  div[data-testid="stSelectbox"] div[role="option"] {{
+      font-size:{FS_SELECT}px !important;
+  }}
+
+  /* Buttons use FS_BUTTON, no wrapping */
+  div.stButton > button {{
+    font-size:{FS_BUTTON}px !important;
+    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+    white-space:nowrap !important;
+    color:#fff !important;
+    font-weight:700; border:none !important; border-radius:8px !important;
+    background:#4CAF50 !important;
+  }}
+  div.stButton > button:hover {{ filter: brightness(0.95); }}
+
+  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
+  button[key="reset_btn"] {{ background:#2196F3 !important; }}
+  button[key="clear_btn"] {{ background:#f44336 !important; }}
+
+  .form-banner {{
+    text-align:center;
+    background: linear-gradient(90deg, #0E9F6E, #84CC16);
+    color: #fff;
+    padding:.45rem .75rem;
+    border-radius:10px;
+    font-weight:800;
+    font-size:{FS_SECTION + 4}px;
+    margin:.1rem 0 !important;
+    transform: translateY(-10px);
+  }}
+
+  .prediction-result {{
+    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
+    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
+  }}
+  .recent-box {{
+    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
+    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+  }}
+
+  #compact-form{{ max-width:900px; margin:0 auto; }}
+  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
+  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  #compact-form [data-testid="stNumberInput"],
+  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
+  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
+  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:{LEFT_BG} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
+  }}
+
+  [data-baseweb="popover"], [data-baseweb="tooltip"],
+  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
+      background:#000 !important; color:#fff !important; border-radius:8px !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
+  }}
+  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+  #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
 
+# Keep header area slim - REDUCED TOP SPACE
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
+try:
+    qp = st.query_params
+    if "tune" in qp:
+        SHOW_TUNING = _is_on(qp.get("tune"))
+except Exception:
+    try:
+        qp = st.experimental_get_query_params()
+        if "tune" in qp:
+            SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
+    except Exception:
+        pass
 
+# Defaults (used when sidebar tuning is hidden)
 right_offset = 80
-HEADER_X = 0
+HEADER_X   = 0
 TITLE_LEFT = 35
-TITLE_TOP = 60
-LOGO_LEFT = 0
-LOGO_TOP = 60
-LOGO_SIZE = 50
+TITLE_TOP  = 60
+LOGO_LEFT  = 80
+LOGO_TOP   = 60
+LOGO_SIZE  = 50
 _show_recent = False
 
 if SHOW_TUNING:
@@ -225,6 +303,11 @@ if SHOW_TUNING:
         LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
+
+
+
+
+
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
@@ -234,13 +317,14 @@ try:
 except Exception:
     _b64 = ""
 
+# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
 <style>
-  .page-header {{
-    display: flex;
-    align-items: center;
-    justify-content: flex-start; 
-    margin: 0;
+  .page-header {{ 
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-end; 
+    margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
   }}
@@ -249,9 +333,7 @@ st.markdown(f"""
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block;
-    position: absolute;
-    left: {LOGO_LEFT}px;
-    top: {LOGO_TOP}px;
+    margin-right: 2rem;
   }}
 </style>
 <div class="page-header-outer">
@@ -260,9 +342,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
-
-
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -379,7 +458,6 @@ if SHOW_TUNING:
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
-
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
@@ -431,18 +509,16 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1, 1], gap="large")
 
 with left:
-    # **Title and Banner Styling**
+    # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:0px; padding:0px; margin-bottom:0px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:0px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:10px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
-    </div>
     """, unsafe_allow_html=True)
     
-    # **Banner moved closer with reduced margin-top and padding**
-    st.markdown("<div class='form-banner' style='margin-top: 5px; padding: 0px; margin-bottom: 0px;'>Inputs Features</div>", unsafe_allow_html=True)
-    st.markdown("<style>.section-header{margin:0px 0 !important; padding: 0px;}</style>", unsafe_allow_html=True)
+    st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
+    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
 
@@ -450,29 +526,21 @@ with left:
     c1, c2, c3 = st.columns([1, 1, 1], gap="large")
 
     with c1:
-        st.markdown("<div class='section-header' style='margin-top:0px;'>Geometry </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
     with c2:
-        st.markdown("<div class='section-header' style='margin-top:0px;'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
     with c3:
-        st.markdown("<div class='section-header' style='margin-top:0px;'>Material Strengths</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
     css("</div>")
     css("</div>")
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
-
-
-
-
-
-
-
-
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -798,53 +866,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
