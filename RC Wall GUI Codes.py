@@ -107,7 +107,7 @@ FS_TITLE   = s(20)  # page title
 FS_SECTION = s(60)  # section headers
 FS_LABEL   = s(30)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
-FS_INPUT   = s(30)  # number input value
+FS_INPUT   = s(50)  # number input value
 FS_SELECT  = s(35)  # dropdown value/options
 FS_BUTTON  = s(20)  # Calculate / Reset / Clear All
 FS_BADGE   = s(30)  # predicted badge
@@ -250,18 +250,6 @@ css(f"""
 </style>
 """)
 
-# Keep header area slim - REDUCED TOP SPACE
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -877,6 +865,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
