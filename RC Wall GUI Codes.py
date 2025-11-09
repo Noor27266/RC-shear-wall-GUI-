@@ -103,7 +103,7 @@ SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% 
 
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(70)  # page title
+FS_TITLE   = s(20)  # page title
 FS_SECTION = s(60)  # section headers
 FS_LABEL   = s(50)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
