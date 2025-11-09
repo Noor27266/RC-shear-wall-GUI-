@@ -491,7 +491,6 @@ if SHOW_TUNING:
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
-
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
@@ -543,32 +542,25 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 1], gap="large")
 
 with left:
+    # METHOD 1: Remove all empty space first
+    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    
     # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:10px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:2px; margin:0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:2px 0; padding:0;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
     
-    # ADD CSS THAT ACTUALLY WORKS
+    # METHOD 2: Use multiple empty spaces to push content up
+    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
+    
+    # METHOD 3: Combine title and inputs in one container
     st.markdown("""
-    <style>
-    /* NUCLEAR OPTION - FORCE UPWARD MOVEMENT */
-    .form-banner {
-        margin-top: -30px !important;
-        margin-bottom: 5px !important;
-    }
-    #compact-form {
-        margin-top: -20px !important;
-    }
-    </style>
+    <div style="margin: -30px 0 0 0; padding: 0;">
+        <div class='form-banner'>Inputs Features</div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-    
-    css("<div id='leftwrap'>")
-    css("<div id='compact-form'>")
 
     # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
@@ -586,8 +578,7 @@ with left:
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
-    css("</div>")
-    css("</div>")
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
 
 # =============================================================================
@@ -1084,6 +1075,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
