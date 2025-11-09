@@ -597,6 +597,99 @@ with right:
 
     st.markdown(""" 
     <style>
+    /* Remove borders from the dropdown select box */
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: none !important; /* Remove border */
+        box-shadow: none !important; /* Remove shadow */
+        background: #D3D3D3 !important; /* Background color */
+        height: 50px !important;
+        border-radius: 8px !important; /* Rounded corners */
+        outline: none !important; /* Remove outline */
+        padding: 0px 12px !important;
+    }
+    
+    /* Remove borders from dropdown menu options */
+    div[data-testid="stSelectbox"] > div > div {
+        height: 50px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        margin-top: 0px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        outline: none !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove border from the input element inside the dropdown */
+    div[data-testid="stSelectbox"] input {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove focus borders */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the border around the popover */
+    [data-baseweb="popover"] {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the borders from the menu options */
+    [data-baseweb="menu"] {
+        border: none !important;
+        border-radius: 8px !important;
+        box-shadow: none !important; /* Ensure no shadow around the menu */
+    }
+    
+    /* Remove borders around the options in the dropdown */
+    div[role="option"] {
+        color: #888888 !important;
+        font-size: 16px !important;
+        background-color: #D3D3D3 !important;
+        padding: 12px 16px !important;
+        border: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Remove the last item border */
+    div[role="option"]:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* Make dropdown hover effect also grey */
+    div[role="option"]:hover {
+        background-color: #B8B8B8 !important;
+        color: #888888 !important;
+    }
+
+    /* Ensure the dropdown list is clean, with no black borders anywhere */
+    div[data-testid="stSelectbox"] [role="listbox"] {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Make the dropdown cleaner with no outer border */
+    div[data-testid="stSelectbox"] div[role="combobox"] {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove the border from the dropdown's outer box */
+    div[data-testid="stSelectbox"] {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
@@ -606,7 +699,7 @@ with right:
         margin-top: 10px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BORDERS FROM MODEL SELECTION - ALL BLACK BORDERS REMOVED */
+    /* COMPLETELY REMOVE ALL BORDERS FROM MODEL SELECTION */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
         box-shadow: none !important; 
@@ -644,17 +737,6 @@ with right:
         box-shadow: none !important;
     }
     
-    /* Remove any remaining borders from dropdown arrow and container */
-    div[data-testid="stSelectbox"] svg {
-        border: none !important;
-    }
-    
-    /* Remove borders from the select dropdown trigger */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-        border: none !important;
-        outline: none !important;
-    }
-    
     /* MOVE MODEL SELECTION DROPDOWN DOWN */
     div[data-testid="stSelectbox"] > div:first-child {
         margin-top: 30px !important;
@@ -667,7 +749,7 @@ with right:
         margin-bottom: 5px !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK TEXT - REMOVE ALL BORDERS */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK TEXT */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
@@ -675,30 +757,20 @@ with right:
         background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
-        outline: none !important;
     }
     
-    /* Remove border from popover - NO BORDERS */
+    /* Remove border from popover */
     [data-baseweb="popover"] {
         border-radius: 8px !important;
         overflow: hidden !important;
         border: none !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-        outline: none !important;
     }
     
-    /* Remove borders from dropdown menu - COMPLETELY BORDERLESS */
+    /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove borders from menu items */
-    [data-baseweb="menu"] > div {
-        border: none !important;
-        outline: none !important;
     }
     
     div[role="option"] { 
@@ -708,7 +780,6 @@ with right:
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
-        outline: none !important;
     }
     
     /* Remove last item border */
@@ -716,30 +787,10 @@ with right:
         border-bottom: none !important;
     }
     
-    /* Remove any separator borders between options */
-    div[role="option"]:not(:last-child) {
-        border-bottom: none !important;
-    }
-    
-    /* Make dropdown hover effect also grey - NO BORDERS */
+    /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
         color: #888888 !important;
-        border: none !important;
-        outline: none !important;
-    }
-    
-    /* Remove any focus borders from options */
-    div[role="option"]:focus {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove borders from the dropdown list container */
-    [data-baseweb="popover"] > div {
-        border: none !important;
-        outline: none !important;
     }
     
     /* Make buttons smaller in width */
@@ -767,7 +818,6 @@ with right:
     div.stButton > button:focus {
         outline: none !important;
         box-shadow: none !important;
-        border: none !important;
     }
     
     /* Remove the margin from the three-btns container */
@@ -776,14 +826,6 @@ with right:
         display: flex !important;
         gap: 8px !important;
         width: 100% !important;
-    }
-    
-    /* Additional safety rules to remove any potential borders */
-    div[data-baseweb="select"] div,
-    div[data-baseweb="select"] span,
-    div[data-baseweb="select"] button {
-        border: none !important;
-        outline: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -829,6 +871,7 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
+
 
 
 
@@ -1086,6 +1129,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
