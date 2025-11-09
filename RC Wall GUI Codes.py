@@ -613,6 +613,18 @@ with right:
     with col2:
         chart_slot = st.empty()
 
+
+with left:
+    st.markdown("""
+    <div style="background:#e0e4ec; border-radius:12px; padding:5px; margin-bottom:5px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:0;">
+            Predict Damage index (DI) for RC Shear Walls
+        </div>
+        <div style="text-align:center; margin:2px 0 8px 0; font-weight:500; color:#555;">
+            Inputs Features
+        </div>
+    """, unsafe_allow_html=True)
+
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
@@ -866,6 +878,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
