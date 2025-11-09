@@ -553,7 +553,7 @@ with left:
     """, unsafe_allow_html=True)
     
     # AGGRESSIVE UPWARD MOVEMENT FOR INPUT FEATURES AND COLUMNS
-    st.markdown("<div style='margin-top: -25px; padding-top: 0px;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: -35px; padding-top: 0px;'>", unsafe_allow_html=True)
     st.markdown("<div class='form-banner' style='margin-top: 0px; margin-bottom: 5px;'>Inputs Features</div>", unsafe_allow_html=True)
     
     # Add CSS to remove all spacing around the columns
@@ -561,18 +561,18 @@ with left:
     <style>
     /* Remove all spacing around the input columns */
     #compact-form {
-        margin-top: -250px !important;
+        margin-top: -25px !important;
         padding-top: 0px !important;
     }
     #leftwrap {
-        margin-top: -15px !important;
+        margin-top: -20px !important;
         padding-top: 0px !important;
     }
     /* Reduce spacing in columns */
     [data-testid="column"] {
         padding-top: 0px !important;
         padding-bottom: 0px !important;
-        margin-top: -10px !important;
+        margin-top: -15px !important;
     }
     /* Reduce spacing between inputs */
     div[data-testid="stNumberInput"] {
@@ -1099,6 +1099,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
