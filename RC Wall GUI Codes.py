@@ -128,7 +128,7 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0rem; }}
+  .block-container {{ padding-top: 2rem; }}
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
@@ -256,13 +256,12 @@ st.markdown("""
 html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+div.stApp{ margin-top:0rem !important; }
+section.main > div.block-container{ padding-top:2rem !important; margin-top:0 !important; }
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
-
 st.markdown("""
 <style>
 /* Hide Streamlit's small +/- buttons on number inputs */
@@ -274,7 +273,6 @@ div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appe
 div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
 </style>
 """, unsafe_allow_html=True)
-
 st.markdown("""
 <style>
 /* Increase the width of the Predicted Damage Index (DI) box */
@@ -329,12 +327,12 @@ header[data-testid="stHeader"] {
 
 /* Remove the extra space at the top of the app */
 div.stApp {
-    margin-top: -8rem !important; /* Adjust this value if needed */
+    margin-top: 0rem !important;
 }
 
 /* Adjust the margins and padding for the block container */
 section.main > div.block-container {
-    padding-top: 0 !important;
+    padding-top: 2rem !important;
     margin-top: 0 !important;
 }
 </style>
@@ -342,29 +340,11 @@ section.main > div.block-container {
 
 css("""
 <style>
-/* Remove ALL scrolling */
-html, body, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Ensure content fits within viewport */
-.stApp > div {
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Prevent any element from causing overflow */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Constrain your specific components */
-.page-header-outer {
-    max-width: 100% !important;
+/* Center the overall interface */
+.main .block-container {
+    max-width: 95% !important;
+    padding-left: 2% !important;
+    padding-right: 2% !important;
 }
 
 /* Make sure columns and containers don't overflow */
@@ -374,7 +354,6 @@ html, body, .stApp {
 }
 </style>
 """)
-
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -427,15 +406,26 @@ except Exception:
 
 st.markdown(f"""
 <style>
-  .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
-  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; }}
+  .page-header {{ 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    margin: 0; 
+    padding: 2rem 0 1rem 0;
+    width: 100%;
+  }}
+  .page-header__title {{ 
+    font-size:{FS_TITLE}px; 
+    font-weight:800; 
+    margin:0;
+    flex: 1;
+  }}
 
-  /* Move the logo to the right and fix it on the page */
   .page-header__logo {{
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
-    display:block; 
-    z-index: 1000;  /* Ensure the logo stays on top of other elements */
+    display:block;
+    margin-left: auto;
   }}
 </style>
 <div class="page-header-outer">
@@ -545,7 +535,7 @@ except Exception as e:
 
 model_registry = {}
 for name, ok, *_ in health:
-    if not ok: continue
+    if not ok; continue
     if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
     elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
     elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
@@ -950,7 +940,7 @@ if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm,
 if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
 if _FS_SELECT  is not None:
     _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
-    _rules.append(f"div[data-testid='stSelectbox'] div[role='listbox'], div[data-testid='stSelectbox'] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
+    _rules.append(f"div[data-testid="stSelectbox"] div[role='listbox'], div[data-testid="stSelectbox"] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
 if _FS_BUTTON  is not None:
     _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
     _btn_lh = max(36, int(round(_FS_BUTTON * 1.15)))
@@ -967,4 +957,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
