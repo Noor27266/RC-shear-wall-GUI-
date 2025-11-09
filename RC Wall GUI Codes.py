@@ -377,10 +377,9 @@ html, body, .stApp {
 
 
 
-# Streamlit markdown with CSS to adjust layout
 st.markdown("""
 <style>
-    /* Set the layout to fill the screen automatically */
+    /* Make sure the entire layout takes up the full screen */
     html, body, .stApp {
         height: 100%;
         width: 100%;
@@ -389,40 +388,50 @@ st.markdown("""
         overflow: hidden;
     }
 
+    /* The main container should take up the full height of the viewport */
     .block-container {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
-        height: 100vh; /* 100% of viewport height */
-        width: 100vw; /* 100% of viewport width */
+        height: 100vh;
+        width: 100%;
         padding: 20px;
+        overflow-y: auto; /* Allow scrolling if needed */
     }
 
-    /* Adjust form elements to be fluid */
+    /* Adjust form inputs to be responsive */
     .stNumberInput, .stSelectbox, .stButton {
-        width: 100%; /* Make input elements take up 100% width */
-        max-width: 600px; /* You can set a max-width if needed */
+        width: 100%; /* Ensure all form inputs take up full width */
+        max-width: 500px; /* Set a max-width for larger screens */
         margin-bottom: 10px;
     }
 
-    /* Make header and title scale automatically */
+    /* Ensure the title and inputs are aligned properly */
     h1 {
-        font-size: 5vw; /* Adjust font size based on viewport width */
+        font-size: 5vw; /* Scale title based on viewport width */
     }
 
-    /* Make sure the logo is positioned well */
+    /* Adjust logo position */
     .page-header__logo {
         position: fixed;
         top: 20px;
-        left: 10px;
-        height: 5vh; /* Adjust logo size relative to screen height */
+        left: 20px; /* Move logo a bit to the left */
+        height: 5vh; /* Adjust logo size to fit better */
+        z-index: 1000; /* Keep the logo on top */
     }
 
-    /* Scale everything appropriately inside media queries */
+    /* Adjust layout for smaller screens */
     @media (max-width: 768px) {
         .stButton {
-            font-size: 14px;
+            font-size: 14px; /* Make buttons smaller on small screens */
+        }
+        .page-header__logo {
+            left: 10px; /* Keep logo more centered on small screens */
+            height: 4vh; /* Smaller logo on small screens */
+        }
+        .block-container {
+            padding: 10px; /* Reduce padding for better space usage */
         }
     }
 </style>
@@ -1049,6 +1058,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
