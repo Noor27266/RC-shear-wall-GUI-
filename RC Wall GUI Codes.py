@@ -611,14 +611,15 @@ with right:
         min-width: 0 !important;
     }
     
-    /* Style the model selection to match button height and shape - WITH GREY BACKGROUND */
+    /* COMPLETELY REMOVE ALL BORDERS FROM MODEL SELECTION */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;  /* REMOVED THE WHITE BORDER */
+        border: none !important;
         box-shadow: none !important; 
-        background: #D3D3D3 !important;  /* GREY BACKGROUND */
+        background: #D3D3D3 !important;
         height: 50px !important;
-        border-radius: 8px !important;  /* SAME ROUNDED CORNERS AS BUTTONS */
+        border-radius: 8px !important;
         padding: 0px 12px !important;
+        outline: none !important;
     }
     
     div[data-testid="stSelectbox"] > div > div { 
@@ -626,46 +627,79 @@ with right:
         display:flex !important; 
         align-items:center !important; 
         margin-top: 0px !important;
-        border-radius: 8px !important;  /* SAME ROUNDED CORNERS */
+        border-radius: 8px !important;
+        border: none !important;
+        outline: none !important;
+    }
+    
+    /* Remove border from the input element inside */
+    div[data-testid="stSelectbox"] input {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+    }
+    
+    /* Remove focus borders */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
     }
     
     /* MOVE MODEL SELECTION DROPDOWN DOWN */
     div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 30px !important;  /* This moves the dropdown down */
+        margin-top: 30px !important;
     }
     
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
-        color: #666666 !important;  /* Dark grey instead of black */
+        color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - REMOVED BLACK COLORS */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BORDERS */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
-        color: #333333 !important;  /* Dark grey instead of black */
-        background-color: #D3D3D3 !important;  /* GREY BACKGROUND */
+        color: #333333 !important;
+        background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
+        border: none !important;
     }
     
-    /* Style the dropdown menu to match button shape */
+    /* Remove border from popover */
     [data-baseweb="popover"] {
-        border-radius: 8px !important;  /* ROUNDED CORNERS FOR DROPDOWN MENU */
+        border-radius: 8px !important;
         overflow: hidden !important;
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Remove borders from dropdown menu */
+    [data-baseweb="menu"] {
+        border: none !important;
+        border-radius: 8px !important;
     }
     
     div[role="option"] { 
-        color: #333333 !important;  /* Dark grey instead of black */
+        color: #333333 !important;
         font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important;  /* GREY BACKGROUND FOR OPTIONS */
+        background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
+        border: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Remove last item border */
+    div[role="option"]:last-child {
+        border-bottom: none !important;
     }
     
     /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
-        background-color: #B8B8B8 !important;  /* Slightly darker grey on hover */
+        background-color: #B8B8B8 !important;
     }
     
     /* Make buttons equal height and width - MOVED DOWN */
@@ -678,15 +712,22 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 !important;
         white-space: nowrap !important;
-        margin-top: 30px !important;  /* THIS MOVES BUTTONS DOWN */
-        border-radius: 8px !important;  /* ROUNDED CORNERS */
+        margin-top: 30px !important;
+        border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
+        outline: none !important;
     }
     
     button[key="calc_btn"] { background:#4CAF50 !important; }
     button[key="reset_btn"] { background:#2196F3 !important; }
     button[key="clear_btn"] { background:#f44336 !important; }
+    
+    /* Remove button focus borders */
+    div.stButton > button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
     
     /* Remove the margin from the three-btns container */
     #three-btns {
@@ -995,6 +1036,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
