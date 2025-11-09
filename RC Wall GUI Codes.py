@@ -298,7 +298,7 @@ if SHOW_TUNING:
         HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
         TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
         TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
-        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
+        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=4000, value=LOGO_LEFT, step=10)
         LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
         LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
