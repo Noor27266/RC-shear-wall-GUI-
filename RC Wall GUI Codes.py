@@ -335,7 +335,7 @@ st.markdown(f"""
     display:block;
     margin-right: 2rem;
     position: relative;
-    left: {int(LOGO_LEFT)}px;  # This controls the horizontal position
+    left: {int(100}px;  # This controls the horizontal position
     top: {int(LOGO_TOP)}px;   # This controls the vertical position
   }}
 </style>
@@ -870,6 +870,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
