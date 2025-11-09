@@ -378,7 +378,7 @@ html, body, .stApp {
 # =============================================================================
 st.markdown("""
 <style>
-/* Ensure the body and HTML take full height */
+/* Ensure html, body, and the app take full height and width */
 html, body, .stApp {
     margin: 0;
     padding: 0;
@@ -387,54 +387,82 @@ html, body, .stApp {
     overflow: hidden;
 }
 
-/* Ensure the main block container takes full height */
+/* Make sure the main block container takes up 100% height */
 section.main > div.block-container {
     height: 100% !important;
     max-height: 100% !important;
 }
 
-/* Set the left panel and right panel to stretch across the screen */
-#compact-form, .stButton, .stSelectbox, .stNumberInput {
+/* Make the header take up full width */
+.page-header__title {
     width: 100% !important;
+    font-size: 1.5em !important;  /* Adjust title font size */
+    text-align: center;
 }
 
-/* Adjust form elements to take full width */
+/* Ensure the layout for form elements stretches */
 #compact-form {
     width: 100% !important;
     max-width: 100% !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     margin: 0 auto;
 }
 
-/* Set the header and footer to use full width */
-.page-header__title, .form-banner {
+/* Make form fields stretch across the available width */
+.stNumberInput, .stSelectbox, .stButton {
     width: 100% !important;
 }
 
-/* Adjust the layout for different screen sizes */
-@media (max-width: 1200px) {
-    .stApp {
-        transform: none;
-        width: 100% !important;
-    }
+/* Make sure everything stays inside the viewport */
+.stApp {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-@media (max-width: 800px) {
+/* Set the model selection box and buttons to stretch */
+.stSelectbox, .stButton {
+    width: 100% !important;
+}
+
+/* Adjust input fields and labels for responsiveness */
+.stNumberInput input {
+    width: 100% !important;
+    padding: 12px !important;
+}
+
+/* Adjust the labels font size */
+.stNumberInput label, .stSelectbox label {
+    font-size: 14px !important;
+}
+
+/* For small screens, adjust padding and form layout */
+@media (max-width: 768px) {
     .stApp {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        padding: 0 !important;
     }
 
-    /* Adjust the form and text sizes for smaller screens */
-    .stNumberInput input, .stSelectbox, .stButton {
+    /* Adjust header and form elements */
+    .stNumberInput, .stSelectbox, .stButton {
         font-size: 14px !important;
     }
-}
 
-/* For small screen sizes, adjust the number input and labels to be more compact */
-.stNumberInput label, .stSelectbox label {
-    font-size: 12px !important;
-}
+    .stButton {
+        width: 100% !important;
+    }
 
+    .page-header__title {
+        font-size: 1.2em !important;
+    }
+    
+    /* Adjust the chart size for mobile */
+    .vega-embed {
+        width: 100% !important;
+        height: auto !important;
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1059,6 +1087,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
