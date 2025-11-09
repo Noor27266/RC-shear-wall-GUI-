@@ -451,29 +451,20 @@ try:
 except Exception:
     _b64 = ""
 
-st.markdown(f"""
-<style>
-  .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
-  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
-  
-  /* Move the logo to the right and make it fixed */
-  .page-header__logo {{
-    height:{int(LOGO_SIZE)}px; 
-    width:auto; 
-    display:block; 
-    position: fixed;  /* Make it stick to the page */
-    top: {int(LOGO_TOP)}px;  /* Adjust logo top position */
-    left: 30px;  /* Move logo to the right, adjust this value as needed */
-    transform: translate({int(LOGO_LEFT)}px, {int(LOGO_TOP)}px); 
-  }}
-</style>
-<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
-  <div class="page-header">
-    <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
-</div>
-""", unsafe_allow_html=True)
+/* Move the logo to the right and make it fixed */
+.page-header__logo {
+    height: {int(LOGO_SIZE)}px; 
+    width: auto; 
+    display: block;
+    position: fixed;  /* Make the logo fixed to the page */
+    top: {int(LOGO_TOP)}px;  /* Adjust top position */
+    left: 50px;  /* Move logo to the right by adjusting this value */
+    z-index: 1000;  /* Ensure the logo stays on top of other elements */
+    margin-left: 0;  /* Remove any margin */
+    margin-top: 0;  /* Remove any margin */
+    transform: none;  /* Ensure there's no transformation */
+}
+
 
 
 # =============================================================================
@@ -990,6 +981,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
