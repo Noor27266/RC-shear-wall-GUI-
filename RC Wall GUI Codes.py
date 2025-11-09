@@ -374,10 +374,6 @@ html, body, .stApp {
 </style>
 """)
 
-
-
-
-
 # =============================================================================
 # Move the interface to the right side
 # =============================================================================
@@ -386,7 +382,7 @@ st.markdown("""
 <style>
 /* Move the entire interface to the right */
 .stApp {
-    transform: translateX(300px);  /* Adjust the value as needed */
+    transform: translateX(250px);  /* Adjust the value as needed */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -468,6 +464,7 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # Step #4: Model loading (robust; tolerates different names/paths)
@@ -983,6 +980,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
