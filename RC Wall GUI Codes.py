@@ -124,9 +124,9 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
-# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP (REMOVE ALL LAYOUT FIXING CSS)
+# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP (REMOVE LAYOUT FIXING CSS, KEEP STYLES)
 # =============================================================================
-# Removed custom layout-fixing CSS, as you requested to let Streamlit handle it automatically.
+# Keep the grey left-side background and retain styling
 css(f"""
 <style>
   .block-container {{ padding-top: 0rem; }}
@@ -198,13 +198,21 @@ css(f"""
     font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
   }}
+
+  /* Retaining the grey left background */
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:{LEFT_BG} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
+  }}
 </style>
 """)
 
 # =============================================================================
-# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
+# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS (REMOVED FIXES)
 # =============================================================================
-# Removed layout fixing CSS for position and fixed layout styles.
+# Removed layout fixing CSS for position and fixed layout styles, allowing streamlit's default layout.
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -281,6 +289,8 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Continue with your other logic unchanged...
 
 
 
@@ -802,3 +812,4 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
