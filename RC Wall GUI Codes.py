@@ -306,7 +306,7 @@ if SHOW_TUNING:
 # Define LOGO_SIZE and LOGO_TOP before using them
 LOGO_SIZE = 60  # Set logo size (adjust this value as needed)
 LOGO_LEFT = 40  # Keep the logo position to the left as is (no horizontal movement)
-LOGO_TOP = 100  # Increase this value to move the logo down (increase as needed)
+LOGO_TOP = 500  # Increase this value to move the logo down (increase as needed)
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -884,6 +884,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
