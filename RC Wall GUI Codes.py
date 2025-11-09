@@ -601,7 +601,7 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-left, right = st.columns([1.5, 2], gap="large")
+left, right = st.columns([1, 1], gap="large")
 
 with left:
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
@@ -951,3 +951,4 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
