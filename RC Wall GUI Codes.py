@@ -606,7 +606,7 @@ with right:
         margin-top: 10px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
+    /* COMPLETELY REMOVE ALL BORDERS FROM MODEL SELECTION */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
         box-shadow: none !important; 
@@ -636,29 +636,12 @@ with right:
         color: #888888 !important;
     }
     
-    /* Remove ALL focus borders and black outlines */
+    /* Remove focus borders */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* Remove black from dropdown arrow */
-    div[data-testid="stSelectbox"] svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-    
-    /* Remove black from dropdown arrow on hover/focus */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
     }
     
     /* MOVE MODEL SELECTION DROPDOWN DOWN */
@@ -673,7 +656,7 @@ with right:
         margin-bottom: 5px !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK TEXT */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
@@ -681,24 +664,20 @@ with right:
         background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
     }
     
-    /* Remove border from popover - NO BLACK BORDERS */
+    /* Remove border from popover */
     [data-baseweb="popover"] {
         border-radius: 8px !important;
         overflow: hidden !important;
         border: none !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-        background-color: #D3D3D3 !important;
     }
     
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
     }
     
     div[role="option"] { 
@@ -715,16 +694,10 @@ with right:
         border-bottom: none !important;
     }
     
-    /* Remove any separator lines between options */
-    div[role="option"]:not(:last-child) {
-        border-bottom: none !important;
-    }
-    
     /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
         color: #888888 !important;
-        border: none !important;
     }
     
     /* Make buttons smaller in width */
@@ -805,6 +778,7 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
+
 
 
 
@@ -1061,6 +1035,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
