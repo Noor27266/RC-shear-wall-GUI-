@@ -321,7 +321,7 @@ except Exception:
 if SHOW_TUNING:
     with st.sidebar:
         st.markdown("### Logo Position and Size Controls")
-        LOGO_LEFT = st.number_input("Logo Left Position (px)", value=80, min_value=-500, max_value=500, step=10)
+        LOGO_LEFT = st.number_input("Logo Left Position (px)", value=50, min_value=-500, max_value=500, step=10)
         LOGO_TOP = st.number_input("Logo Top Position (px)", value=60, min_value=-500, max_value=500, step=10)
         LOGO_SIZE = st.number_input("Logo Size (px)", value=50, min_value=20, max_value=400, step=5)
 
@@ -887,6 +887,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
