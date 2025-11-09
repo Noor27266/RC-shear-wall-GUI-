@@ -210,7 +210,7 @@ css(f"""
     border-radius:10px;
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
-    margin-top:-8px !important;
+    margin-top:-2px !important;
     margin-bottom:-15px !important;
   }}
 
@@ -867,6 +867,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
