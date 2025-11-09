@@ -653,7 +653,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 !important;
         white-space: nowrap !important;
-        margin-top: 25px !important;  /* THIS MOVES BUTTONS DOWN */
+        margin-top: 30px !important;  /* THIS MOVES BUTTONS DOWN */
     }
     
     button[key="calc_btn"] { background:#4CAF50 !important; }
@@ -964,6 +964,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
