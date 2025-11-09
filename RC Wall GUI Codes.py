@@ -128,129 +128,133 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0 !important; }}
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 !important; }}
+    .block-container {{ padding-top: 0.1rem !important; }}
+    h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
-  .section-header {{
-    font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:0px !important; padding:0 !important;
-  }}
+    .section-header {{
+        font-size:{FS_SECTION}px !important;
+        font-weight:700; margin:.35rem 0;
+    }}
 
-  .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
-  }}
-  .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
-  .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
+    .stNumberInput label, .stSelectbox label {{
+        font-size:{FS_LABEL}px !important; font-weight:700;
+    }}
+    .stNumberInput label .katex,
+    .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
+    .stNumberInput label .katex .fontsize-ensurer,
+    .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
 
-  .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
+    .stNumberInput label .katex .mathrm,
+    .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
 
-  div[data-testid="stNumberInput"] input[type="number"],
-  div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
-      height:{INPUT_H}px !important;
-      line-height:{INPUT_H - 8}px !important;
-      font-weight:600 !important;
-      padding:10px 12px !important;
-  }}
+    div[data-testid="stNumberInput"] input[type="number"],
+    div[data-testid="stNumberInput"] input[type="text"] {{
+        font-size:{FS_INPUT}px !important;
+        height:{INPUT_H}px !important;
+        line-height:{INPUT_H - 8}px !important;
+        font-weight:600 !important;
+        padding:10px 12px !important;
+    }}
 
-  div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
-      background:{INPUT_BG} !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-      transition:border-color .15s ease, box-shadow .15s ease !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-      border-color:{PRIMARY} !important;
-      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
-  }}
+    div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
+        background:{INPUT_BG} !important;
+        border:1px solid {INPUT_BORDER} !important;
+        border-radius:12px !important;
+        box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
+        transition:border-color .15s ease, box-shadow .15s ease !important;
+    }}
+    div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
+    div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
+        border-color:{PRIMARY} !important;
+        box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
+    }}
 
-  div[data-testid="stNumberInput"] button {{
-      background:#ffffff !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:10px !important;
-      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
-  }}
-  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
+    div[data-testid="stNumberInput"] button {{
+        background:#ffffff !important;
+        border:1px solid {INPUT_BORDER} !important;
+        border-radius:10px !important;
+        box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
+    }}
+    div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
 
-  /* Select font sizes are tied to FS_SELECT */
-  .stSelectbox [role="combobox"],
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-  div[data-testid="stSelectbox"] div[role="listbox"],
-  div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}px !important;
-  }}
+    /* Select font sizes are tied to FS_SELECT */
+    .stSelectbox [role="combobox"],
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
+    div[data-testid="stSelectbox"] div[role="listbox"],
+    div[data-testid="stSelectbox"] div[role="option"] {{
+        font-size:{FS_SELECT}px !important;
+    }}
 
-  /* Buttons use FS_BUTTON, no wrapping */
-  div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-    white-space:nowrap !important;
-    color:#fff !important;
-    font-weight:700; border:none !important; border-radius:8px !important;
-    background:#4CAF50 !important;
-  }}
-  div.stButton > button:hover {{ filter: brightness(0.95); }}
+    /* Buttons use FS_BUTTON, no wrapping */
+    div.stButton > button {{
+        font-size:{FS_BUTTON}px !important;
+        height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+        line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+        white-space:nowrap !important;
+        color:#fff !important;
+        font-weight:700; border:none !important; border-radius:8px !important;
+        background:#4CAF50 !important;
+    }}
+    div.stButton > button:hover {{ filter: brightness(0.95); }}
 
-  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-  button[key="reset_btn"] {{ background:#2196F3 !important; }}
-  button[key="clear_btn"] {{ background:#f44336 !important; }}
+    button[key="calc_btn"] {{ background:#4CAF50 !important; }}
+    button[key="reset_btn"] {{ background:#2196F3 !important; }}
+    button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-  /* Adjust the form banner */
-  .form-banner {{
-    text-align:center;
-    background: linear-gradient(90deg, #0E9F6E, #84CC16);
-    color: #fff;
-    padding:.45rem .75rem;
-    border-radius:10px;
-    font-weight:800;
-    font-size:{FS_SECTION + 4}px;
-    margin-top:-2px !important;
-    margin-bottom:-15px !important;
-  }}
+    /* Adjust the form banner */
+    .form-banner {{
+        margin-top: -10px !important;
+        margin-bottom: -5px !important;
+    }}
 
-  /* Remove unnecessary space between the banner and inputs */
-  .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-  }}
-  .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
-  }}
+    /* Adjust the spacing between section headers */
+    .section-header {{
+        margin-top: 0px !important;
+        padding-top: 0px !important;
+    }}
 
-  #compact-form{{ max-width:900px; margin:0 auto; }}
-  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
-  #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
-  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+    /* Adjust the spacing between number inputs */
+    .stNumberInput {{
+        margin-top: 0px !important;
+    }}
 
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-  }}
+    .prediction-result {{
+        font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
+        background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
+    }}
+    .recent-box {{
+        font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
+        border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+    }}
 
-  [data-baseweb="popover"], [data-baseweb="tooltip"],
-  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background:#000 !important; color:#fff !important; border-radius:8px !important;
-      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
-  }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+    #compact-form{{ max-width:900px; margin:0 auto; }}
+    #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
+    #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+    #compact-form [data-testid="stNumberInput"],
+    #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
+    #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
+    #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* Keep consistent sizes for model select label and buttons */
-  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
-  #action-row {{ display:flex; align-items:center; gap:10px; }}
+    .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+        background:{LEFT_BG} !important;
+        border-radius:12px !important;
+        box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+        padding:16px !important;
+    }}
+
+    [data-baseweb="popover"], [data-baseweb="tooltip"],
+    [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
+        background:#000 !important; color:#fff !important; border-radius:8px !important;
+        padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
+    }}
+    [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+
+    /* Keep consistent sizes for model select label and buttons */
+    label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+    #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
+
 
 
 # =============================================================================
@@ -867,6 +871,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
