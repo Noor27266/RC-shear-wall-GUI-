@@ -284,13 +284,23 @@ except Exception:
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
+# Set default values for title positioning
+TITLE_LEFT = 35  # Default value for left position
+TITLE_TOP = 60   # Default value for top position
 
+# Optional: You can use Streamlit's session state or query parameters to get dynamic values
+# Example:
+# TITLE_LEFT = st.session_state.get("TITLE_LEFT", 35)
+# TITLE_TOP = st.session_state.get("TITLE_TOP", 60)
+
+# Loading logo if available
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
-    _b64 = ""
+    _b64 = ""  # Fallback to empty string if logo loading fails
 
+# Apply dynamic header positioning and logo with CSS
 st.markdown(f"""
 <style>
   .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
@@ -317,6 +327,7 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -836,4 +847,5 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
