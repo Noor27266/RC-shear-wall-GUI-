@@ -625,7 +625,7 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
-        color: #555555 !important;  /* GREY TEXT COLOR */
+        color: #888888 !important;
     }
     
     /* Remove border from the input element inside */
@@ -633,7 +633,7 @@ with right:
         border: none !important;
         outline: none !important;
         background: transparent !important;
-        color: #555555 !important;  /* GREY TEXT COLOR */
+        color: #888888 !important;
     }
     
     /* Remove focus borders */
@@ -660,20 +660,10 @@ with right:
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
-        color: #555555 !important;  /* MEDIUM GREY TEXT */
+        color: #888888 !important;
         background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
-    }
-    
-    /* Specifically target the selected value text */
-    div[data-baseweb="select"] > div > div {
-        color: #555555 !important;  /* GREY TEXT */
-    }
-    
-    /* Target dropdown arrow color */
-    div[data-baseweb="select"] svg {
-        fill: #555555 !important;  /* GREY ARROW */
     }
     
     /* Remove border from popover */
@@ -691,7 +681,7 @@ with right:
     }
     
     div[role="option"] { 
-        color: #555555 !important;  /* MEDIUM GREY TEXT */
+        color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
         background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
@@ -707,18 +697,18 @@ with right:
     /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
-        color: #555555 !important;  /* KEEP GREY TEXT ON HOVER */
+        color: #888888 !important;
     }
     
     /* Make buttons smaller in width */
     div.stButton > button { 
         height: 50px !important; 
-        width: 90% !important;  /* SMALLER WIDTH */
+        width: 90% !important;
         display:flex !important; 
         align-items:center !important; 
         justify-content:center !important;
         font-size: {FS_BUTTON}px !important;
-        margin: 0 auto !important;  /* Center the smaller buttons */
+        margin: 0 auto !important;
         white-space: nowrap !important;
         margin-top: 30px !important;
         border-radius: 8px !important;
@@ -1044,6 +1034,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
