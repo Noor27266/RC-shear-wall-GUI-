@@ -963,7 +963,7 @@ if _FS_UNITS   is not None: _rules.append(f".stNumberInput label .katex .mathrm,
 if _FS_INPUT   is not None: _rules.append(f"div[data-testid='stNumberInput'] input{{font-size:{_FS_INPUT}px !important;}}")
 if _FS_SELECT  is not None:
     _rules.append(f".stSelectbox [role='combobox'], div[data-testid='stSelectbox'] div[data-baseweb='select'] > div > div:first-child{{font-size:{_FS_SELECT}px !important;}}")
-    _rules.append(f"div[data-testid='stSelectbox'] div[role='listbox'], div[data-testid='stSelectbox'] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
+    _rules.append(f"div[data-testid="stSelectbox"] div[role='listbox'], div[data-testid='stSelectbox'] div[role='option']{{font-size:{_FS_SELECT}px !important;}}")
 if _FS_BUTTON  is not None:
     _btn_h  = max(42, int(round(_FS_BUTTON * 1.45)))
     _btn_lh = max(36, int(round(_FS_BUTTON * 1.15)))
