@@ -625,6 +625,7 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
+        color: #555555 !important;  /* GREY TEXT COLOR */
     }
     
     /* Remove border from the input element inside */
@@ -632,6 +633,7 @@ with right:
         border: none !important;
         outline: none !important;
         background: transparent !important;
+        color: #555555 !important;  /* GREY TEXT COLOR */
     }
     
     /* Remove focus borders */
@@ -654,14 +656,24 @@ with right:
         margin-bottom: 5px !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BORDERS */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK TEXT */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
-        color: #333333 !important;
+        color: #555555 !important;  /* MEDIUM GREY TEXT */
         background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
+    }
+    
+    /* Specifically target the selected value text */
+    div[data-baseweb="select"] > div > div {
+        color: #555555 !important;  /* GREY TEXT */
+    }
+    
+    /* Target dropdown arrow color */
+    div[data-baseweb="select"] svg {
+        fill: #555555 !important;  /* GREY ARROW */
     }
     
     /* Remove border from popover */
@@ -679,7 +691,7 @@ with right:
     }
     
     div[role="option"] { 
-        color: #333333 !important;
+        color: #555555 !important;  /* MEDIUM GREY TEXT */
         font-size: {FS_SELECT}px !important; 
         background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
@@ -695,6 +707,7 @@ with right:
     /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
+        color: #555555 !important;  /* KEEP GREY TEXT ON HOVER */
     }
     
     /* Make buttons smaller in width */
@@ -1031,6 +1044,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
