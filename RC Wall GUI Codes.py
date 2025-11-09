@@ -314,7 +314,7 @@ except Exception:
 
 # SIMPLIFIED LOGO POSITIONING - JUST USE MARGIN
 LOGO_SIZE = 60
-LOGO_MARGIN_TOP = 30  # Increase this to move logo down
+LOGO_MARGIN_TOP = 50  # Increase this to move logo down
 
 st.markdown(f"""
 <style>
@@ -875,6 +875,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
