@@ -303,11 +303,10 @@ if SHOW_TUNING:
 
 
 
-
 # Define LOGO_SIZE, LOGO_LEFT, and LOGO_TOP before using them
 LOGO_SIZE = 60  # Set logo size (adjust this value as needed)
-LOGO_LEFT = 40  # Keep logo position to the left as is (no change here)
-LOGO_TOP = 100  # Increase this value to move the logo down (increase if necessary)
+LOGO_LEFT = 40  # Keep the logo in place horizontally
+LOGO_TOP = 100  # Increase this value to move the logo down (increase as needed)
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -328,7 +327,7 @@ st.markdown(f"""
     margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
-    position: relative; /* Ensure parent container is relative */
+    position: relative; /* Ensure the parent container allows absolute positioning */
   }}
 
   .page-header__logo {{
@@ -336,9 +335,9 @@ st.markdown(f"""
     width:auto !important; 
     display:block;
     margin-right: 2rem !important;
-    position: absolute !important;  /* Absolute positioning to move freely */
-    left: {int(LOGO_LEFT)}px !important;  # Keep the horizontal position as is
-    top: {int(LOGO_TOP)}px !important;   # Increase top value to move logo down
+    position: absolute !important;  /* Absolute positioning to move independently */
+    left: {int(LOGO_LEFT)}px !important;  # Keep the logo in place horizontally
+    top: {int(LOGO_TOP)}px !important;   # Adjust top value to move logo down vertically
   }}
 </style>
 <div class="page-header-outer">
@@ -353,6 +352,7 @@ HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
 # LOGO_LEFT and LOGO_TOP are already defined above
+
 
 
 
@@ -883,6 +883,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
