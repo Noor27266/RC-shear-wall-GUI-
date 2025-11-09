@@ -294,17 +294,7 @@ st.markdown("""
 # =============================================================================
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
-
-st.markdown("""
-<style>
-/* Move the entire interface to the right */
-.stApp {
-    transform: translateX(250px);  /* Adjust the value as needed */
-}
-</style>
-""", unsafe_allow_html=True)
-
-
+# Removed layout fixing CSS for position and fixed layout styles.
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -381,6 +371,8 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+
 
 
 
