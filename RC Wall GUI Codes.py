@@ -374,32 +374,53 @@ html, body, .stApp {
 </style>
 """)
 
+
+
+/* Set the layout to fill the screen automatically */
+html, body, .stApp {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.block-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh; /* 100% of viewport height */
+    width: 100vw; /* 100% of viewport width */
+    padding: 20px;
+}
+
+/* Adjust form elements to be fluid */
+.stNumberInput, .stSelectbox, .stButton {
+    width: 100%; /* Make input elements take up 100% width */
+    max-width: 600px; /* You can set a max-width if needed */
+    margin-bottom: 10px;
+}
+
+/* Make header and title scale automatically */
+h1 {
+    font-size: 5vw; /* Adjust font size based on viewport width */
+}
+
+/* Make sure the logo is positioned well */
+.page-header__logo {
+    position: fixed;
+    top: 20px;
+    left: 10px;
+    height: 5vh; /* Adjust logo size relative to screen height */
+}
+
+/* Scale everything appropriately inside media queries */
 @media (max-width: 768px) {
-  /* Apply these styles for small screens */
-  .form-container {
-    width: 100%;
-    padding: 10px;
-  }
-  .prediction-container {
-    width: 100%;
-  }
-  .header-logo {
-    width: 50px; /* Smaller logo for small screens */
-  }
+    .stButton {
+        font-size: 14px;
+    }
 }
-
-@media (min-width: 769px) {
-  /* Apply these styles for larger screens */
-  .form-container {
-    width: 70%;
-  }
-  .header-logo {
-    width: 100px; /* Larger logo for larger screens */
-  }
-}
-
-
-
 
 
 
@@ -1019,6 +1040,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
