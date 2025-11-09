@@ -307,6 +307,42 @@ if SHOW_TUNING:
 
 
 
+
+# =============================================================================
+# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
+# =============================================================================
+try:
+    _logo_path = BASE_DIR / "TJU logo.png"
+    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
+except Exception:
+    _b64 = ""
+
+# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
+st.markdown(f"""
+<style>
+  .page-header {{ 
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-end; 
+    margin: 0; 
+    padding: 0.5rem 0 0.5rem 0;
+    width: 100%;
+  }}
+
+  .page-header__logo {{
+    height:{int(LOGO_SIZE)}px; 
+    width:auto; 
+    display:block;
+    margin-right: 2rem;
+  }}
+</style>
+<div class="page-header-outer">
+  <div class="page-header">
+    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
@@ -422,42 +458,6 @@ if SHOW_TUNING:
 
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
-
-# =============================================================================
-# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
-# =============================================================================
-try:
-    _logo_path = BASE_DIR / "TJU logo.png"
-    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
-except Exception:
-    _b64 = ""
-
-# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
-st.markdown(f"""
-<style>
-  .page-header {{ 
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-end; 
-    margin: 0; 
-    padding: 0.5rem 0 0.5rem 0;
-    width: 100%;
-  }}
-
-  .page-header__logo {{
-    height:{int(LOGO_SIZE)}px; 
-    width:auto; 
-    display:block;
-    margin-right: 2rem;
-  }}
-</style>
-<div class="page-header-outer">
-  <div class="page-header">
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
@@ -512,7 +512,7 @@ with left:
     # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
     <div style="background:#e0e4ec; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:30px; font-weight:800; color:#333; margin-bottom:20px;">
+        <div style="text-align:center; font-size:28px; font-weight:700; color:#333; margin-bottom:20px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
