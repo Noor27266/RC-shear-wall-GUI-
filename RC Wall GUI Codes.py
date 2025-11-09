@@ -594,23 +594,88 @@ with right:
 
     st.markdown(""" 
     <style>
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: 1px solid #e6e9f2 !important; box-shadow: none !important; background: #fff !important;
+    /* Make all elements in the action row equal width and same line */
+    #action-row { 
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-top: 10px !important;
     }
-    [data-baseweb="popover"], [data-baseweb="popover"] > div { background: transparent !important; box-shadow: none !important; border: none !important; }
-    div[data-testid="stSelectbox"] > div > div { height: 50px !important; display:flex !important; align-items:center !important; margin-top: -0px; }
-    div[data-testid="stSelectbox"] label p { font-size: {FS_LABEL}px !important; color: black !important; font-weight: bold !important; }
-    [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] * { color: black !important; background-color: #D3D3D3 !important; font-size: {FS_SELECT}px !important; }
-    div[role="option"] { color: black !important; font-size: {FS_SELECT}px !important; }
-    div.stButton > button { height: {max(42, int(round(FS_BUTTON*1.45)))}px !important; display:flex; align-items:center; justify-content:center; }
-    #action-row { display:flex; align-items:center; gap: 1px; }
+    
+    #action-row > * {
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+    
+    /* Style the model selection to match button height */
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: 1px solid #e6e9f2 !important; 
+        box-shadow: none !important; 
+        background: #fff !important;
+        height: 50px !important;
+    }
+    
+    div[data-testid="stSelectbox"] > div > div { 
+        height: 50px !important; 
+        display:flex !important; 
+        align-items:center !important; 
+        margin-top: 0px !important;
+    }
+    
+    div[data-testid="stSelectbox"] label p { 
+        font-size: {FS_LABEL}px !important; 
+        color: black !important; 
+        font-weight: bold !important; 
+        margin-bottom: 5px !important;
+    }
+    
+    [data-baseweb="select"] *, 
+    [data-baseweb="popover"] *, 
+    [data-baseweb="menu"] * { 
+        color: black !important; 
+        background-color: #fff !important; 
+        font-size: {FS_SELECT}px !important; 
+    }
+    
+    div[role="option"] { 
+        color: black !important; 
+        font-size: {FS_SELECT}px !important; 
+    }
+    
+    /* Make buttons equal height and width */
+    div.stButton > button { 
+        height: 50px !important; 
+        width: 100% !important;
+        display:flex !important; 
+        align-items:center !important; 
+        justify-content:center !important;
+        font-size: {FS_BUTTON}px !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }
+    
+    button[key="calc_btn"] { background:#4CAF50 !important; }
+    button[key="reset_btn"] { background:#2196F3 !important; }
+    button[key="clear_btn"] { background:#f44336 !important; }
+    
+    /* Remove the margin from the three-btns container */
+    #three-btns {
+        margin-top: 0 !important;
+        display: flex !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
+    # SINGLE ROW WITH EQUAL WIDTH COLUMNS - ALL IN ONE LINE
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
-    row = st.columns([0.8, 2.1, 2.1, 2.1], gap="small")
+    
+    # Use equal weights for all four elements
+    model_col, calc_col, reset_col, clear_col = st.columns([1, 1, 1, 1], gap="small")
 
-    with row[0]:
+    with model_col:
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
         ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -619,19 +684,19 @@ with right:
         model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    with row[1]:
-        st.markdown("<div id='three-btns' style='margin-top:35px;'>", unsafe_allow_html=True)
-        b1, b2, b3 = st.columns([1, 1, 1.2], gap="small")
-        with b1:
-            submit = st.button("Calculate", key="calc_btn")
-        with b2:
-            if st.button("Reset", key="reset_btn"):
-                st.rerun()
-        with b3:
-            if st.button("Clear All", key="clear_btn"):
-                st.session_state.results_df = pd.DataFrame()
-                st.success("All predictions cleared.")
-        st.markdown("</div>", unsafe_allow_html=True)
+    with calc_col:
+        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+
+    with reset_col:
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            st.rerun()
+
+    with clear_col:
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
+            st.session_state.results_df = pd.DataFrame()
+            st.success("All predictions cleared.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
     badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
     with badge_col:
@@ -899,6 +964,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
