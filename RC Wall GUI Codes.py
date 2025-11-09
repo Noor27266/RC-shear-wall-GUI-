@@ -128,12 +128,12 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0.5rem !important; }}
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
+  .block-container {{ padding-top: 0 !important; }}
+  h1 {{ font-size:{FS_TITLE}px !important; margin:0 !important; }}
 
   .section-header {{
     font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
+    font-weight:700; margin:0px !important; padding:0 !important;
   }}
 
   .stNumberInput label, .stSelectbox label {{
@@ -201,6 +201,7 @@ css(f"""
   button[key="reset_btn"] {{ background:#2196F3 !important; }}
   button[key="clear_btn"] {{ background:#f44336 !important; }}
 
+  /* Adjust the form banner */
   .form-banner {{
     text-align:center;
     background: linear-gradient(90deg, #0E9F6E, #84CC16);
@@ -209,10 +210,11 @@ css(f"""
     border-radius:10px;
     font-weight:800;
     font-size:{FS_SECTION + 4}px;
-    margin:.1rem 0 !important;
-    transform: translateY(-10px);
+    margin-top:-8px !important;
+    margin-bottom:-15px !important;
   }}
 
+  /* Remove unnecessary space between the banner and inputs */
   .prediction-result {{
     font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
     background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
@@ -865,6 +867,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
