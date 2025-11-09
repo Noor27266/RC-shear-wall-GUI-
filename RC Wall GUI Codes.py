@@ -285,9 +285,7 @@ right_offset = 80
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
-LOGO_LEFT  = 20
-LOGO_TOP   = 60
-LOGO_SIZE  = 50
+# Logo-related variables removed from here
 _show_recent = False
 
 if SHOW_TUNING:
@@ -298,10 +296,8 @@ if SHOW_TUNING:
         HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
         TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
         TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
-        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=4000, value=LOGO_LEFT, step=10)
-        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
-        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
+
 
 
 
@@ -335,8 +331,8 @@ st.markdown(f"""
     display:block;
     margin-right: 2rem;
     position: relative;
-    left: {int(100}px;  # This controls the horizontal position
-    top: {int(LOGO_TOP)}px;   # This controls the vertical position
+    left: {int(LOGO_LEFT)}px;  # Move the logo slightly to the left
+    top: {int(LOGO_TOP)}px;   # Move the logo slightly down
   }}
 </style>
 <div class="page-header-outer">
@@ -345,6 +341,14 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+# In the Feature Flags & Sidebar Tuning Controls (Step 5), this remains as it was:
+HEADER_X   = 0
+TITLE_LEFT = 35
+TITLE_TOP  = 60
+LOGO_LEFT  = 60  # Move logo slightly to the left
+LOGO_TOP   = 75  # Move logo slightly down
+
 
 
 # =============================================================================
@@ -870,6 +874,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
