@@ -247,154 +247,29 @@ css(f"""
   /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
-</style>
-""")
 
-# Keep header area slim
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-4rem !important; }
-section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-</style>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
-/* Hide Streamlit's small +/- buttons on number inputs */
-div[data-testid="stNumberInput"] button { display: none !important; }
-
-/* Also hide browser numeric spinners for consistency */
-div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
-div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
-</style>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
-/* Increase the width of the Predicted Damage Index (DI) box */
-.prediction-result {
-  width: auto !important;  /* Ensure the width is not stretched */
-  max-width: 250px !important;  /* Slightly increase the width */
-  padding: 4px 12px !important;  /* Maintain compact padding */
-  font-size: 0.9em !important;  /* Smaller text inside DI box */
-  white-space: nowrap !important;  /* Prevent wrapping of text */
-  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
-}
-/* Move the Download CSV button closer to the DI box */
-div[data-testid="stDownloadButton"] {
-  display: inline-block !important;
-  margin-left:-100px !important;  /* Move it slightly to the left */
-}
-div[data-testid="stDownloadButton"] button {
-  white-space: nowrap !important;
-  padding: 3px 8px !important;  /* Smaller button padding */
-  font-size: 8px !important;  /* Smaller font size */
-  height: auto !important;  /* Adjust height according to content */
-  line-height: 1.1 !important;  /* Adjust line height */
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-/* Decrease the width and increase the height of the model selection box */
-div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
-    height: 30px !important;  /* Increase the height (length) of the select box */
-}
-
-/* Ensure the options inside are also displayed nicely */
-div[data-testid="stSelectbox"] > div > div {
-    height: 110px !important;  /* Set the height of the dropdown items */
-    line-height: 30px !important;  /* Make the items vertically centered */
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-<style>
-/* Adjust the header to eliminate any space at the top */
-header[data-testid="stHeader"] {
-    height: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-}
-
-/* Remove the extra space at the top of the app */
-div.stApp {
-    margin-top: -8rem !important; /* Adjust this value if needed */
-}
-
-/* Adjust the margins and padding for the block container */
-section.main > div.block-container {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-css("""
-<style>
-/* Remove ALL scrolling */
-html, body, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Ensure content fits within viewport */
-.stApp > div {
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Prevent any element from causing overflow */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-}
-
-/* Constrain your specific components */
-.page-header-outer {
-    max-width: 100% !important;
-    transform: none !important;
-}
-
-/* Make sure columns and containers don't overflow */
-[data-testid="column"], [data-testid="stHorizontalBlock"] {
-    max-width: 100% !important;
-    overflow: hidden !important;
-}
-</style>
-""")
-
-
-  /* === ZOOM-PROOF FIXES === */
-  .stApp {
+  /* ZOOM-PROOF FIXES */
+  .stApp {{
       transform: none !important;
       position: relative !important;
-  }
+  }}
   
-  .main .block-container {
+  .main .block-container {{
       position: relative !important;
       transform: none !important;
-  }
+  }}
   
   /* Prevent any layout shifting */
-  [data-testid="column"] {
+  [data-testid="column"] {{
       position: relative !important;
-  }
+  }}
   
   /* Keep buttons in place */
-  .stButton {
+  .stButton {{
       position: relative !important;
-  }
+  }}
+</style>
+""")
 
 
 
@@ -1019,5 +894,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
