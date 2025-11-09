@@ -308,19 +308,30 @@ if SHOW_TUNING:
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
+
+# Add dynamic controls for logo positioning
 try:
+    # Try to read logo from file path
     _logo_path = BASE_DIR / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
     _b64 = ""
 
-# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
+# Allow dynamic controls for logo position (left and top) and size
+if SHOW_TUNING:
+    with st.sidebar:
+        st.markdown("### Logo Position and Size Controls")
+        LOGO_LEFT = st.number_input("Logo Left Position (px)", value=80, min_value=-500, max_value=500, step=10)
+        LOGO_TOP = st.number_input("Logo Top Position (px)", value=60, min_value=-500, max_value=500, step=10)
+        LOGO_SIZE = st.number_input("Logo Size (px)", value=50, min_value=20, max_value=400, step=5)
+
+# Adjust the CSS to dynamically position the logo
 st.markdown(f"""
 <style>
   .page-header {{ 
     display: flex; 
     align-items: center; 
-    justify-content: flex-end; 
+    justify-content: flex-start; /* Keep the logo aligned to the left */
     margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
@@ -330,7 +341,8 @@ st.markdown(f"""
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block;
-    margin-right: 2rem;
+    margin-left: {LOGO_LEFT}px;   /* Move logo horizontally */
+    margin-top: {LOGO_TOP}px;     /* Move logo vertically */
   }}
 </style>
 <div class="page-header-outer">
@@ -339,6 +351,7 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -874,6 +887,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
