@@ -643,7 +643,7 @@ with right:
         font-size: {FS_SELECT}px !important; 
     }
     
-    /* Make buttons equal height and width */
+    /* Make buttons equal height and width - MOVED DOWN */
     div.stButton > button { 
         height: 50px !important; 
         width: 100% !important;
@@ -653,6 +653,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 !important;
         white-space: nowrap !important;
+        margin-top: 25px !important;  /* THIS MOVES BUTTONS DOWN */
     }
     
     button[key="calc_btn"] { background:#4CAF50 !important; }
@@ -710,7 +711,6 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
-
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
@@ -964,6 +964,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
