@@ -390,6 +390,30 @@ st.markdown("""
 
 
 
+/* For fixed positioning */
+.page-header__logo {
+  position: fixed;
+  top: 5vh; /* Relative to viewport height */
+  left: 50%; /* Centered horizontally */
+  transform: translateX(-50%); /* Adjust position based on the width of the logo */
+}
+
+/* For flexible scaling */
+html, body {
+  font-size: 1rem; /* Use rem units for scalable fonts */
+}
+
+/* Ensure elements don't overflow */
+.stApp {
+  overflow: hidden; /* Prevent overflow */
+  position: relative;
+  width: 100%;
+}
+
+/* Other container settings */
+.stApp > div {
+  max-width: 100%; /* Prevent resizing beyond screen */
+}
 
 
 
@@ -995,6 +1019,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
