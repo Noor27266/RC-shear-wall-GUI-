@@ -250,24 +250,132 @@ css(f"""
 </style>
 """)
 
-# =============================================================================
-# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
-# =============================================================================
-
-# Full layout adjustments
+# Keep header area slim
 st.markdown("""
 <style>
-/* Move the entire interface to the right */
-.stApp {
-    transform: translateX(250px);  /* Adjust the value as needed */
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Hide Streamlit's small +/- buttons on number inputs */
+div[data-testid="stNumberInput"] button { display: none !important; }
+
+/* Also hide browser numeric spinners for consistency */
+div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Increase the width of the Predicted Damage Index (DI) box */
+.prediction-result {
+  width: auto !important;  /* Ensure the width is not stretched */
+  max-width: 250px !important;  /* Slightly increase the width */
+  padding: 4px 12px !important;  /* Maintain compact padding */
+  font-size: 0.9em !important;  /* Smaller text inside DI box */
+  white-space: nowrap !important;  /* Prevent wrapping of text */
+  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+}
+/* Move the Download CSV button closer to the DI box */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left:-100px !important;  /* Move it slightly to the left */
+}
+div[data-testid="stDownloadButton"] button {
+  white-space: nowrap !important;
+  padding: 3px 8px !important;  /* Smaller button padding */
+  font-size: 8px !important;  /* Smaller font size */
+  height: auto !important;  /* Adjust height according to content */
+  line-height: 1.1 !important;  /* Adjust line height */
 }
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* Decrease the width and increase the height of the model selection box */
+div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
+    height: 30px !important;  /* Increase the height (length) of the select box */
+}
+
+/* Ensure the options inside are also displayed nicely */
+div[data-testid="stSelectbox"] > div > div {
+    height: 110px !important;  /* Set the height of the dropdown items */
+    line-height: 30px !important;  /* Make the items vertically centered */
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<style>
+/* Adjust the header to eliminate any space at the top */
+header[data-testid="stHeader"] {
+    height: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* Remove the extra space at the top of the app */
+div.stApp {
+    margin-top: -8rem !important; /* Adjust this value if needed */
+}
+
+/* Adjust the margins and padding for the block container */
+section.main > div.block-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+css("""
+<style>
+/* Remove ALL scrolling */
+html, body, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Ensure content fits within viewport */
+.stApp > div {
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Prevent any element from causing overflow */
+.block-container, .main, section[data-testid="stAppViewContainer"] {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Constrain your specific components */
+.page-header-outer {
+    max-width: 100% !important;
+}
+
+/* Make sure columns and containers don't overflow */
+[data-testid="column"], [data-testid="stHorizontalBlock"] {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+</style>
+""")
+
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
-
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
 try:
@@ -281,52 +389,61 @@ except Exception:
             SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
     except Exception:
         pass
+
+# Defaults (used when sidebar tuning is hidden)
+right_offset = 80
+HEADER_X   = 0
+TITLE_LEFT = 35
+TITLE_TOP  = 60
+LOGO_LEFT  = 80
+LOGO_TOP   = 60
+LOGO_SIZE  = 50
+_show_recent = False
+
+if SHOW_TUNING:
+    with st.sidebar:
+        right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
+    with st.sidebar:
+        st.markdown("### Header position (title & logo)")
+        HEADER_X = st.number_input("Header X offset (px)", min_value=-2000, max_value=6000, value=HEADER_X, step=20)
+        TITLE_LEFT = st.number_input("Title X (px)", min_value=-1000, max_value=5000, value=TITLE_LEFT, step=10)
+        TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
+        LOGO_LEFT  = st.number_input("Logo X (px)",   min_value=-1000, max_value=5000, value=LOGO_LEFT, step=10)
+        LOGO_TOP   = st.number_input("Logo Y (px)",   min_value=-500,  max_value=500,  value=LOGO_TOP,  step=2)
+        LOGO_SIZE  = st.number_input("Logo size (px)", min_value=20, max_value=400, value=LOGO_SIZE, step=2)
+        _show_recent = st.checkbox("Show Recent Predictions", value=False)
+
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
-# Set default values for title positioning
-TITLE_LEFT = 35  # Default value for left position
-TITLE_TOP = 60   # Default value for top position
-
-# Optional: You can use Streamlit's session state or query parameters to get dynamic values
-# Example:
-# TITLE_LEFT = st.session_state.get("TITLE_LEFT", 35)
-# TITLE_TOP = st.session_state.get("TITLE_TOP", 60)
-
-# Loading logo if available
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
     _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
-    _b64 = ""  # Fallback to empty string if logo loading fails
+    _b64 = ""
 
-# Apply dynamic header positioning and logo with CSS
 st.markdown(f"""
 <style>
   .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
-  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
+  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; }}
 
   /* Move the logo to the right and fix it on the page */
   .page-header__logo {{
     height:{int(LOGO_SIZE)}px; 
     width:auto; 
     display:block; 
-    position: fixed;  /* Fix the logo to the page */
-    top: {int(LOGO_TOP)}px;  /* Adjust the top position */
-    left: 950px;  /* Move logo to the right */
     z-index: 1000;  /* Ensure the logo stays on top of other elements */
-    margin-left: 0;  /* Ensure no left margin */
-    margin-top: 0;  /* Ensure no top margin */
-    transform: none;  /* Reset transform */
   }}
 </style>
-<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
+<div class="page-header-outer">
   <div class="page-header">
     <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+
 
 
 # =============================================================================
@@ -519,6 +636,7 @@ with left:
 
     css("</div>")
     css("</div>")
+
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -760,7 +878,7 @@ with right:
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
-st.markdown(""" 
+st.markdown("""
 <style>
 .form-banner{
   background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
@@ -843,9 +961,6 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
-
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
