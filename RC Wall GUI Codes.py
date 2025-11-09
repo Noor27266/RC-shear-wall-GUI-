@@ -334,6 +334,9 @@ st.markdown(f"""
     width:auto; 
     display:block;
     margin-right: 2rem;
+    position: relative;
+    left: {int(LOGO_LEFT)}px;  # This controls the horizontal position
+    top: {int(LOGO_TOP)}px;   # This controls the vertical position
   }}
 </style>
 <div class="page-header-outer">
@@ -342,6 +345,7 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -866,6 +870,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
