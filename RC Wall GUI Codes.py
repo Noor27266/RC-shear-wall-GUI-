@@ -465,79 +465,39 @@ if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
-# 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
+# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
-R = {
-    "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
-    "fyt":(0.0,1187.0), "fysh":(0.0,1375.0), "fyl":(160.0,1000.0), "fybl":(0.0,900.0),
-    "rt":(0.000545,0.025139), "rsh":(0.0,0.041888), "rl":(0.0,0.029089), "rbl":(0.0,0.031438),
-    "axial":(0.0,0.86), "b0":(45.0,3045.0), "db":(0.0,500.0), "s_db":(0.0,47.65625),
-    "AR":(0.388889,5.833333), "M_Vlw":(0.388889,4.1), "theta":(0.0275,4.85),
-}
-THETA_MAX = R["theta"][1]
-U = lambda s: rf"\;(\mathrm{{{s}}})"
+try:
+    _logo_path = BASE_DIR / "TJU logo.png"
+    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
+except Exception:
+    _b64 = ""
 
-GEOM = [
-    (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
-    (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
-    (rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness"),
-    (rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width"),
-    (rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length"),
-    (r"$AR$","AR",2.0,0.01,None,"Aspect ratio"),
-    (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
-]
+# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
+st.markdown(f"""
+<style>
+  .page-header {{ 
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-end; 
+    margin: 0; 
+    padding: 0.5rem 0 0.5rem 0;
+    width: 100%;
+  }}
 
-MATS = [
-    (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
-    (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
-    (rf"$f_{{ysh}}{U('MPa')}$",   "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
-    (rf"$f_{{yl}}{U('MPa')}$","fyl",  400.0, 1.0, None, "Vertical web yield strength"),
-    (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
-]
-
-REINF = [
-    (r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio"),
-    (r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio"),
-    (r"$\rho_l\;(\%)$","rl",0.25,0.0001,"%.6f","Vertical web ratio"),
-    (r"$\rho_{bl}\;(\%)$","rbl",0.25,0.0001,"%.6f","Vertical boundary ratio"),
-    (r"$s/d_b$","s_db",0.25,0.01,None,"Hoop spacing ratio"),
-    (r"$P/(A_g f'_c)$","axial",0.10,0.001,None,"Axial Load Ratio"),
-    (r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio"),
-]
-
-def num(label, key, default, step, fmt, help_):
-    return st.number_input(
-        label, value=dv(R, key, default), step=step,
-        min_value=R[key][0], max_value=R[key][1],
-        format=fmt if fmt else None, help=help_
-    )
-
-left, right = st.columns([1, 1], gap="large")
-
-with left:
-    st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
-    css("<div id='leftwrap'>")
-    css("<div id='compact-form'>")
-
-    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
-    c1, c2, c3 = st.columns([1, 1, 1], gap="large")
-
-    with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
-        lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
-
-    with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
-        rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
-
-    with c3:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
-        fyl, fybl = [num(*row) for row in MATS[3:]]
-
-    css("</div>")
-    css("</div>")
+  .page-header__logo {{
+    height:{int(LOGO_SIZE)}px; 
+    width:auto; 
+    display:block;
+    margin-right: 2rem;
+  }}
+</style>
+<div class="page-header-outer">
+  <div class="page-header">
+    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # =============================================================================
@@ -865,6 +825,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
