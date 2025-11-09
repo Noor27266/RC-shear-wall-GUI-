@@ -553,7 +553,7 @@ with left:
     """, unsafe_allow_html=True)
     
     # EXTREMELY AGGRESSIVE UPWARD MOVEMENT FOR INPUT FEATURES AND COLUMNS
-    st.markdown("<div style='margin-top: -70px; padding-top: 0px;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: -100px; padding-top: 0px;'>", unsafe_allow_html=True)
     st.markdown("<div class='form-banner' style='margin-top: 0px; margin-bottom: 2px; padding: 0.3rem 0.75rem;'>Inputs Features</div>", unsafe_allow_html=True)
     
     # Add CSS to remove all spacing around the columns
@@ -1103,6 +1103,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
