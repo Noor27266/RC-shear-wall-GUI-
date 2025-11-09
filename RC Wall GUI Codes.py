@@ -631,12 +631,20 @@ with right:
     }
     
     [data-baseweb="select"] *, 
-    [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] * { 
-        color: black !important; 
-        background-color: #fff !important; 
-        font-size: {FS_SELECT}px !important; 
-    }
+[data-baseweb="popover"] *, 
+[data-baseweb="menu"] * { 
+    color: black !important; 
+    background-color: #D3D3D3 !important;  /* Changed to grey */
+    font-size: {FS_SELECT}px !important; 
+}
+
+/* Also make the main select box background grey */
+div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    border: 1px solid #e6e9f2 !important; 
+    box-shadow: none !important; 
+    background: #D3D3D3 !important;  /* Changed to grey */
+    height: 50px !important;
+}
     
     div[role="option"] { 
         color: black !important; 
@@ -964,6 +972,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
