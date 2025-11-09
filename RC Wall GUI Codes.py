@@ -506,7 +506,7 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-left, right = st.columns([1, 1], gap="large")
+left, right = st.columns([1.5, 1], gap="large")
 
 with left:
     # MOVE THE TITLE INSIDE THE GREY AREA
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
