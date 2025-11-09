@@ -103,7 +103,7 @@ SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% 
 
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(70)  # page title
+FS_TITLE   = s(100)  # page title
 FS_SECTION = s(60)  # section headers
 FS_LABEL   = s(50)  # input & select labels (katex included)
 FS_UNITS   = s(30)  # math units in labels
@@ -373,113 +373,6 @@ html, body, .stApp {
 }
 </style>
 """)
-# =============================================================================
-# 🎯 Css
-# =============================================================================
-st.markdown("""
-<style>
-/* Ensure html, body, and app take full height and width */
-html, body, .stApp {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-/* Full height for all sections and centering */
-section.main > div.block-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Ensures the form is centered */
-    justify-content: flex-start;
-}
-
-/* Title should be centered */
-.page-header__title {
-    font-size: 2.5em !important; /* Adjust title font size */
-    text-align: center;
-    margin: 20px 0;
-    width: 100%; /* Ensure it takes full width */
-}
-
-/* Make sure form elements are aligned properly */
-#compact-form {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: 100%;
-    gap: 20px; /* Add some gap between form fields */
-}
-
-/* Form input fields, select boxes, and buttons should be flexible */
-.stNumberInput, .stSelectbox, .stButton {
-    width: 48% !important; /* Use 48% width for form elements (2 per row) */
-    margin-bottom: 10px;
-}
-
-/* Ensure the form is stacked vertically on small screens */
-@media (max-width: 768px) {
-    /* Adjust title font size for smaller screens */
-    .page-header__title {
-        font-size: 1.8em !important;
-    }
-
-    /* Form fields should take up the whole width on small screens */
-    .stNumberInput, .stSelectbox, .stButton {
-        width: 100% !important;
-    }
-
-    /* Ensure buttons are a bit smaller for small screens */
-    .stButton {
-        font-size: 14px !important;
-        padding: 12px !important;
-    }
-
-    /* Make chart responsive for smaller screens */
-    .vega-embed {
-        width: 100% !important;
-        height: auto !important;
-    }
-
-    /* Ensure no horizontal scroll */
-    .stApp {
-        overflow: hidden !important;
-    }
-}
-
-/* Make sure no horizontal scrolling */
-.block-container, .main, section[data-testid="stAppViewContainer"] {
-    overflow: hidden !important;
-}
-
-/* Adjust the header (make sure it doesn't take too much space) */
-header[data-testid="stHeader"] {
-    display: none !important;
-}
-
-/* Adjust the width of the prediction box to fit well */
-.prediction-result {
-    width: auto !important;  /* Ensure the width is not stretched */
-    max-width: 250px !important;  /* Slightly increase the width */
-    padding: 4px 12px !important;  /* Maintain compact padding */
-    font-size: 0.9em !important;  /* Smaller text inside DI box */
-    white-space: nowrap !important;  /* Prevent wrapping of text */
-    margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-
-
-
-
-
-
 
 # =============================================================================
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
@@ -489,7 +382,7 @@ st.markdown("""
 <style>
 /* Move the entire interface to the right */
 .stApp {
-    transform: translateX(150px);  /* Adjust the value as needed */
+    transform: translateX(250px);  /* Adjust the value as needed */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -518,7 +411,7 @@ right_offset = 80
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
-LOGO_LEFT  = 50
+LOGO_LEFT  = 80
 LOGO_TOP   = 60
 LOGO_SIZE  = 50
 _show_recent = False
@@ -1093,11 +986,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
