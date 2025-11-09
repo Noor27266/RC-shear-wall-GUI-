@@ -597,135 +597,175 @@ with right:
 
     st.markdown(""" 
     <style>
-    /* Remove borders and shadows from the dropdown select box */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important; /* Remove border */
-        box-shadow: none !important; 
-        background: #D3D3D3 !important; /* Light grey background */
-        height: 50px !important;
-        border-radius: 8px !important; /* Rounded corners */
-        padding: 0px 12px !important;
-        outline: none !important; /* Remove outline */
-    }
-
-    /* Remove borders from the dropdown options container */
-    div[data-testid="stSelectbox"] > div {
-        border: none !important;
-        box-shadow: none !important;
+    /* Make all elements in the action row with custom widths */
+    #action-row { 
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-top: 10px !important;
     }
     
-    /* Remove the borders from the dropdown menu options */
+    /* NUCLEAR OPTION - REMOVE ALL BORDERS FROM EVERY POSSIBLE ELEMENT */
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: none !important;
+        box-shadow: none !important; 
+        background: #D3D3D3 !important;
+        height: 50px !important;
+        border-radius: 8px !important;
+        padding: 0px 12px !important;
+        outline: none !important;
+    }
+    
+    /* TARGET THE SPECIFIC BORDER CONTAINER IN BASEWEB */
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important;
+    }
+    
+    /* TARGET THE ROOT BORDER ELEMENT */
+    div[data-testid="stSelectbox"] [data-baseweb="base-input"] {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important;
+    }
+    
+    /* TARGET THE INPUT CONTAINER */
+    div[data-testid="stSelectbox"] [data-baseweb="input-container"] {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important;
+    }
+    
+    /* TARGET ALL POSSIBLE BORDER ELEMENTS */
+    div[data-testid="stSelectbox"] [data-baseweb="input"] {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important;
+    }
+    
     div[data-testid="stSelectbox"] > div > div { 
         height: 50px !important; 
-        display: flex !important; 
-        align-items: center !important; 
+        display:flex !important; 
+        align-items:center !important; 
         margin-top: 0px !important;
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
         color: #888888 !important;
+        background-color: #D3D3D3 !important;
     }
-
-    /* Remove border from the input element inside the dropdown */
+    
+    /* Remove border from the input element inside */
     div[data-testid="stSelectbox"] input {
         border: none !important;
         outline: none !important;
         background: transparent !important;
         color: #888888 !important;
     }
-
-    /* Remove all focus borders and black outlines */
+    
+    /* Remove ALL focus borders and black outlines */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
+    div[data-testid="stSelectbox"] [data-baseweb="base-input"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="base-input"]:focus-within,
+    div[data-testid="stSelectbox"] [data-baseweb="base-input"]:hover {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
-
-    /* Remove black color from dropdown arrow */
+    
+    /* Remove black from dropdown arrow */
     div[data-testid="stSelectbox"] svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
-
-    /* Remove black color from dropdown arrow on hover/focus */
+    
+    /* Remove black from dropdown arrow on hover/focus */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
-
-    /* Move model selection dropdown down */
+    
+    /* MOVE MODEL SELECTION DROPDOWN DOWN */
     div[data-testid="stSelectbox"] > div:first-child {
         margin-top: 30px !important;
     }
-
+    
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
     }
-
-    /* Ensure the entire dropdown is grey, no black anywhere */
+    
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] * { 
+    [data-baseweb="menu"] *,
+    [data-baseweb="base-input"] *,
+    [data-baseweb="input-container"] *,
+    [data-baseweb="input"] * { 
         color: #888888 !important;
-        background-color: #D3D3D3 !important; /* Light grey */
+        background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
     }
-
-    /* Remove borders from popover (dropdown container) - No black borders */
+    
+    /* Remove border from popover - NO BLACK BORDERS */
     [data-baseweb="popover"] {
         border-radius: 8px !important;
         overflow: hidden !important;
         border: none !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
-
+    
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
-
-    /* Remove the border from options in the dropdown */
+    
     div[role="option"] { 
         color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important; /* Light grey */
+        background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
     }
-
-    /* Remove the last item border */
+    
+    /* Remove last item border */
     div[role="option"]:last-child {
         border-bottom: none !important;
     }
-
+    
     /* Remove any separator lines between options */
     div[role="option"]:not(:last-child) {
         border-bottom: none !important;
     }
-
-    /* Make the dropdown hover effect grey */
+    
+    /* Make dropdown hover effect also grey */
     div[role="option"]:hover {
-        background-color: #B8B8B8 !important; /* Darker grey hover */
+        background-color: #B8B8B8 !important;
         color: #888888 !important;
         border: none !important;
     }
-
+    
     /* Make buttons smaller in width */
     div.stButton > button { 
         height: 50px !important; 
@@ -742,17 +782,17 @@ with right:
         font-weight: 700 !important;
         outline: none !important;
     }
-
+    
     button[key="calc_btn"] { background:#4CAF50 !important; }
     button[key="reset_btn"] { background:#2196F3 !important; }
     button[key="clear_btn"] { background:#f44336 !important; }
-
+    
     /* Remove button focus borders */
     div.stButton > button:focus {
         outline: none !important;
         box-shadow: none !important;
     }
-
+    
     /* Remove the margin from the three-btns container */
     #three-btns {
         margin-top: 0 !important;
@@ -760,12 +800,17 @@ with right:
         gap: 8px !important;
         width: 100% !important;
     }
+    
+    /* EXTREME: Target any element that could have border */
+    div[data-testid="stSelectbox"] * {
+        border: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
     # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
-
+    
     # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
@@ -804,7 +849,6 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
-
 
 
 
@@ -1064,6 +1108,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
