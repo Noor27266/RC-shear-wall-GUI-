@@ -103,6 +103,9 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
+# -*- coding: utf-8 -*-
+
+
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
@@ -131,6 +134,7 @@ css(f"""
         margin-top: 0px !important;
         margin-bottom: 0px !important;
     }}
+
     .form-banner {{
         margin-top: -25px !important;
         padding: 5px 0px !important;
@@ -149,8 +153,49 @@ css(f"""
         font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
         border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
     }}
+
+    /* Ensuring the left container has a grey background */
+    .block-container [data-testid="stHorizontalBlock"] > div {{
+        background:#e0e4ec !important;
+        border-radius:12px !important;
+        box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+        padding:16px !important;
+    }}
+
+    /* Page and content centering */
+    .page-container {{
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 0 20px;
+    }}
+    .main-content-container {{
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+    }}
+
+    .page-header {{
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; 
+        margin: 0;
+        padding: 0.5rem 0 0.5rem 0;
+        width: 100%;
+    }}
+
+    .page-header__logo {{
+        height:{int(LOGO_SIZE)}px; 
+        width:auto; 
+        display:block;
+        margin-right: 2rem;
+        position: absolute;
+        left: {LOGO_LEFT}px;
+        top: {LOGO_TOP}px;
+    }}
 </style>
 """)
+
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -753,6 +798,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
