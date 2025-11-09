@@ -221,15 +221,176 @@ css(f"""
     font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
   }}
+
+  #compact-form{{ max-width:900px; margin:0 auto; }}
+  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
+  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  #compact-form [data-testid="stNumberInput"],
+  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
+  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
+  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:{LEFT_BG} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
+  }}
+
+  [data-baseweb="popover"], [data-baseweb="tooltip"],
+  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
+      background:#000 !important; color:#fff !important; border-radius:8px !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
+  }}
+  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+  #action-row {{ display:flex; align-items:center; gap:10px; }}
+</style>
+""")
+
+# Keep header area slim
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Hide Streamlit's small +/- buttons on number inputs */
+div[data-testid="stNumberInput"] button { display: none !important; }
+
+/* Also hide browser numeric spinners for consistency */
+div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Increase the width of the Predicted Damage Index (DI) box */
+.prediction-result {
+  width: auto !important;  /* Ensure the width is not stretched */
+  max-width: 250px !important;  /* Slightly increase the width */
+  padding: 4px 12px !important;  /* Maintain compact padding */
+  font-size: 0.9em !important;  /* Smaller text inside DI box */
+  white-space: nowrap !important;  /* Prevent wrapping of text */
+  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+}
+/* Move the Download CSV button closer to the DI box */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left:-100px !important;  /* Move it slightly to the left */
+}
+div[data-testid="stDownloadButton"] button {
+  white-space: nowrap !important;
+  padding: 3px 8px !important;  /* Smaller button padding */
+  font-size: 8px !important;  /* Smaller font size */
+  height: auto !important;  /* Adjust height according to content */
+  line-height: 1.1 !important;  /* Adjust line height */
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+/* Decrease the width and increase the height of the model selection box */
+div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
+    height: 30px !important;  /* Increase the height (length) of the select box */
+}
+
+/* Ensure the options inside are also displayed nicely */
+div[data-testid="stSelectbox"] > div > div {
+    height: 110px !important;  /* Set the height of the dropdown items */
+    line-height: 30px !important;  /* Make the items vertically centered */
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<style>
+/* Adjust the header to eliminate any space at the top */
+header[data-testid="stHeader"] {
+    height: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* Remove the extra space at the top of the app */
+div.stApp {
+    margin-top: -8rem !important; /* Adjust this value if needed */
+}
+
+/* Adjust the margins and padding for the block container */
+section.main > div.block-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+css("""
+<style>
+/* Remove ALL scrolling */
+html, body, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Ensure content fits within viewport */
+.stApp > div {
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Prevent any element from causing overflow */
+.block-container, .main, section[data-testid="stAppViewContainer"] {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
+
+/* Constrain your specific components */
+.page-header-outer {
+    max-width: 100% !important;
+    transform: none !important;
+}
+
+/* Make sure columns and containers don't overflow */
+[data-testid="column"], [data-testid="stHorizontalBlock"] {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
 </style>
 """)
 
 # =============================================================================
-# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS (NO CHANGES MADE HERE)
+# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
 
+st.markdown("""
+<style>
+/* Move the entire interface to the right */
+.stApp {
+    transform: translateX(250px);  /* Adjust the value as needed */
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
 # =============================================================================
-# 🏷️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
+# ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
@@ -304,18 +465,128 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+
+
+
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
 
-# Machine Learning model loading steps for various models
+class _ScalerShim:
+    def __init__(self, X_scaler, y_scaler):
+        import numpy as _np
+        self._np = _np
+        self.Xs = X_scaler
+        self.Ys = y_scaler
+        self.x_kind = "External joblib"
+        self.y_kind = "External joblib"
+    def transform_X(self, X): return self.Xs.transform(X)
+    def inverse_transform_y(self, y):
+        y = self._np.array(y).reshape(-1, 1)
+        return self.Ys.inverse_transform(y)
+
+ann_ps_model = None; ann_ps_proc = None
+try:
+    ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
+    ann_ps_model = _load_keras_model(ps_model_path)
+    sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
+    sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
+    ann_ps_proc = _ScalerShim(sx, sy)
+    record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
+except Exception as e:
+    record_health("PS (ANN)", False, f"{e}")
+
+ann_mlp_model = None; ann_mlp_proc = None
+try:
+    mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
+    ann_mlp_model = _load_keras_model(mlp_model_path)
+    sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
+    sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
+    ann_mlp_proc = _ScalerShim(sx, sy)
+    record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
+except Exception as e:
+    record_health("MLP (ANN)", False, f"{e}")
+
+rf_model = None
+try:
+    rf_path = pfind([
+        "random_forest_model.pkl", "random_forest_model.joblib",
+        "rf_model.pkl", "RF_model.pkl",
+        "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
+    ])
+    try:
+        rf_model = joblib.load(rf_path)
+        record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
+    except Exception as e_joblib:
+        try:
+            import skops.io as sio
+            rf_model = sio.load(rf_path, trusted=True)
+            record_health("Random Forest", True, f"loaded via skops from {rf_path}")
+        except Exception as e_skops:
+            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})")
+except Exception as e:
+    record_health("Random Forest", False, str(e))
+
+xgb_model = None
+try:
+    xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
+    xgb_model = xgb.XGBRegressor(); xgb_model.load_model(xgb_path)
+    record_health("XGBoost", True, f"loaded from {xgb_path}")
+except Exception as e:
+    record_health("XGBoost", False, str(e))
+
+cat_model = None
+try:
+    cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
+    cat_model = catboost.CatBoostRegressor(); cat_model.load_model(cat_path)
+    record_health("CatBoost", True, f"loaded from {cat_path}")
+except Exception as e:
+    record_health("CatBoost", False, f"{e}")
+
+def load_lightgbm_flex():
+    try:
+        p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
+    except Exception:
+        raise FileNotFoundError("No LightGBM model file found.")
+    try: return lgb.Booster(model_file=str(p)), "booster", p
+    except Exception:
+        try: return joblib.load(p), "sklearn", p
+        except Exception as e:
+            raise e
+
+try:
+    lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
+    record_health("LightGBM", True, f"loaded as {lgb_kind} from {lgb_path}")
+except Exception as e:
+    lgb_model = None; record_health("LightGBM", False, str(e))
+
+model_registry = {}
+for name, ok, *_ in health:
+    if not ok: continue
+    if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
+    elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
+    elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
+    elif name == "PS (ANN)" and ann_ps_model is not None: model_registry["PS"] = ann_ps_model
+    elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
+    elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
+
+if SHOW_TUNING:
+    with st.sidebar:
+        st.header("Model Health")
+        for name, ok, msg, cls in health:
+            st.markdown(f"- <span class='{cls}'>{'✅' if ok else '❌'} {name}</span><br/><small>{msg}</small>", unsafe_allow_html=True)
+        for label, proc in [("PS scaler", ann_ps_proc), ("MLP scaler", ann_mlp_proc)]:
+            try: st.caption(f"{label}: X={proc.x_kind} | Y={proc.y_kind}")
+            except Exception: pass
+
+if "results_df" not in st.session_state:
+    st.session_state.results_df = pd.DataFrame()
 
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
-
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
     "fyt":(0.0,1187.0), "fysh":(0.0,1375.0), "fyl":(160.0,1000.0), "fybl":(0.0,900.0),
@@ -324,10 +595,43 @@ R = {
     "AR":(0.388889,5.833333), "M_Vlw":(0.388889,4.1), "theta":(0.0275,4.85),
 }
 THETA_MAX = R["theta"][1]
+U = lambda s: rf"\;(\mathrm{{{s}}})"
 
-# =============================================================================
-# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
-# =============================================================================
+GEOM = [
+    (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
+    (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
+    (rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness"),
+    (rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width"),
+    (rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length"),
+    (r"$AR$","AR",2.0,0.01,None,"Aspect ratio"),
+    (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
+]
+
+MATS = [
+    (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
+    (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
+    (rf"$f_{{ysh}}{U('MPa')}$",   "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
+    (rf"$f_{{yl}}{U('MPa')}$","fyl",  400.0, 1.0, None, "Vertical web yield strength"),
+    (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
+]
+
+REINF = [
+    (r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio"),
+    (r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio"),
+    (r"$\rho_l\;(\%)$","rl",0.25,0.0001,"%.6f","Vertical web ratio"),
+    (r"$\rho_{bl}\;(\%)$","rbl",0.25,0.0001,"%.6f","Vertical boundary ratio"),
+    (r"$s/d_b$","s_db",0.25,0.01,None,"Hoop spacing ratio"),
+    (r"$P/(A_g f'_c)$","axial",0.10,0.001,None,"Axial Load Ratio"),
+    (r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio"),
+]
+
+def num(label, key, default, step, fmt, help_):
+    return st.number_input(
+        label, value=dv(R, key, default), step=step,
+        min_value=R[key][0], max_value=R[key][1],
+        format=fmt if fmt else None, help=help_
+    )
+
 left, right = st.columns([1, 1], gap="large")
 
 with left:
@@ -354,6 +658,14 @@ with left:
 
     css("</div>")
     css("</div>")
+
+
+# =============================================================================
+# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# =============================================================================
+HERO_X, HERO_Y, HERO_W = 100, 5, 300
+MODEL_X, MODEL_Y = 100, -2
+CHART_W = 300
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -421,11 +733,124 @@ with right:
         chart_slot = st.empty()
 
 # =============================================================================
-# 📊 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
+# 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
+_TRAIN_NAME_MAP = {
+    'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
+    'fyt': 'fyt', 'fysh': 'fysh', 'fyl': 'fyl', 'fybl': 'fybl',
+    'ρt': 'pt', 'ρsh': 'psh', 'ρl': 'pl', 'ρbl': 'pbl',
+    'P/(Agf′c)': 'P/(Agfc)', 'b0': 'b0', 'db': 'db', 's/db': 's/db',
+    'AR': 'AR', 'M/Vlw': 'M/Vlw', 'θ': 'θ'
+}
+_TRAIN_COL_ORDER = ['lw','hw','tw','fc','fyt','fysh','fyl','fybl','pt','psh','pl','pbl','P/(Agfc)','b0','db','s/db','AR','M/Vlw','θ']
+
+def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
+    return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
+
+def predict_di(choice, _unused_array, input_df):
+    df_trees = _df_in_train_order(input_df)
+    df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    X = df_trees.values.astype(np.float32)
+
+    if choice == "LightGBM":
+        mdl = model_registry["LightGBM"]
+        prediction = float(mdl.predict(X)[0])
+    if choice == "XGBoost":
+        prediction = float(model_registry["XGBoost"].predict(X)[0])
+    if choice == "CatBoost":
+        prediction = float(model_registry["CatBoost"].predict(X)[0])
+    if choice == "Random Forest":
+        prediction = float(model_registry["Random Forest"].predict(X)[0])
+    if choice == "PS":
+        Xn = ann_ps_proc.transform_X(X)
+        try:
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        except Exception:
+            model_registry["PS"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
+    if choice == "MLP":
+        Xn = ann_mlp_proc.transform_X(X)
+        try:
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        except Exception:
+            model_registry["MLP"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
+
+    prediction = max(0.035, min(prediction, 1.5))
+    return prediction
+
+def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
+    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
+    x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
+    return pd.DataFrame(x, columns=cols)
+
+def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
+    if model_choice not in model_registry:
+        return pd.DataFrame(columns=["θ","Predicted_DI"])
+    thetas = np.round(np.arange(0.0, theta_max + 1e-9, step), 2)
+    rows = []
+    for th in thetas:
+        df = base_df.copy()
+        df.loc[:, 'θ'] = float(th)
+        di = predict_di(model_choice, None, df)
+        di = max(0.035, min(di, 1.5))
+        rows.append({"θ": float(th), "Predicted_DI": float(di)})
+    return pd.DataFrame(rows)
+
+def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
+                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
+    import altair as alt
+    selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
+    AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
+    base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
+    x_ticks = np.linspace(0.0, theta_max, 5).round(2)
+
+    axes_layer = (
+        alt.Chart(base_axes_df).mark_line(opacity=0).encode(
+            x=alt.X("θ:Q", title="Drift Ratio (θ)", scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
+                    axis=alt.Axis(values=list(x_ticks), labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
+                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
+                                  labelFlush=True, labelFlushOffset=0)),
+            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)", scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+                    axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5], labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
+                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
+                                  labelFlush=True, labelFlushOffset=0)),
+        ).properties(width=size, height=size)
+    )
+
+    curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
+    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
+
+    k = 3
+    if not curve.empty:
+        curve_points = curve.iloc[::k].copy()
+    else:
+        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
+
+    points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
+        x="θ:Q", y="Predicted_DI:Q",
+        tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
+                 alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
+    ).add_params(selection)
+
+    rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
+    text_layer = alt.Chart(curve).mark_text(align='left', dx=8, dy=-8, fontSize=14, fontWeight='bold', color='red').encode(
+        x="θ:Q", y="Predicted_DI:Q", text=alt.Text("Predicted_DI:Q", format=".4f")
+    ).transform_filter(selection)
+
+    chart = (alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
+             .configure_view(strokeWidth=0)
+             .configure_axis(domain=True, ticks=True)
+             .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
+    chart_html = chart.to_html()
+    chart_html = chart_html.replace('</style>',
+        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
+    st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
-# 🔮 STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
+# ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
