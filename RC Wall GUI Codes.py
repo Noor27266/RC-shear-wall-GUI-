@@ -542,7 +542,7 @@ def num(label, key, default, step, fmt, help_):
 left, right = st.columns([1.5, 1], gap="large")
 
 with left:
-    # MOVE THE TITLE INSIDE THE GREY AREA - REDUCED PADDING
+    # MOVE THE TITLE INSIDE THE GREY AREA - REDUCED PADDING FOR UPWARD MOVEMENT
     st.markdown("""
     <div style="background:#e0e4ec; border-radius:12px; padding:2px 5px 0px 5px; margin-bottom:2px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin-bottom:5px;">
@@ -1070,6 +1070,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
