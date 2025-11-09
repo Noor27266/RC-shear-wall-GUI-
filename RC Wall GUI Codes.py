@@ -314,34 +314,46 @@ except Exception:
 
 # Logo positioning variables
 LOGO_SIZE = 60
-LOGO_MARGIN_TOP = 70  # Increase this to move logo further down
-LOGO_MARGIN_RIGHT = -3 # DECREASE this to move logo to the right
+LOGO_TOP = 80   # Distance from top of page (increase to move down)
+LOGO_RIGHT = 50 # Distance from right edge (decrease to move left)
 
-# REMOVE THE SEPARATE TITLE AND JUST KEEP THE LOGO
 st.markdown(f"""
 <style>
-  .page-header {{ 
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-end; 
-    margin: 0; 
-    padding: 0.5rem 0 0.5rem 0;
-    width: 100%;
-    position: relative;
+  .page-header-outer {{
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 0 !important;
+    z-index: 9999 !important;
+    pointer-events: none !important;
+  }}
+
+  .page-header {{
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    height: 0 !important;
+    position: relative !important;
   }}
 
   .page-header__logo {{
-    height:{int(LOGO_SIZE)}px !important; 
-    width:auto !important; 
-    display:block !important;
-    margin-right: {int(LOGO_MARGIN_RIGHT)}rem !important;  /* Change this to move left/right */
-    margin-top: {int(LOGO_MARGIN_TOP)}px !important;  /* This moves the logo down */
+    height: {int(LOGO_SIZE)}px !important;
+    width: auto !important;
+    position: fixed !important;
+    top: {int(LOGO_TOP)}px !important;
+    right: {int(LOGO_RIGHT)}px !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
   }}
-  
-  .page-header-outer {{
-    margin-bottom: 20px !important;
+
+  /* Add space at the top so content doesn't get hidden behind fixed logo */
+  .main .block-container {{
+    padding-top: {int(LOGO_TOP + LOGO_SIZE + 20)}px !important;
   }}
 </style>
+
 <div class="page-header-outer">
   <div class="page-header">
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
@@ -349,10 +361,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# In the Feature Flags & Sidebar Tuning Controls (Step 5), this remains as it was:
-HEADER_X   = 0
+# Remove the old positioning variables since we're not using them
+HEADER_X = 0
 TITLE_LEFT = 35
-TITLE_TOP  = 60
+TITLE_TOP = 60
 
 
 
@@ -887,6 +899,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
