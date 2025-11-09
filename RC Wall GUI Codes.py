@@ -303,30 +303,19 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
 
-class _ScalerShim:
-    def __init__(self, X_scaler, y_scaler):
-        import numpy as _np
-        self._np = _np
-        self.Xs = X_scaler
-        self.Ys = y_scaler
-        self.x_kind = "External joblib"
-        self.y_kind = "External joblib"
-    def transform_X(self, X): return self.Xs.transform(X)
-    def inverse_transform_y(self, y):
-        y = self._np.array(y).reshape(-1, 1)
-        return self.Ys.inverse_transform(y)
-
-# Model loading continues as per your initial setup
+# Machine Learning model loading steps for various models
 
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
+
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
     "fyt":(0.0,1187.0), "fysh":(0.0,1375.0), "fyl":(160.0,1000.0), "fybl":(0.0,900.0),
@@ -335,22 +324,36 @@ R = {
     "AR":(0.388889,5.833333), "M_Vlw":(0.388889,4.1), "theta":(0.0275,4.85),
 }
 THETA_MAX = R["theta"][1]
-U = lambda s: rf"\;(\mathrm{{{s}}})"
-
-# Define GEOM, MATS, REINF (unchanged from your original)
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-# Define remaining code (interaction logic, buttons, predictions, etc.)
+left, right = st.columns([1, 1], gap="large")
 
+with left:
+    st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
+    st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
+    css("<div id='leftwrap'>")
+    css("<div id='compact-form'>")
 
-# =============================================================================
-# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
-# =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 5, 300
-MODEL_X, MODEL_Y = 100, -2
-CHART_W = 300
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
+    c1, c2, c3 = st.columns([1, 1, 1], gap="large")
+
+    with c1:
+        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
+        lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
+
+    with c2:
+        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
+
+    with c3:
+        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
+        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
+        fyl, fybl = [num(*row) for row in MATS[3:]]
+
+    css("</div>")
+    css("</div>")
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -418,124 +421,11 @@ with right:
         chart_slot = st.empty()
 
 # =============================================================================
-# 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
+# 📊 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
-_TRAIN_NAME_MAP = {
-    'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
-    'fyt': 'fyt', 'fysh': 'fysh', 'fyl': 'fyl', 'fybl': 'fybl',
-    'ρt': 'pt', 'ρsh': 'psh', 'ρl': 'pl', 'ρbl': 'pbl',
-    'P/(Agf′c)': 'P/(Agfc)', 'b0': 'b0', 'db': 'db', 's/db': 's/db',
-    'AR': 'AR', 'M/Vlw': 'M/Vlw', 'θ': 'θ'
-}
-_TRAIN_COL_ORDER = ['lw','hw','tw','fc','fyt','fysh','fyl','fybl','pt','psh','pl','pbl','P/(Agfc)','b0','db','s/db','AR','M/Vlw','θ']
-
-def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
-    return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
-
-def predict_di(choice, _unused_array, input_df):
-    df_trees = _df_in_train_order(input_df)
-    df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
-    X = df_trees.values.astype(np.float32)
-
-    if choice == "LightGBM":
-        mdl = model_registry["LightGBM"]
-        prediction = float(mdl.predict(X)[0])
-    if choice == "XGBoost":
-        prediction = float(model_registry["XGBoost"].predict(X)[0])
-    if choice == "CatBoost":
-        prediction = float(model_registry["CatBoost"].predict(X)[0])
-    if choice == "Random Forest":
-        prediction = float(model_registry["Random Forest"].predict(X)[0])
-    if choice == "PS":
-        Xn = ann_ps_proc.transform_X(X)
-        try:
-            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
-        except Exception:
-            model_registry["PS"].compile(optimizer="adam", loss="mse")
-            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
-        prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-    if choice == "MLP":
-        Xn = ann_mlp_proc.transform_X(X)
-        try:
-            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
-        except Exception:
-            model_registry["MLP"].compile(optimizer="adam", loss="mse")
-            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
-        prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
-
-    prediction = max(0.035, min(prediction, 1.5))
-    return prediction
-
-def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
-    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
-    x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
-    return pd.DataFrame(x, columns=cols)
-
-def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
-    if model_choice not in model_registry:
-        return pd.DataFrame(columns=["θ","Predicted_DI"])
-    thetas = np.round(np.arange(0.0, theta_max + 1e-9, step), 2)
-    rows = []
-    for th in thetas:
-        df = base_df.copy()
-        df.loc[:, 'θ'] = float(th)
-        di = predict_di(model_choice, None, df)
-        di = max(0.035, min(di, 1.5))
-        rows.append({"θ": float(th), "Predicted_DI": float(di)})
-    return pd.DataFrame(rows)
-
-def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
-                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
-    import altair as alt
-    selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'], nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
-    base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
-    x_ticks = np.linspace(0.0, theta_max, 5).round(2)
-
-    axes_layer = (
-        alt.Chart(base_axes_df).mark_line(opacity=0).encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)", scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
-                    axis=alt.Axis(values=list(x_ticks), labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)", scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
-                    axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5], labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD, tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
-        ).properties(width=size, height=size)
-    )
-
-    curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
-
-    k = 3
-    if not curve.empty:
-        curve_points = curve.iloc[::k].copy()
-    else:
-        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
-
-    points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
-        x="θ:Q", y="Predicted_DI:Q",
-        tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
-                 alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
-    ).add_params(selection)
-
-    rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
-    text_layer = alt.Chart(curve).mark_text(align='left', dx=8, dy=-8, fontSize=14, fontWeight='bold', color='red').encode(
-        x="θ:Q", y="Predicted_DI:Q", text=alt.Text("Predicted_DI:Q", format=".4f")
-    ).transform_filter(selection)
-
-    chart = (alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
-             .configure_view(strokeWidth=0)
-             .configure_axis(domain=True, ticks=True)
-             .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
-    chart_html = chart.to_html()
-    chart_html = chart_html.replace('</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * { font-size: 14px !important; font-weight: bold !important; background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
-    st.components.v1.html(chart_html, height=size + 100)
 
 # =============================================================================
-# ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
+# 🔮 STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
@@ -671,4 +561,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
