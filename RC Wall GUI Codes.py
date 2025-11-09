@@ -305,8 +305,8 @@ if SHOW_TUNING:
 
 # Define LOGO_SIZE and LOGO_TOP before using them
 LOGO_SIZE = 60  # Set logo size (adjust this value as needed)
-LOGO_LEFT = 40  # Keep the logo position to the left as is (no horizontal movement)
-LOGO_TOP = 500  # Increase this value to move the logo down (increase as needed)
+LOGO_LEFT = 40  # Keep logo position to the left as is (no horizontal movement)
+LOGO_TOP = 200  # Increase this value to move the logo further down (adjust as needed)
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -336,8 +336,8 @@ st.markdown(f"""
     display:block;
     margin-right: 2rem !important;
     position: relative !important;  /* Keep relative positioning for downward movement */
-    left: {int(LOGO_LEFT)}px !important;  # Keep logo's horizontal position
-    top: {int(LOGO_TOP)}px !important;   # Only adjust the top value to move the logo down
+    left: {int(LOGO_LEFT)}px !important;  # Keep the logo's horizontal position as is
+    top: {int(LOGO_TOP)}px !important;   # Increase top value to move logo down
   }}
 </style>
 <div class="page-header-outer">
@@ -352,6 +352,7 @@ HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
 # LOGO_LEFT and LOGO_TOP are already defined above
+
 
 
 
@@ -884,6 +885,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
