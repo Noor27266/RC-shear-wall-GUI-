@@ -382,7 +382,7 @@ st.markdown("""
 <style>
 /* Move the entire interface to the right */
 .stApp {
-    transform: translateX(250px);  /* Adjust the value as needed */
+    transform: translateX(200px);  /* Adjust the value as needed */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -986,3 +986,4 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
