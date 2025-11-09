@@ -517,7 +517,7 @@ with left:
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div class='form-banner' style='margin-top: -5px;'>Inputs Features</div>", unsafe_allow_html=True)
+    st.markdown("<div class='form-banner' style='margin-top: -20px;'>Inputs Features</div>", unsafe_allow_html=True)
     st.markdown("<style>.section-header{margin:.2rem 0 !important;}</style>", unsafe_allow_html=True)
     css("<div id='leftwrap'>")
     css("<div id='compact-form'>")
@@ -866,6 +866,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
