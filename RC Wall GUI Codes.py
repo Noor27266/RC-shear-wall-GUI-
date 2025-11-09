@@ -597,18 +597,13 @@ with right:
 
     st.markdown(""" 
     <style>
-    /* Make all elements in the action row equal width and same line */
+    /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
         margin-top: 10px !important;
-    }
-    
-    #action-row > * {
-        flex: 1 !important;
-        min-width: 0 !important;
     }
     
     /* COMPLETELY REMOVE ALL BORDERS FROM MODEL SELECTION */
@@ -702,15 +697,15 @@ with right:
         background-color: #B8B8B8 !important;
     }
     
-    /* Make buttons equal height and width - MOVED DOWN */
+    /* Make buttons smaller in width */
     div.stButton > button { 
         height: 50px !important; 
-        width: 100% !important;
+        width: 90% !important;  /* SMALLER WIDTH */
         display:flex !important; 
         align-items:center !important; 
         justify-content:center !important;
         font-size: {FS_BUTTON}px !important;
-        margin: 0 !important;
+        margin: 0 auto !important;  /* Center the smaller buttons */
         white-space: nowrap !important;
         margin-top: 30px !important;
         border-radius: 8px !important;
@@ -739,11 +734,11 @@ with right:
     </style>
     """, unsafe_allow_html=True)
 
-    # SINGLE ROW WITH EQUAL WIDTH COLUMNS - ALL IN ONE LINE
+    # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
     
-    # Use equal weights for all four elements
-    model_col, calc_col, reset_col, clear_col = st.columns([1, 1, 1, 1], gap="small")
+    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
+    model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
         available = set(model_registry.keys())
@@ -1036,6 +1031,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
