@@ -328,6 +328,7 @@ st.markdown(f"""
     margin: 0; 
     padding: 0.5rem 0 0.5rem 0;
     width: 100%;
+    position: relative; /* Ensure parent container is relative */
   }}
 
   .page-header__logo {{
@@ -335,7 +336,7 @@ st.markdown(f"""
     width:auto !important; 
     display:block;
     margin-right: 2rem !important;
-    position: relative !important;  /* Keep relative positioning */
+    position: absolute !important;  /* Absolute positioning to move freely */
     left: {int(LOGO_LEFT)}px !important;  # Keep the horizontal position as is
     top: {int(LOGO_TOP)}px !important;   # Increase top value to move logo down
   }}
@@ -352,6 +353,7 @@ HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
 # LOGO_LEFT and LOGO_TOP are already defined above
+
 
 
 
@@ -881,6 +883,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
