@@ -535,7 +535,7 @@ except Exception as e:
 
 model_registry = {}
 for name, ok, *_ in health:
-    if not ok; continue
+    if not ok: continue  # FIXED: Changed semicolon ; to colon :
     if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
     elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
     elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
@@ -957,3 +957,4 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
