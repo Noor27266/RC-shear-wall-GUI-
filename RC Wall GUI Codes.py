@@ -558,7 +558,7 @@ with left:
     
     # METHOD 3: Combine title and inputs in one container
     st.markdown("""
-    <div style="margin: -45px 0 0 0; padding: 0;">
+    <div style="margin: -60px 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
     """, unsafe_allow_html=True)
 
@@ -1075,6 +1075,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
