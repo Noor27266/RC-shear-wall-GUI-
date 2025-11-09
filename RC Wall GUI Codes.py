@@ -58,6 +58,41 @@ css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
+# ---------- path helper ----------
+BASE_DIR = Path(__file__).resolve().parent
+def pfind(candidates):
+    for c in candidates:
+        p = Path(c)
+        if p.exists():
+            return p
+    roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
+    for root in roots:
+        if not root.exists():
+            continue
+        for c in candidates:
+            p = root / c
+            if p.exists():
+                return p
+    for root in [BASE_DIR, Path("/mnt/data")]:
+        if not root.exists():
+            continue
+        for sub in root.iterdir():
+            if sub.is_dir():
+                for c in candidates:
+                    p = sub / c
+                    if p.exists():
+                        return p
+    pats = []
+    for c in candidates:
+        for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
+            if root.exists():
+                pats.append(str(root / "**" / c))
+    for pat in pats:
+        matches = glob(pat, recursive=True)
+        if matches:
+            return Path(matches[0])
+    raise FileNotFoundError(f"None of these files were found: {candidates}")
+
 # =============================================================================
 # 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
 # =============================================================================
@@ -91,7 +126,6 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
-# Adjusting CSS to make buttons and model selection box appear in the same line and fixed issues
 css(f"""
 <style>
   .block-container {{ padding-top: 0rem; }}
@@ -143,16 +177,15 @@ css(f"""
   }}
   div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
 
-  /* Adjusting Model Selection */
+  /* Select font sizes are tied to FS_SELECT */
   .stSelectbox [role="combobox"],
   div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
   div[data-testid="stSelectbox"] div[role="listbox"],
   div[data-testid="stSelectbox"] div[role="option"] {{
       font-size:{FS_SELECT}px !important;
-      width: 100% !important; /* Fixing the width of the model selection box */
   }}
 
-  /* Button Fixes */
+  /* Buttons use FS_BUTTON, no wrapping */
   div.stButton > button {{
     font-size:{FS_BUTTON}px !important;
     height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
@@ -164,44 +197,80 @@ css(f"""
   }}
   div.stButton > button:hover {{ filter: brightness(0.95); }}
 
-  /* Adjusting Button Placement in the same line */
-  #action-row {{
-    display: flex;
-    gap: 10px;
-    justify-content: flex-start;
-    align-items: center;
+  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
+  button[key="reset_btn"] {{ background:#2196F3 !important; }}
+  button[key="clear_btn"] {{ background:#f44336 !important; }}
+
+  .form-banner {{
+    text-align:center;
+    background: linear-gradient(90deg, #0E9F6E, #84CC16);
+    color: #fff;
+    padding:.45rem .75rem;
+    border-radius:10px;
+    font-weight:800;
+    font-size:{FS_SECTION + 4}px;
+    margin:.1rem 0 !important;
+    transform: translateY(-10px);
   }}
-
-  #action-row .stButton {{
-    margin-bottom: 10px;
-  }}
-
-  /* Adjusting download button visibility: only show after calculation */
-  .download-csv {
-    display: none !important;
-  }
-
-  .download-csv.show {
-    display: inline-block !important;
-  }
 
   .prediction-result {{
     font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
     background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
   }}
+  .recent-box {{
+    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
+    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+  }}
+
+  #compact-form{{ max-width:900px; margin:0 auto; }}
+  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
+  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  #compact-form [data-testid="stNumberInput"],
+  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
+  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
+  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:{LEFT_BG} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
+  }}
+
+  [data-baseweb="popover"], [data-baseweb="tooltip"],
+  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
+      background:#000 !important; color:#fff !important; border-radius:8px !important;
+      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
+  }}
+  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
+
+  /* Keep consistent sizes for model select label and buttons */
+  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
+  #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
+
+# Keep header area slim
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
 # =============================================================================
 
-# Adjust the layout positioning for buttons and fields if needed
-# This code ensures everything remains in line, and no elements are hidden or misplaced.
-
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
+
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
 try:
@@ -215,6 +284,7 @@ except Exception:
             SHOW_TUNING = _is_on(qp.get("tune", ["0"])[0])
     except Exception:
         pass
+
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -571,4 +641,5 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
