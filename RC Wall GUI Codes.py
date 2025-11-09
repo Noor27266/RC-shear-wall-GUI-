@@ -124,7 +124,7 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
-# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP (ZOOM-PROOF)
+# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
 css(f"""
 <style>
@@ -247,70 +247,145 @@ css(f"""
   /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
-
-  /* === ZOOM-PROOF LAYOUT FIXES === */
-  .main .block-container {{
-      max-width: 100% !important;
-      padding-left: 2rem !important;
-      padding-right: 2rem !important;
-  }}
-
-  /* Lock the layout - prevent zoom distortion */
-  section.main {{
-      min-width: 100% !important;
-      transform: none !important;
-  }}
-
-  /* Ensure consistent column behavior */
-  [data-testid="stHorizontalBlock"] {{
-      width: 100% !important;
-      flex-wrap: nowrap !important;
-  }}
-
-  /* Input form stability */
-  #compact-form {{
-      width: 100% !important;
-      max-width: none !important;
-  }}
-
-  /* Right panel stability */
-  [data-testid="column"]:last-child {{
-      position: relative !important;
-      right: 0 !important;
-  }}
-
-  /* Remove ALL scrolling and lock viewport */
-  html, body, .stApp {{
-      overflow: hidden !important;
-      max-height: 100vh !important;
-      max-width: 100vw !important;
-      position: relative !important;
-  }}
-
-  /* Remove transform that causes zoom issues */
-  .stApp {{
-      transform: none !important;
-      margin-left: 0 !important;
-  }}
 </style>
 """)
 
+# Keep header area slim
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-4rem !important; }
+section.main > div.block-container{ padding-top:0 !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Hide Streamlit's small +/- buttons on number inputs */
+div[data-testid="stNumberInput"] button { display: none !important; }
+
+/* Also hide browser numeric spinners for consistency */
+div[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+div[data-testid="stNumberInput"] input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+div[data-testid="stNumberInput"] input[type=number] { -moz-appearance: textfield; }
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Increase the width of the Predicted Damage Index (DI) box */
+.prediction-result {
+  width: auto !important;  /* Ensure the width is not stretched */
+  max-width: 250px !important;  /* Slightly increase the width */
+  padding: 4px 12px !important;  /* Maintain compact padding */
+  font-size: 0.9em !important;  /* Smaller text inside DI box */
+  white-space: nowrap !important;  /* Prevent wrapping of text */
+  margin-right: 15px !important;  /* Adjust margin to bring it closer to the button */
+}
+/* Move the Download CSV button closer to the DI box */
+div[data-testid="stDownloadButton"] {
+  display: inline-block !important;
+  margin-left:-100px !important;  /* Move it slightly to the left */
+}
+div[data-testid="stDownloadButton"] button {
+  white-space: nowrap !important;
+  padding: 3px 8px !important;  /* Smaller button padding */
+  font-size: 8px !important;  /* Smaller font size */
+  height: auto !important;  /* Adjust height according to content */
+  line-height: 1.1 !important;  /* Adjust line height */
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+/* Decrease the width and increase the height of the model selection box */
+div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    width: 110% !important;  /* Decrease width, set it to 80% or adjust as needed */
+    height: 30px !important;  /* Increase the height (length) of the select box */
+}
+
+/* Ensure the options inside are also displayed nicely */
+div[data-testid="stSelectbox"] > div > div {
+    height: 110px !important;  /* Set the height of the dropdown items */
+    line-height: 30px !important;  /* Make the items vertically centered */
+}
+</style>
+""", unsafe_allow_html=True)
 
 
+st.markdown("""
+<style>
+/* Adjust the header to eliminate any space at the top */
+header[data-testid="stHeader"] {
+    height: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
 
+/* Remove the extra space at the top of the app */
+div.stApp {
+    margin-top: -8rem !important; /* Adjust this value if needed */
+}
 
+/* Adjust the margins and padding for the block container */
+section.main > div.block-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
+css("""
+<style>
+/* Remove ALL scrolling */
+html, body, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
 
+/* Ensure content fits within viewport */
+.stApp > div {
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
 
+/* Prevent any element from causing overflow */
+.block-container, .main, section[data-testid="stAppViewContainer"] {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+}
 
+/* Constrain your specific components */
+.page-header-outer {
+    max-width: 100% !important;
+    transform: none !important;
+}
 
+/* Make sure columns and containers don't overflow */
+[data-testid="column"], [data-testid="stHorizontalBlock"] {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+</style>
+""")
 
+# =============================================================================
+# 🎯 STEP 4: INTERFACE POSITIONING & LAYOUT ADJUSTMENTS
+# =============================================================================
 
-
-
-
-
-
+st.markdown("""
+<style>
+/* Move the entire interface to the right */
+.stApp {
+    transform: translateX(250px);  /* Adjust the value as needed */
+}
+</style>
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -353,7 +428,7 @@ if SHOW_TUNING:
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
 # =============================================================================
-# 🏷️ STEP 6: ZOOM-PROOF HEADER & LOGO POSITIONING
+# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -363,49 +438,30 @@ except Exception:
 
 st.markdown(f"""
 <style>
-  .page-header {{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    margin: 0;
-    padding: 0 2rem;
-    width: 100%;
-    box-sizing: border-box;
-  }}
-  
-  .page-header__title {{
-    font-size:{FS_TITLE}px;
-    font-weight: 800;
-    margin: 0;
-    flex: 1;
-    text-align: left;
-  }}
+  .page-header {{ display:flex; align-items:center; justify-content:flex-start; gap:20px; margin:0; padding:0; }}
+  .page-header__title {{ font-size:{FS_TITLE}px; font-weight:800; margin:0; transform: translate({int(TITLE_LEFT)}px, {int(TITLE_TOP)}px); }}
 
-  /* Logo positioning - use flexbox instead of fixed positioning */
+  /* Move the logo to the right and fix it on the page */
   .page-header__logo {{
-    height:{LOGO_SIZE}px;
-    width: auto;
-    flex-shrink: 0;
-  }}
-
-  /* Header container */
-  .page-header-outer {{
-    width: 100% !important;
-    margin-bottom: 2rem;
+    height:{int(LOGO_SIZE)}px; 
+    width:auto; 
+    display:block; 
+    position: fixed;  /* Fix the logo to the page */
+    top: {int(LOGO_TOP)}px;  /* Adjust the top position */
+    left: 950px;  /* Move logo to the right */
+    z-index: 1000;  /* Ensure the logo stays on top of other elements */
+    margin-left: 0;  /* Ensure no left margin */
+    margin-top: 0;  /* Ensure no top margin */
+    transform: none;  /* Reset transform */
   }}
 </style>
-
-<div class="page-header-outer">
+<div class="page-header-outer" style="width:100%; transform: translateX({int(HEADER_X)}px) !important; will-change: transform;">
   <div class="page-header">
     <div class="page-header__title">Predict Damage index (DI) for RC Shear Walls</div>
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
   </div>
 </div>
 """, unsafe_allow_html=True)
-
-
-
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -598,7 +654,6 @@ with left:
     css("</div>")
     css("</div>")
 
-
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -607,11 +662,9 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    # Remove or comment out this line that uses right_offset:
-    # st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
-    
-    # Use a consistent spacing instead:
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
             <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
         </div>
@@ -927,4 +980,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
