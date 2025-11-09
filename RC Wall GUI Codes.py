@@ -386,7 +386,7 @@ st.markdown("""
 <style>
 /* Move the entire interface to the right */
 .stApp {
-    transform: translateX(100px);  /* Adjust the value as needed */
+    transform: translateX(300px);  /* Adjust the value as needed */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -983,6 +983,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # ============================  END LATE PER-COMPONENT FONT & LOGO OVERRIDES  ===========================
+
 
 
 
