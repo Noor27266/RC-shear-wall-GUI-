@@ -1074,9 +1074,63 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
+
+# =============================================================================
+# ⬆️ STEP 15: MOVE EVERYTHING UP - POSITIONING OVERRIDE
+# =============================================================================
+st.markdown("""
+<style>
+/* MOVE ENTIRE INTERFACE UPWARD */
+.block-container { 
+    padding-top: 0.1rem !important; 
+    margin-top: -2rem !important;
+}
+
+.main .block-container { 
+    padding-top: 30px !important; 
+}
+
+/* Move the grey title area and form up */
+div[data-testid="stHorizontalBlock"] { 
+    margin-top: -30px !important; 
+}
+
+/* Move "Inputs Features" banner up */
+.form-banner { 
+    margin-top: 10px !important; 
+    margin-bottom: 5px !important;
+}
+
+/* Move the three columns (Geometry, Reinf. Ratios, Material Strengths) up */
+[data-testid="column"] {
+    margin-top: -15px !important;
+}
+
+/* Move Model Selection and buttons up */
+#action-row {
+    margin-top: -10px !important;
+}
+
+/* Move the prediction chart up */
+[data-testid="element-container"] {
+    margin-top: -20px !important;
+}
+
+/* Reduce spacing in the right panel */
+[data-testid="stVerticalBlock"] {
+    gap: 0.5rem !important;
+}
+
+/* Move the hero image up if needed */
+[data-testid="stMarkdownContainer"] {
+    margin-top: -10px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
