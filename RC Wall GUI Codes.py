@@ -313,7 +313,7 @@ except Exception:
     _b64 = ""
 
 # Logo positioning variables
-LOGO_SIZE = 60
+LOGO_SIZE = 50
 LOGO_TOP = 25   # Distance from top of page (increase to move down)
 LOGO_RIGHT = 60 # Distance from right edge (decrease to move left)
 
@@ -1077,6 +1077,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
