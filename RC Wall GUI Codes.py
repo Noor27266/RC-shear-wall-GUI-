@@ -582,7 +582,6 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
-
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -591,7 +590,46 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    st.markdown(f"<div style='height:{int(5)}px'></div>", unsafe_allow_html=True)  # REDUCED FROM 20 to 5
+    # REMOVE ALL SPACING - NO EMPTY DIVS
+    st.markdown("""
+    <style>
+    /* NUCLEAR OPTION - FORCE EVERYTHING UP */
+    div[data-testid="stVerticalBlock"] > div:first-child {
+        margin-top: -50px !important;
+        padding-top: 0px !important;
+    }
+    
+    #action-row { 
+        margin-top: -30px !important;
+        padding-top: 0px !important;
+    }
+    
+    /* Target the specific Model Selection container */
+    div[data-testid="stSelectbox"] {
+        margin-top: -20px !important;
+        padding-top: 0px !important;
+    }
+    
+    /* Target the buttons container */
+    div.stButton {
+        margin-top: -15px !important;
+        padding-top: 0px !important;
+    }
+    
+    /* Remove all default Streamlit spacing */
+    [data-testid="column"] {
+        margin-top: -25px !important;
+        padding-top: 0px !important;
+    }
+    
+    /* Force the entire right panel up */
+    [data-testid="stVerticalBlock"] {
+        gap: 0px !important;
+        margin-top: -40px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -603,24 +641,15 @@ with right:
 
     st.markdown(""" 
     <style>
-    /* Make all elements in the action row with custom widths */
-    #action-row { 
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: -15px !important;  /* CHANGED FROM 0px to -15px */
-    }
-    
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important; /* Remove border */
+        border: none !important;
         box-shadow: none !important; 
-        background: #D3D3D3 !important; /* Light grey background */
+        background: #D3D3D3 !important;
         height: 50px !important;
-        border-radius: 8px !important; /* Rounded corners */
+        border-radius: 8px !important;
         padding: 0px 12px !important;
-        outline: none !important; /* Remove outline */
+        outline: none !important;
     }
     
     div[data-testid="stSelectbox"] > div {
@@ -640,7 +669,6 @@ with right:
         color: #888888 !important;
     }
     
-    /* Remove border from the input element inside */
     div[data-testid="stSelectbox"] input {
         border: none !important;
         outline: none !important;
@@ -648,24 +676,21 @@ with right:
         color: #888888 !important;
     }
     
-    /* Remove ALL focus borders and black outlines */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
     
-    /* Remove black from dropdown arrow */
     div[data-testid="stSelectbox"] svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
     
-    /* Remove black from dropdown arrow on hover/focus */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
         fill: #888888 !important;
@@ -673,78 +698,52 @@ with right:
         stroke: #888888 !important;
     }
     
-    /* MOVE MODEL SELECTION DROPDOWN UP */
-    div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 0px !important;  /* CHANGED FROM 10px to 0px */
-    }
-    
-    /* MOVE THE MODEL SELECTION LABEL UP */
-    div[data-testid="stSelectbox"] label {
-        margin-bottom: 2px !important;  /* ADDED THIS */
-    }
-    
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
-        margin-bottom: 2px !important;  /* CHANGED FROM 5px to 2px */
+        margin-bottom: 2px !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
         color: #888888 !important;
-        background-color: #D3D3D3 !important; /* Light grey */
+        background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
     }
     
-    /* Remove border from popover - NO BLACK BORDERS */
     [data-baseweb="popover"] {
         border-radius: 8px !important;
         overflow: hidden !important;
         border: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
     
-    /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: none !important;
         border-radius: 8px !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
     
     div[role="option"] { 
         color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important; /* Light grey */
+        background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
         border: none !important;
-        border-bottom: none !important;
     }
     
-    /* Remove the last item border */
-    div[role="option"]:last-child {
-        border-bottom: none !important;
-    }
-    
-    /* Remove any separator lines between options */
-    div[role="option"]:not(:last-child) {
-        border-bottom: none !important;
-    }
-    
-    /* Make dropdown hover effect grey */
     div[role="option"]:hover {
-        background-color: #B8B8B8 !important; /* Darker grey hover */
+        background-color: #B8B8B8 !important;
         color: #888888 !important;
         border: none !important;
     }
     
-    /* Make buttons smaller in width and MOVE UP */
     div.stButton > button { 
         height: 50px !important; 
         width: 90% !important;
@@ -754,7 +753,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 5px !important;  /* CHANGED FROM 10px to 5px */
+        margin-top: 0px !important;
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -765,26 +764,16 @@ with right:
     button[key="reset_btn"] { background:#2196F3 !important; }
     button[key="clear_btn"] { background:#f44336 !important; }
     
-    /* Remove button focus borders */
     div.stButton > button:focus {
         outline: none !important;
         box-shadow: none !important;
     }
-    
-    /* Remove the margin from the three-btns container */
-    #three-btns {
-        margin-top: 0 !important;
-        display: flex !important;
-        gap: 8px !important;
-        width: 100% !important;
-    }
     </style>
     """, unsafe_allow_html=True)
 
-    # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
+    # SINGLE ROW WITH CUSTOM WIDTHS
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
-    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
@@ -1081,6 +1070,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
