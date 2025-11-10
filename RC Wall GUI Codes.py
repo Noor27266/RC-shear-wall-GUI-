@@ -115,7 +115,7 @@ FS_RECENT  = s(20)  # small chips
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
 # header logo default height (can still be changed by URL param "logo")
-DEFAULT_LOGO_H = 60
+DEFAULT_LOGO_H = 50
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
@@ -1077,6 +1077,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
