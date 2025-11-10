@@ -591,7 +591,7 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    st.markdown(f"<div style='height:{int(20)}px'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='height:{int(5)}px'></div>", unsafe_allow_html=True)  # REDUCED FROM 20 to 5
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -609,7 +609,7 @@ with right:
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: 0px !important;
+        margin-top: -15px !important;  /* CHANGED FROM 0px to -15px */
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -675,14 +675,19 @@ with right:
     
     /* MOVE MODEL SELECTION DROPDOWN UP */
     div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 10px !important;
+        margin-top: 0px !important;  /* CHANGED FROM 10px to 0px */
+    }
+    
+    /* MOVE THE MODEL SELECTION LABEL UP */
+    div[data-testid="stSelectbox"] label {
+        margin-bottom: 2px !important;  /* ADDED THIS */
     }
     
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
-        margin-bottom: 5px !important;
+        margin-bottom: 2px !important;  /* CHANGED FROM 5px to 2px */
     }
     
     /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
@@ -749,7 +754,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 10px !important;
+        margin-top: 5px !important;  /* CHANGED FROM 10px to 5px */
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -817,9 +822,6 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
-
-
-
 
 
 
@@ -1079,5 +1081,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
