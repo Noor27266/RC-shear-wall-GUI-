@@ -587,7 +587,7 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -10, 300
-MODEL_X, MODEL_Y = 100, -2
+MODEL_X, MODEL_Y = 100, -10
 CHART_W = 300
 
 with right:
@@ -959,6 +959,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
