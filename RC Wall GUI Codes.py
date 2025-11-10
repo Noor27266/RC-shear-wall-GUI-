@@ -603,51 +603,66 @@ with right:
         unsafe_allow_html=True,
     )
 
+    # Add CSS to remove scrollbars
     st.markdown(""" 
     <style>
-    /* Ensure the right panel elements are moved up */
-    #action-row { 
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: -40px !important;  /* Increase negative margin to move everything up */
-        margin-bottom: -10px !important; /* Optional: adjust if needed */
-    }
-    
-    /* Move buttons up */
-    div.stButton > button { 
-        height: 50px !important; 
-        width: 90% !important;
-        display:flex !important; 
-        align-items:center !important; 
-        justify-content:center !important;
-        font-size: {FS_BUTTON}px !important;
-        margin: 0 auto !important;
-        white-space: nowrap !important;
-        margin-top: -10px !important;  /* Adjust to move buttons further up */
-        border-radius: 8px !important;
-        border: none !important;
-        font-weight: 700 !important;
-        outline: none !important;
-    }
+        /* Disable horizontal and vertical scrolling */
+        body, .css-18e3nfs {
+            overflow: hidden !important;
+        }
 
-    /* Fix the Download Button layout */
-    .stDownloadButton > button {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        white-space: nowrap !important;
-        margin: 0 auto !important;
-        margin-top: -10px !important;  /* Adjust for download button */
-    }
+        /* Optional: Prevent content from overflowing */
+        .streamlit-expanderHeader, .stButton, .stSelectbox, .stDownloadButton {
+            overflow: hidden !important;
+        }
 
-    /* Adjust prediction result position */
-    .prediction-result {
-        margin-top: -15px !important;
-        margin-bottom: -10px !important;
-    }
+        /* Fix container overflow issues */
+        .css-1aumxhk {
+            overflow: hidden !important;
+        }
+
+        /* Existing styles for action row and buttons */
+        #action-row { 
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            width: 100% !important;
+            margin-top: -40px !important;
+            margin-bottom: -10px !important;
+        }
+
+        /* Move buttons up */
+        div.stButton > button { 
+            height: 50px !important; 
+            width: 90% !important;
+            display:flex !important; 
+            align-items:center !important; 
+            justify-content:center !important;
+            font-size: {FS_BUTTON}px !important;
+            margin: 0 auto !important;
+            white-space: nowrap !important;
+            margin-top: -10px !important;
+            border-radius: 8px !important;
+            border: none !important;
+            font-weight: 700 !important;
+            outline: none !important;
+        }
+
+        /* Fix the Download Button layout */
+        .stDownloadButton > button {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+            margin: 0 auto !important;
+            margin-top: -10px !important;
+        }
+
+        .prediction-result {
+            margin-top: -15px !important;
+            margin-bottom: -10px !important;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -961,6 +976,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
