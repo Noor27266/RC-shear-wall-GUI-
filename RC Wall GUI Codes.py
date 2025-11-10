@@ -606,19 +606,29 @@ with right:
     # Add CSS to remove scrollbars
     st.markdown(""" 
     <style>
-        /* Disable horizontal and vertical scrolling */
-        body, .css-18e3nfs {
+        /* Disable horizontal and vertical scrolling for the entire page */
+        body, .css-18e3nfs, .streamlit-expanderHeader, .stButton, .stSelectbox, .stDownloadButton, .css-1aumxhk {
             overflow: hidden !important;
         }
 
-        /* Optional: Prevent content from overflowing */
-        .streamlit-expanderHeader, .stButton, .stSelectbox, .stDownloadButton {
+        /* Prevent any container from overflowing */
+        .css-1v3fvcr {
             overflow: hidden !important;
         }
 
-        /* Fix container overflow issues */
-        .css-1aumxhk {
+        /* Remove any specific scrollbars in columns or layout */
+        .css-1dpd3ov, .css-1p3npbq, .css-2trq3k {
             overflow: hidden !important;
+        }
+
+        /* Remove horizontal scrollbar if it's being caused by an element */
+        .css-1mejflz {
+            overflow-x: hidden !important;
+        }
+
+        /* Optional: Fix spacing issues caused by margins */
+        .css-1fp8uwr {
+            margin: 0 !important;
         }
 
         /* Existing styles for action row and buttons */
@@ -715,7 +725,6 @@ with right:
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True)
 
     chart_slot = st.empty()
-
 
 
 
@@ -976,6 +985,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
