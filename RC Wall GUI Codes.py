@@ -586,9 +586,9 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, -0, 300
+HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 250
+CHART_W = 300
 
 with right:
     # REMOVE ALL SPACING
@@ -700,6 +700,7 @@ with right:
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True)
 
     chart_slot = st.empty()
+
 
 
 
@@ -959,6 +960,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
