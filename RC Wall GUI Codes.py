@@ -376,7 +376,6 @@ TITLE_TOP = 60
 
 
 
-
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
@@ -592,9 +591,7 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    # REMOVE ALL SPACING
-    st.markdown("<div style='height: 1px;'></div>", unsafe_allow_html=True)
-    
+    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -604,82 +601,185 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # Add CSS to remove scrollbars
     st.markdown(""" 
     <style>
-        /* Disable horizontal and vertical scrolling for the entire page */
-        body, .css-18e3nfs, .streamlit-expanderHeader, .stButton, .stSelectbox, .stDownloadButton, .css-1aumxhk {
-            overflow: hidden !important;
-        }
+    /* Make all elements in the action row with custom widths */
+    #action-row { 
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+    }
+    
+    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        border: none !important; /* Remove border */
+        box-shadow: none !important; 
+        background: #D3D3D3 !important; /* Light grey background */
+        height: 50px !important;
+        border-radius: 8px !important; /* Rounded corners */
+        padding: 0px 12px !important;
+        outline: none !important; /* Remove outline */
+    }
+    
+    div[data-testid="stSelectbox"] > div {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
 
-        /* Prevent any container from overflowing */
-        .css-1v3fvcr {
-            overflow: hidden !important;
-        }
-
-        /* Remove any specific scrollbars in columns or layout */
-        .css-1dpd3ov, .css-1p3npbq, .css-2trq3k {
-            overflow: hidden !important;
-        }
-
-        /* Remove horizontal scrollbar if it's being caused by an element */
-        .css-1mejflz {
-            overflow-x: hidden !important;
-        }
-
-        /* Optional: Fix spacing issues caused by margins */
-        .css-1fp8uwr {
-            margin: 0 !important;
-        }
-
-        /* Existing styles for action row and buttons */
-        #action-row { 
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            width: 100% !important;
-            margin-top: -40px !important;
-            margin-bottom: -10px !important;
-        }
-
-        /* Move buttons up */
-        div.stButton > button { 
-            height: 50px !important; 
-            width: 90% !important;
-            display:flex !important; 
-            align-items:center !important; 
-            justify-content:center !important;
-            font-size: {FS_BUTTON}px !important;
-            margin: 0 auto !important;
-            white-space: nowrap !important;
-            margin-top: -10px !important;
-            border-radius: 8px !important;
-            border: none !important;
-            font-weight: 700 !important;
-            outline: none !important;
-        }
-
-        /* Fix the Download Button layout */
-        .stDownloadButton > button {
-            width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            white-space: nowrap !important;
-            margin: 0 auto !important;
-            margin-top: -10px !important;
-        }
-
-        .prediction-result {
-            margin-top: -15px !important;
-            margin-bottom: -10px !important;
-        }
+    div[data-testid="stSelectbox"] > div > div { 
+        height: 50px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        margin-top: 0px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        outline: none !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove border from the input element inside */
+    div[data-testid="stSelectbox"] input {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove ALL focus borders and black outlines */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important; /* Keep light grey */
+    }
+    
+    /* Remove black from dropdown arrow */
+    div[data-testid="stSelectbox"] svg {
+        fill: #888888 !important;
+        color: #888888 !important;
+        stroke: #888888 !important;
+    }
+    
+    /* Remove black from dropdown arrow on hover/focus */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
+        fill: #888888 !important;
+        color: #888888 !important;
+        stroke: #888888 !important;
+    }
+    
+    /* MOVE MODEL SELECTION DROPDOWN DOWN */
+    div[data-testid="stSelectbox"] > div:first-child {
+        margin-top: 30px !important;
+    }
+    
+    div[data-testid="stSelectbox"] label p { 
+        font-size: {FS_LABEL}px !important; 
+        color: #666666 !important;
+        font-weight: bold !important; 
+        margin-bottom: 5px !important;
+    }
+    
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
+    [data-baseweb="select"] *, 
+    [data-baseweb="popover"] *, 
+    [data-baseweb="menu"] * { 
+        color: #888888 !important;
+        background-color: #D3D3D3 !important; /* Light grey */
+        font-size: {FS_SELECT}px !important; 
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove border from popover - NO BLACK BORDERS */
+    [data-baseweb="popover"] {
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important; /* Keep light grey */
+    }
+    
+    /* Remove borders from dropdown menu */
+    [data-baseweb="menu"] {
+        border: none !important;
+        border-radius: 8px !important;
+        background-color: #D3D3D3 !important; /* Keep light grey */
+    }
+    
+    div[role="option"] { 
+        color: #888888 !important;
+        font-size: {FS_SELECT}px !important; 
+        background-color: #D3D3D3 !important; /* Light grey */
+        padding: 12px 16px !important;
+        border: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Remove the last item border */
+    div[role="option"]:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* Remove any separator lines between options */
+    div[role="option"]:not(:last-child) {
+        border-bottom: none !important;
+    }
+    
+    /* Make dropdown hover effect grey */
+    div[role="option"]:hover {
+        background-color: #B8B8B8 !important; /* Darker grey hover */
+        color: #888888 !important;
+        border: none !important;
+    }
+    
+    /* Make buttons smaller in width */
+    div.stButton > button { 
+        height: 50px !important; 
+        width: 90% !important;
+        display:flex !important; 
+        align-items:center !important; 
+        justify-content:center !important;
+        font-size: {FS_BUTTON}px !important;
+        margin: 0 auto !important;
+        white-space: nowrap !important;
+        margin-top: 30px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        font-weight: 700 !important;
+        outline: none !important;
+    }
+    
+    button[key="calc_btn"] { background:#4CAF50 !important; }
+    button[key="reset_btn"] { background:#2196F3 !important; }
+    button[key="clear_btn"] { background:#f44336 !important; }
+    
+    /* Remove button focus borders */
+    div.stButton > button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the margin from the three-btns container */
+    #three-btns {
+        margin-top: 0 !important;
+        display: flex !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    # SINGLE ROW WITH CUSTOM WIDTHS
+    # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
+    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
@@ -705,27 +805,18 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # FIX DOWNLOAD BUTTON LAYOUT
-    st.markdown("""
-    <style>
-    /* FIX THE DOWNLOAD BUTTON COLUMNS */
-    [data-testid="column"] {
-        min-width: auto !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # USE PROPER COLUMNS FOR DOWNLOAD BUTTON
-    dl_col1, dl_col2 = st.columns([1, 1])
-    with dl_col1:
+    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
+    with badge_col:
         pred_banner = st.empty()
-    with dl_col2:
+    with dl_col:
         dl_slot = st.empty()
-        if not st.session_state.results_df.empty:
-            csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True)
+    if not st.session_state.results_df.empty:
+        csv = st.session_state.results_df.to_csv(index=False)
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
 
-    chart_slot = st.empty()
+    col1, col2 = st.columns([0.01, 20])
+    with col2:
+        chart_slot = st.empty()
 
 
 
@@ -986,6 +1077,21 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
