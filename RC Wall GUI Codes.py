@@ -26,117 +26,8 @@ with right:
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: -25px !important;
-        margin-bottom: -10px !important;
-    }
-    
-    /* MAKE MODEL SELECTION LABEL BLACK */
-    div[data-testid="stSelectbox"] label p { 
-        font-size: {FS_LABEL}px !important; 
-        color: #000000 !important; /* CHANGED TO BLACK */
-        font-weight: bold !important; 
-        margin-bottom: 2px !important;
-    }
-    
-    /* MAKE DROPDOWN TEXT BLACK */
-    div[data-testid="stSelectbox"] > div > div { 
-        height: 50px !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        outline: none !important;
-        color: #000000 !important; /* CHANGED TO BLACK */
-    }
-    
-    /* MAKE DROPDOWN INPUT TEXT BLACK */
-    div[data-testid="stSelectbox"] input {
-        border: none !important;
-        outline: none !important;
-        background: transparent !important;
-        color: #000000 !important; /* CHANGED TO BLACK */
-    }
-    
-    /* COMPLETELY REMOVE ALL BLACK BORDERS - KEEP GREY BACKGROUND */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;
-        box-shadow: none !important; 
-        background: #D3D3D3 !important;
-        height: 50px !important;
-        border-radius: 8px !important;
-        padding: 0px 12px !important;
-        outline: none !important;
-    }
-    
-    div[data-testid="stSelectbox"] > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    
-    /* Remove ALL focus borders and black outlines */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* Remove black from dropdown arrow - MAKE IT DARK GREY */
-    div[data-testid="stSelectbox"] svg {
-        fill: #666666 !important; /* DARK GREY */
-        color: #666666 !important;
-        stroke: #666666 !important;
-    }
-    
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
-        fill: #666666 !important;
-        color: #666666 !important;
-        stroke: #666666 !important;
-    }
-    
-    /* MAKE ENTIRE DROPDOWN OPTIONS BLACK TEXT */
-    [data-baseweb="select"] *, 
-    [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] * { 
-        color: #000000 !important; /* CHANGED TO BLACK */
-        background-color: #D3D3D3 !important;
-        font-size: {FS_SELECT}px !important; 
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    [data-baseweb="popover"] {
-        border-radius: 8px !important;
-        overflow: hidden !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    [data-baseweb="menu"] {
-        border: none !important;
-        border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    div[role="option"] { 
-        color: #000000 !important; /* CHANGED TO BLACK */
-        font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important;
-        padding: 12px 16px !important;
-        border: none !important;
-    }
-    
-    div[role="option"]:hover {
-        background-color: #B8B8B8 !important;
-        color: #000000 !important; /* CHANGED TO BLACK */
-        border: none !important;
+        margin-top: -30px !important;  /* Adjust this to move everything up */
+        margin-bottom: -10px !important; /* Optional: adjust if needed */
     }
     
     /* MOVE BUTTONS UP */
@@ -149,20 +40,11 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: -5px !important; /* MOVED UP */
+        margin-top: -5px !important;  /* Adjust this value to move buttons further up */
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
         outline: none !important;
-    }
-    
-    button[key="calc_btn"] { background:#4CAF50 !important; }
-    button[key="reset_btn"] { background:#2196F3 !important; }
-    button[key="clear_btn"] { background:#f44336 !important; }
-    
-    div.stButton > button:focus {
-        outline: none !important;
-        box-shadow: none !important;
     }
     
     /* FIX DOWNLOAD BUTTON - MAKE IT STRAIGHT LINE */
@@ -173,8 +55,9 @@ with right:
         align-items: center !important;
         white-space: nowrap !important;
         margin: 0 auto !important;
+        margin-top: -10px !important;  /* Adjust this value for the download button */
     }
-    
+
     /* FIX PREDICTION RESULT POSITION */
     .prediction-result {
         margin-top: -10px !important;
@@ -232,3 +115,4 @@ with right:
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True)
 
     chart_slot = st.empty()
+
