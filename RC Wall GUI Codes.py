@@ -591,7 +591,7 @@ MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
 with right:
-    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='height:{int(20)}px'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -609,7 +609,7 @@ with right:
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: 10px !important;
+        margin-top: 0px !important;
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -673,9 +673,9 @@ with right:
         stroke: #888888 !important;
     }
     
-    /* MOVE MODEL SELECTION DROPDOWN DOWN */
+    /* MOVE MODEL SELECTION DROPDOWN UP */
     div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 30px !important;
+        margin-top: 10px !important;
     }
     
     div[data-testid="stSelectbox"] label p { 
@@ -739,7 +739,7 @@ with right:
         border: none !important;
     }
     
-    /* Make buttons smaller in width */
+    /* Make buttons smaller in width and MOVE UP */
     div.stButton > button { 
         height: 50px !important; 
         width: 90% !important;
@@ -749,7 +749,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 30px !important;
+        margin-top: 10px !important;
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -1075,90 +1075,9 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 
-# =============================================================================
-# ⬆️ STEP 15: MOVE EVERYTHING UP - POSITIONING OVERRIDE
-# =============================================================================
-st.markdown("""
-<style>
-/* MOVE ENTIRE INTERFACE UPWARD */
-.block-container { 
-    padding-top: 0.1rem !important; 
-    margin-top: -2rem !important;
-}
 
-.main .block-container { 
-    padding-top: 30px !important; 
-}
-
-/* Move the grey title area and form up */
-div[data-testid="stHorizontalBlock"] { 
-    margin-top: -30px !important; 
-}
-
-/* Move "Inputs Features" banner up */
-.form-banner { 
-    margin-top: 10px !important; 
-    margin-bottom: 5px !important;
-}
-
-/* Move the three columns (Geometry, Reinf. Ratios, Material Strengths) up */
-[data-testid="column"] {
-    margin-top: -15px !important;
-}
-
-/* Move Model Selection and buttons up */
-#action-row {
-    margin-top: -10px !important;
-}
-
-/* Move the prediction chart up */
-[data-testid="element-container"] {
-    margin-top: -20px !important;
-}
-
-/* Reduce spacing in the right panel */
-[data-testid="stVerticalBlock"] {
-    gap: 0.5rem !important;
-}
-
-/* Move the hero image up if needed */
-[data-testid="stMarkdownContainer"] {
-    margin-top: -10px !important;
-}
-</style>
-""", unsafe_allow_html=True)
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
