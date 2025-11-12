@@ -1031,19 +1031,26 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # ONE LINE LAYOUT - MOVED UP
+    # MOVE THE ENTIRE SECTION UP USING STREAMLIT'S BUILT-IN METHODS
+    st.markdown("<div style='margin-top: -400px;'>", unsafe_allow_html=True)
+    
+    # SIMPLE ONE LINE WITH COLUMNS
+    pred_col, dl_col = st.columns([2, 1.5])
+    
+    with pred_col:
+        pred_banner = st.empty()
+        
+    with dl_col:
+        dl_slot = st.empty()
+        if not st.session_state.results_df.empty:
+            csv = st.session_state.results_df.to_csv(index=False)
+            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # STYLING
     st.markdown(f"""
     <style>
-    .prediction-download-container {{
-        position: relative !important;
-        top: -400px !important;  /* INCREASED TO -400px */
-        display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
-        width: 100% !important;
-        margin-bottom: 5px !important;
-        z-index: 1000 !important;
-    }}
     .prediction-with-color {{
         color: #2e86ab !important;
         font-weight: 700 !important;
@@ -1057,46 +1064,9 @@ with right:
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        flex: 1 !important;
-        min-width: 200px !important;
-    }}
-    .download-button-fixed {{
-        height: 45px !important;
-        display: flex !important;
-        align-items: center !important;
-        flex: 1 !important;
-        min-width: 150px !important;
-    }}
-    .download-button-fixed .stDownloadButton button {{
-        height: 45px !important;
-        margin: 0 !important;
-        width: 100% !important;
-    }}
-    
-    /* OVERRIDE STREAMLIT COLUMN MARGINS */
-    [data-testid="column"] {{
-        margin-top: 0px !important;
-        padding-top: 0px !important;
     }}
     </style>
-    
-    <div class="prediction-download-container">
-        <div id="prediction-slot"></div>
-        <div id="download-slot"></div>
-    </div>
     """, unsafe_allow_html=True)
-    
-    # Create containers for the content
-    col1, col2 = st.columns([2, 1.5])
-    
-    with col1:
-        pred_banner = st.empty()
-        
-    with col2:
-        dl_slot = st.empty()
-        if not st.session_state.results_df.empty:
-            csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
 
     chart_slot = st.empty()
 
@@ -1416,6 +1386,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
