@@ -601,7 +601,10 @@ with left:
 HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
-
+/* MOVE ENTIRE RIGHT COLUMN UP */
+div[data-testid="column"]:nth-child(2) {
+    transform: translateY(-400px) !important;
+}
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     st.markdown(
@@ -1089,6 +1092,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
