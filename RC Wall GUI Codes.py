@@ -615,18 +615,13 @@ with right:
 
     st.markdown(""" 
     <style>
-    /* MOVE ENTIRE RIGHT COLUMN UP */
-    div[data-testid="column"]:nth-child(2) {
-        transform: translateY(-400px) !important;
-    }
-    
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: -500px !important;
+        margin-top: -50px !important; /* Move entire row up slightly */
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -822,10 +817,11 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    badge_col, dl_col, _spacer = st.columns([5, 3.0, 7], gap="small")
-    with badge_col:
+        # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
+    pred_dl_row = st.columns([2, 1], gap="small")
+    with pred_dl_row[0]:
         pred_banner = st.empty()
-    with dl_col:
+    with pred_dl_row[1]:
         dl_slot = st.empty()
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
@@ -1094,6 +1090,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
