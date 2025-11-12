@@ -312,17 +312,20 @@ try:
 except Exception:
     _b64 = ""
 
-# Logo positioning variables - MOVED TO LEFT
+# Logo positioning variables - EASY TO MOVE LEFT/RIGHT
 LOGO_SIZE = 40   # Size of the logo
 LOGO_TOP = 25    # Distance from top of page  
-LOGO_LEFT = 30   # Distance from LEFT edge (CHANGED from RIGHT)
+
+# EASY CONTROL: Change this value to move logo left/right
+# Higher number = more to the LEFT, Lower number = more to the RIGHT
+LOGO_POSITION = 60  # Distance from right edge (10 = far right, 200 = more left)
 
 st.markdown(f"""
 <style>
   .page-header-outer {{
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;  /* CHANGED: right to left */
+    right: 0 !important;
     width: 100% !important;
     height: 0 !important;
     z-index: 9999 !important;
@@ -331,7 +334,7 @@ st.markdown(f"""
 
   .page-header {{
     display: flex !important;
-    justify-content: flex-start !important;  /* CHANGED: flex-end to flex-start */
+    justify-content: flex-end !important;
     align-items: flex-start !important;
     width: 100% !important;
     height: 0 !important;
@@ -343,7 +346,7 @@ st.markdown(f"""
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
-    left: {int(LOGO_LEFT)}px !important;  /* CHANGED: right to left */
+    right: {int(LOGO_POSITION)}px !important;
     z-index: 9999 !important;
     pointer-events: auto !important;
   }}
@@ -1090,6 +1093,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
