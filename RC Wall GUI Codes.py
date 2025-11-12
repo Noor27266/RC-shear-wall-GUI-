@@ -312,17 +312,17 @@ try:
 except Exception:
     _b64 = ""
 
-# Logo positioning variables
-LOGO_SIZE = 40
-LOGO_TOP = 25   # Distance from top of page (increase to move down)
-LOGO_RIGHT = 10 # Distance from right edge (decrease to move left)
+# Logo positioning variables - MOVED TO LEFT & SMALLER
+LOGO_SIZE = 20   # Reduced from 30 to make it smaller
+LOGO_TOP = 25    # Distance from top of page  
+LOGO_LEFT = 30   # Distance from left edge
 
 st.markdown(f"""
 <style>
   .page-header-outer {{
     position: fixed !important;
     top: 0 !important;
-    right: 0 !important;
+    left: 0 !important;  /* CHANGED: right to left */
     width: 100% !important;
     height: 0 !important;
     z-index: 9999 !important;
@@ -331,7 +331,7 @@ st.markdown(f"""
 
   .page-header {{
     display: flex !important;
-    justify-content: flex-end !important;
+    justify-content: flex-start !important;  /* CHANGED: flex-end to flex-start */
     align-items: flex-start !important;
     width: 100% !important;
     height: 0 !important;
@@ -343,7 +343,7 @@ st.markdown(f"""
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
-    right: {int(LOGO_RIGHT)}px !important;
+    left: {int(LOGO_LEFT)}px !important;  /* CHANGED: right to left */
     z-index: 9999 !important;
     pointer-events: auto !important;
   }}
@@ -1091,6 +1091,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
