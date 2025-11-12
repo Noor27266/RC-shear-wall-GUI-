@@ -732,7 +732,7 @@ with right:
         margin-top: 0px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
+    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
         box-shadow: none !important; 
@@ -741,14 +741,12 @@ with right:
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
-        width: 100% !important;
     }
     
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
-        width: 100% !important;
     }
 
     div[data-testid="stSelectbox"] > div > div { 
@@ -759,8 +757,7 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
-        color: #888888 !important;
-        width: 100% !important;
+        color: black !important; /* FIX: Make text visible */
     }
     
     /* Remove border from the input element inside */
@@ -768,10 +765,10 @@ with right:
         border: none !important;
         outline: none !important;
         background: transparent !important;
-        color: #888888 !important;
+        color: black !important; /* FIX: Make input text visible */
     }
     
-    /* Remove ALL focus borders and black outlines - ENHANCED */
+    /* Remove ALL focus borders and black outlines */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
@@ -815,7 +812,7 @@ with right:
         line-height: 1 !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE - ENHANCED */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] *,
@@ -829,7 +826,7 @@ with right:
         box-shadow: none !important;
     }
     
-    /* Remove border from popover - NO BLACK BORDERS - ENHANCED */
+    /* Remove border from popover - NO BLACK BORDERS */
     [data-baseweb="popover"],
     [data-baseweb="popover"] > div {
         border-radius: 8px !important;
@@ -837,13 +834,9 @@ with right:
         border: none !important;
         box-shadow: none !important;
         background-color: #D3D3D3 !important;
-        /* FIX DROPDOWN WIDTH - MATCH SELECT BOX */
-        min-width: auto !important;
-        width: 100% !important;
-        max-width: 100% !important;
     }
     
-    /* Remove borders from dropdown menu - ENHANCED */
+    /* Remove borders from dropdown menu */
     [data-baseweb="menu"],
     [data-baseweb="menu"] ul,
     [data-baseweb="menu"] li,
@@ -852,10 +845,6 @@ with right:
         border-radius: 8px !important;
         background-color: #D3D3D3 !important;
         box-shadow: none !important;
-        /* FIX DROPDOWN WIDTH - MATCH SELECT BOX */
-        min-width: auto !important;
-        width: 100% !important;
-        max-width: 100% !important;
     }
     
     /* Target specific dropdown container elements */
@@ -864,16 +853,6 @@ with right:
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
-        width: 100% !important;
-    }
-    
-    /* FIX DROPDOWN MENU WIDTH TO MATCH SELECT BOX */
-    div[role="listbox"],
-    div[role="listbox"] > div,
-    [data-baseweb="popover"] [role="listbox"] {
-        width: 100% !important;
-        min-width: auto !important;
-        max-width: 100% !important;
     }
     
     div[role="option"] { 
@@ -883,8 +862,6 @@ with right:
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
     }
     
     /* Remove the last item border */
@@ -944,7 +921,6 @@ with right:
         position: relative !important;
         margin-top: -45px !important;
         padding-top: 0px !important;
-        width: 100% !important;
     }
     
     div[data-testid="stSelectbox"] label {
@@ -955,14 +931,12 @@ with right:
     
     div[data-testid="stSelectbox"] > div {
         margin-top: 0px !important;
-        width: 100% !important;
     }
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
         margin-top: -450px !important;
         padding-top: 0px !important;
-        width: 100% !important;
     }
     
     /* FIX: Ensure columns align at the top */
@@ -987,21 +961,23 @@ with right:
         border: none !important;
     }
     
-    /* SPECIFIC FIX FOR DROPDOWN WIDTH */
-    div[data-baseweb="select"] > div:last-child {
-        width: 100% !important;
-        min-width: auto !important;
+    /* FIX DROPDOWN WIDTH - SIMPLE SOLUTION */
+    [data-baseweb="popover"] {
+        width: auto !important;
+        min-width: unset !important;
     }
     
-    /* Ensure the dropdown popup matches the select box width */
-    [data-baseweb="popover"] {
-        width: var(--radix-select-trigger-width) !important;
-        min-width: auto !important;
-        max-width: 100% !important;
+    /* Make dropdown menu same width as select box */
+    div[data-baseweb="popover"] > div {
+        width: 100% !important;
+    }
+    
+    /* Ensure the dropdown options don't expand beyond the select box width */
+    [data-baseweb="menu"] {
+        width: 100% !important;
     }
     </style>
     """, unsafe_allow_html=True)
-
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
@@ -1371,6 +1347,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
