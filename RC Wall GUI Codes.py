@@ -598,7 +598,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 50, -10, 300  # Changed HERO_X from 100 to 50 to move logo left
+HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
@@ -615,28 +615,13 @@ with right:
 
     st.markdown(""" 
     <style>
-    /* Make all elements in the action row with custom widths - REDUCED SPACING */
+    /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
         align-items: center !important;
-        gap: 4px !important; /* Reduced from 8px to 4px */
+        gap: 8px !important;
         width: 100% !important;
-        margin-top: 10px !important; /* Reduced spacing */
-    }
-    
-    /* REDUCE SPACING BETWEEN PREDICTION AND DOWNLOAD */
-    div[data-testid="column"] {
-        gap: 4px !important; /* Reduce column spacing */
-    }
-    
-    /* REDUCE SPACING IN MODEL SELECTION */
-    div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 10px !important; /* Reduced from 30px */
-    }
-    
-    /* REDUCE BUTTON MARGINS */
-    div.stButton > button { 
-        margin-top: 10px !important; /* Reduced from 30px */
+        margin-top: 50px !important; /* MOVED DOWN */
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -700,11 +685,16 @@ with right:
         stroke: #888888 !important;
     }
     
+    /* MOVE MODEL SELECTION DROPDOWN DOWN */
+    div[data-testid="stSelectbox"] > div:first-child {
+        margin-top: 30px !important;
+    }
+    
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
-        margin-bottom: 2px !important; /* Reduced from 5px */
+        margin-bottom: 5px !important;
     }
     
     /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
@@ -771,7 +761,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 10px !important; /* Reduced from 30px */
+        margin-top: 30px !important;
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -792,7 +782,7 @@ with right:
     #three-btns {
         margin-top: 0 !important;
         display: flex !important;
-        gap: 4px !important; /* Reduced from 8px */
+        gap: 8px !important;
         width: 100% !important;
     }
     </style>
@@ -801,7 +791,7 @@ with right:
     # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
-    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each) - REDUCED GAP
+    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
@@ -827,7 +817,7 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON - REDUCED SPACING
+      # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
     pred_dl_row = st.columns([1, 1], gap="small")
     with pred_dl_row[0]:
         pred_banner = st.empty()
