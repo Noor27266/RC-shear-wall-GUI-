@@ -737,7 +737,7 @@ with right:
         border: none !important;
         box-shadow: none !important; 
         background: #D3D3D3 !important;
-        height: 50px !important;
+        height: 40px !important;
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
@@ -750,7 +750,7 @@ with right:
     }
 
     div[data-testid="stSelectbox"] > div > div { 
-        height: 50px !important; 
+        height: 40px !important; 
         display: flex !important; 
         align-items: center !important; 
         margin-top: 0px !important;
@@ -1385,6 +1385,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
