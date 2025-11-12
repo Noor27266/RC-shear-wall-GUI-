@@ -818,7 +818,7 @@ with right:
     st.markdown("</div>", unsafe_allow_html=True)
 
         # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
-    pred_dl_row = st.columns([2, 1], gap="small")
+    pred_dl_row = st.columns([1, 1], gap="small")
     with pred_dl_row[0]:
         pred_banner = st.empty()
     with pred_dl_row[1]:
@@ -1090,6 +1090,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
