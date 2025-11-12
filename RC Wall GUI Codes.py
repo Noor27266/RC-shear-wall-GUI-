@@ -797,7 +797,7 @@ with right:
     /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
     div[data-testid="stSelectbox"] {
         position: relative !important;
-        margin-top: -25px !important; /* CHANGED: Move entire selectbox UP */
+        margin-top: -40px !important; /* CHANGED: Move entire selectbox UP */
         padding-top: 0px !important;
     }
     
@@ -813,7 +813,7 @@ with right:
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
-        margin-top: -30px !important; /* CHANGED: Move container UP */
+        margin-top: -45px !important; /* CHANGED: Move container UP */
         padding-top: 0px !important;
     }
     
@@ -825,7 +825,7 @@ with right:
     
     /* Specifically target model column to move it up */
     div[data-testid="column"]:first-child {
-        margin-top: -25px !important;
+        margin-top: -40px !important;
         padding-top: 0px !important;
     }
     </style>
@@ -1136,6 +1136,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
