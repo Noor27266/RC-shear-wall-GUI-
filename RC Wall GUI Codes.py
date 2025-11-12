@@ -757,7 +757,7 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
-        color: black !important; /* FIX: Make text visible */
+        color: black !important;
     }
     
     /* Remove border from the input element inside */
@@ -765,7 +765,7 @@ with right:
         border: none !important;
         outline: none !important;
         background: transparent !important;
-        color: black !important; /* FIX: Make input text visible */
+        color: black !important;
     }
     
     /* Remove ALL focus borders and black outlines */
@@ -961,20 +961,36 @@ with right:
         border: none !important;
     }
     
-    /* FIX DROPDOWN WIDTH - SIMPLE SOLUTION */
+    /* FIX DROPDOWN WIDTH - SPECIFIC SOLUTION */
+    /* Make the dropdown popup match the select box width */
     [data-baseweb="popover"] {
-        width: auto !important;
+        min-width: unset !important;
+        width: fit-content !important;
+    }
+    
+    /* Force the dropdown to be the same width as the trigger element */
+    div[data-baseweb="select"] div[data-baseweb="popover"] {
+        width: var(--radix-select-trigger-width) !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Make sure the dropdown menu inside matches */
+    [data-baseweb="popover"] [data-baseweb="menu"] {
+        width: 100% !important;
         min-width: unset !important;
     }
     
-    /* Make dropdown menu same width as select box */
-    div[data-baseweb="popover"] > div {
+    /* Target the specific dropdown container */
+    div[role="listbox"] {
         width: 100% !important;
     }
     
-    /* Ensure the dropdown options don't expand beyond the select box width */
-    [data-baseweb="menu"] {
-        width: 100% !important;
+    /* Ensure options don't wrap or expand */
+    div[role="option"] {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1347,6 +1363,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
