@@ -606,7 +606,7 @@ with right:
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
-            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
+            <img src='data:image/png;base64,{b64(BASE_DIR / "Schamtic.png")}' width='{int(HERO_W)}'/>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1090,6 +1090,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
