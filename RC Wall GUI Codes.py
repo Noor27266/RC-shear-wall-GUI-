@@ -719,7 +719,7 @@ with right:
     )
 
 # =============================================================================
-# 🎮 SUB STEP 9.2: STYLING AND CSS CONFIGURATION
+# 🎮 SUB STEP 9.2: STYLING AND CSS CONFIGURATION - DROPDOWN WIDTH FIX
 # =============================================================================
     st.markdown(""" 
     <style>
@@ -732,7 +732,7 @@ with right:
         margin-top: 0px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
+    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
         box-shadow: none !important; 
@@ -741,12 +741,14 @@ with right:
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
+        width: 100% !important;
     }
     
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
+        width: 100% !important;
     }
 
     div[data-testid="stSelectbox"] > div > div { 
@@ -757,7 +759,8 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
-        color: #888888 !important;
+        color: black !important;
+        width: 100% !important;
     }
     
     /* Remove border from the input element inside */
@@ -765,10 +768,11 @@ with right:
         border: none !important;
         outline: none !important;
         background: transparent !important;
-        color: #888888 !important;
+        color: black !important;
+        width: 100% !important;
     }
     
-    /* Remove ALL focus borders and black outlines - ENHANCED */
+    /* Remove ALL focus borders and black outlines */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
@@ -812,7 +816,7 @@ with right:
         line-height: 1 !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE - ENHANCED */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] *,
@@ -826,17 +830,51 @@ with right:
         box-shadow: none !important;
     }
     
-    /* Remove border from popover - NO BLACK BORDERS - ENHANCED */
-    [data-baseweb="popover"],
-    [data-baseweb="popover"] > div {
-        border-radius: 8px !important;
-        overflow: hidden !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
+    /* NUCLEAR FIX: FORCE DROPDOWN POPUP WIDTH TO MATCH TRIGGER */
+    [data-baseweb="popover"] {
+        width: var(--radix-select-trigger-width, 200px) !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        transform: none !important;
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
     }
     
-    /* Remove borders from dropdown menu - ENHANCED */
+    /* Force the popover container to match exactly */
+    div[data-baseweb="popover"] > div {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Make the menu inside the popover take full width */
+    [data-baseweb="popover"] [data-baseweb="menu"] {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Force the listbox to be full width */
+    [data-baseweb="popover"] [role="listbox"] {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Make each option full width */
+    [data-baseweb="popover"] [role="option"] {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Remove borders from dropdown menu */
     [data-baseweb="menu"],
     [data-baseweb="menu"] ul,
     [data-baseweb="menu"] li,
@@ -845,6 +883,7 @@ with right:
         border-radius: 8px !important;
         background-color: #D3D3D3 !important;
         box-shadow: none !important;
+        width: 100% !important;
     }
     
     /* Target specific dropdown container elements */
@@ -853,6 +892,7 @@ with right:
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
+        width: 100% !important;
     }
     
     div[role="option"] { 
@@ -862,6 +902,8 @@ with right:
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     /* Remove the last item border */
@@ -921,6 +963,7 @@ with right:
         position: relative !important;
         margin-top: -45px !important;
         padding-top: 0px !important;
+        width: 100% !important;
     }
     
     div[data-testid="stSelectbox"] label {
@@ -931,12 +974,14 @@ with right:
     
     div[data-testid="stSelectbox"] > div {
         margin-top: 0px !important;
+        width: 100% !important;
     }
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
         margin-top: -450px !important;
         padding-top: 0px !important;
+        width: 100% !important;
     }
     
     /* FIX: Ensure columns align at the top */
@@ -949,6 +994,7 @@ with right:
     div[data-testid="column"]:first-child {
         margin-top: -45px !important;
         padding-top: 0px !important;
+        width: 100% !important;
     }
     
     /* ADDITIONAL: Target the specific border that's showing */
@@ -959,6 +1005,66 @@ with right:
     /* Target any element with border style */
     [style*="border"] {
         border: none !important;
+    }
+    
+    /* NUCLEAR SOLUTION: Force the dropdown to be exactly the same width as the trigger */
+    div[data-baseweb="select"] [data-baseweb="popover"] {
+        width: inherit !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    
+    /* Make sure the dropdown menu inside matches exactly */
+    [data-baseweb="popover"] > div {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Ensure the menu takes full available width */
+    [data-baseweb="popover"] [data-baseweb="menu"] {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Make the listbox full width */
+    [data-baseweb="popover"] [role="listbox"] {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+    }
+    
+    /* Ensure options don't wrap or expand - they should truncate if needed */
+    [data-baseweb="popover"] [role="option"] {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: 100% !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* FINAL NUCLEAR OPTION: Explicit width for dropdown */
+    .model-selection-container div[data-testid="stSelectbox"] {
+        width: 250px !important;
+    }
+    
+    .model-selection-container div[data-testid="stSelectbox"] > div {
+        width: 100% !important;
+    }
+    
+    .model-selection-container [data-baseweb="select"] {
+        width: 100% !important;
+    }
+    
+    .model-selection-container [data-baseweb="popover"] {
+        width: 250px !important;
+        min-width: unset !important;
+        max-width: unset !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1332,6 +1438,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
