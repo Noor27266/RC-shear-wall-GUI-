@@ -624,6 +624,29 @@ with right:
         margin-top: -50px !important; /* Move entire row up slightly */
     }
     
+    /* FIX VERTICAL ALIGNMENT FOR ALL ELEMENTS */
+    #action-row, 
+    .prediction-result,
+    .stDownloadButton {
+        vertical-align: middle !important;
+        align-items: center !important;
+    }
+
+    /* Ensure prediction and download are same height */
+    .prediction-result {
+        display: flex !important;
+        align-items: center !important;
+        height: 50px !important;
+    }
+
+    /* Make download button same height */
+    .stDownloadButton button {
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important; /* Remove border */
@@ -817,15 +840,14 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-        # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
-    pred_dl_row = st.columns([1, 1], gap="small")
-    with pred_dl_row[0]:
-        pred_banner = st.empty()
-    with pred_dl_row[1]:
-        dl_slot = st.empty()
-    if not st.session_state.results_df.empty:
-        csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+    # SINGLE ROW FOR PREDICTION AND DOWNLOAD - PERFECTLY ALIGNED
+    pred_dl_container = st.container()
+    with pred_dl_container:
+        pred_col, dl_col = st.columns([1, 1])
+        with pred_col:
+            pred_banner = st.empty()
+        with dl_col:
+            dl_slot = st.empty()
 
     col1, col2 = st.columns([0.01, 20])
     with col2:
@@ -1090,6 +1112,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
