@@ -315,7 +315,7 @@ except Exception:
 # Logo positioning variables - MOVED TO LEFT
 LOGO_SIZE = 40   # Size of the logo
 LOGO_TOP = 25    # Distance from top of page  
-LOGO_LEFT = 10   # Distance from LEFT edge (CHANGED from RIGHT)
+LOGO_LEFT = 30   # Distance from LEFT edge (CHANGED from RIGHT)
 
 st.markdown(f"""
 <style>
@@ -1090,6 +1090,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
