@@ -1029,45 +1029,19 @@ with right:
 
     
 # =============================================================================
-# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
+# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION - NO GAP
 # =============================================================================
-    # USE MULTIPLE EMPTY SPACES TO PUSH CONTENT UP
-    for _ in range(-50):  # ADD MORE EMPTY LINES TO PUSH UP
-        st.markdown("<br>", unsafe_allow_html=True)
-    
-    # SIMPLE ONE LINE WITH COLUMNS
-    pred_col, dl_col = st.columns([2, 1.5])
-    
-    with pred_col:
-        pred_banner = st.empty()
-        
-    with dl_col:
-        dl_slot = st.empty()
-        if not st.session_state.results_df.empty:
-            csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
+# COMPACT LAYOUT - NO EMPTY SPACES
+pred_col, dl_col = st.columns([2, 1.5])
 
-    # STYLING
-    st.markdown(f"""
-    <style>
-    .prediction-with-color {{
-        color: #2e86ab !important;
-        font-weight: 700 !important;
-        font-size: {FS_BADGE}px !important;
-        background: #f1f3f4 !important;
-        padding: 10px 12px !important;
-        border-radius: 6px !important;
-        text-align: center !important;
-        margin: 0 !important;
-        height: 45px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
-
-    chart_slot = st.empty()
+with pred_col:
+    pred_banner = st.empty()
+    
+with dl_col:
+    dl_slot = st.empty()
+    if not st.session_state.results_df.empty:
+        csv = st.session_state.results_df.to_csv(index=False)
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
@@ -1268,8 +1242,11 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
+    # ADD THIS TO REMOVE GAP ABOVE CHART
+    st.markdown("<div style='margin-top: -50px;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1385,6 +1362,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
