@@ -689,7 +689,7 @@ with right:
     
     /* MOVE MODEL SELECTION DROPDOWN DOWN */
     div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 30px !important;
+        margin-top: 10px !important;
     }
     
     div[data-testid="stSelectbox"] label p { 
@@ -1093,6 +1093,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
