@@ -722,7 +722,7 @@ with right:
     
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
-        border: none !important;
+        border: noe !important;
         border-radius: 8px !important;
         background-color: #D3D3D3 !important; /* Keep light grey */
     }
@@ -763,7 +763,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 10px !important;
+        margin-top: 0px !important; /* CHANGED: 10px to 0px */
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -786,6 +786,22 @@ with right:
         display: flex !important;
         gap: 8px !important;
         width: 100% !important;
+    }
+    
+    /* NEW: Align selectbox label and dropdown in same line */
+    div[data-testid="stSelectbox"] {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+    
+    div[data-testid="stSelectbox"] label {
+        margin-bottom: 0 !important;
+        white-space: nowrap !important;
+    }
+    
+    div[data-testid="stSelectbox"] > div {
+        flex: 1 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -832,7 +848,6 @@ with right:
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
-
 
 
 
@@ -1093,6 +1108,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
