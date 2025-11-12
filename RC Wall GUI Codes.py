@@ -1269,7 +1269,10 @@ except NameError:
 # =============================================================================
 with right:
     with _slot:
+        # Wrap the chart in a container with negative margin
+        st.markdown('<div style="margin-top: -30px;">', unsafe_allow_html=True)
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1385,6 +1388,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
