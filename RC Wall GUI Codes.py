@@ -723,142 +723,64 @@ with right:
 # =============================================================================
     st.markdown("""
     <style>
-    /* --------------------------------------------------------------
-       ✅ Match dropdown width to select box (same grey, black labels)
-       -------------------------------------------------------------- */
+    /* ===== WIDTH LOCK: make trigger and dropdown EXACTLY the same ===== */
+    /* Pick the width you want (px) */
+    :root { --model-select-width: 340px; }
 
-    /* Popover and menu (the dropdown container) */
-    [data-baseweb="popover"],
-    [data-baseweb="popover"] > div {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        padding: 0 !important;
-        width: auto !important;
+    /* Select trigger (the visible box) */
+    div[data-testid="stSelectbox"] > div {
+        width: var(--model-select-width) !important;
     }
 
+    /* Dropdown menu panel (BaseWeb menu lives in a portal) */
     [data-baseweb="menu"] {
+        width: var(--model-select-width) !important;
+        min-width: var(--model-select-width) !important;
+        max-width: var(--model-select-width) !important;
+        /* keep your previous look */
         background: #D3D3D3 !important;
         border: none !important;
         box-shadow: none !important;
-        outline: none !important;
         border-radius: 8px !important;
-        width: 100% !important;      /* ✅ same width as select trigger */
-        min-width: 100% !important;
-        max-width: 100% !important;
+        outline: none !important;
     }
 
-    div[role="option"] {
-        background: #D3D3D3 !important;
-        color: black !important;
-        font-size: {FS_SELECT}px !important;
-        border: none !important;
-        padding: 12px 16px !important;
-    }
-    div[role="option"]:hover {
-        background: #B8B8B8 !important;
-        color: black !important;
-        border: none !important;
-    }
-
-    /* -------------------------------------------------------------- */
-    /* Existing styles below (unchanged except label color confirmation) */
-    /* -------------------------------------------------------------- */
-
-    #action-row {
-        display: flex !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: 0px !important;
-    }
+    /* Keep your existing styles (unchanged) */
+    #action-row { display:flex !important; align-items:flex-start !important; gap:8px !important; width:100% !important; margin-top:0 !important; }
 
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;
-        box-shadow: none !important;
-        background: #D3D3D3 !important;
-        height: 50px !important;
-        border-radius: 8px !important;
-        padding: 0px 12px !important;
-        outline: none !important;
+        border:none !important; box-shadow:none !important; background:#D3D3D3 !important;
+        height:50px !important; border-radius:8px !important; padding:0 12px !important; outline:none !important;
     }
-
-    div[data-testid="stSelectbox"] > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        width: 100% !important;   /* ✅ makes the trigger full width */
-    }
-
     div[data-testid="stSelectbox"] > div > div {
-        height: 50px !important;
-        display: flex !important;
-        align-items: center !important;
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        outline: none !important;
-        color: black !important;
+        height:50px !important; display:flex !important; align-items:center !important; margin-top:0 !important;
+        border-radius:8px !important; border:none !important; outline:none !important; color:black !important;
     }
-
-    div[data-testid="stSelectbox"] input {
-        border: none !important;
-        outline: none !important;
-        background: transparent !important;
-        color: black !important;
-    }
-
+    div[data-testid="stSelectbox"] input { border:none !important; outline:none !important; background:transparent !important; color:black !important; }
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:active {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
+        border:none !important; outline:none !important; box-shadow:none !important; background-color:#D3D3D3 !important;
     }
+    div[data-testid="stSelectbox"] svg { fill:#888 !important; color:#888 !important; stroke:#888 !important; }
 
-    div[data-testid="stSelectbox"] svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-
+    /* Label stays black as before */
     div[data-testid="stSelectbox"] label p {
-        font-size: {FS_LABEL}px !important;
-        color: black !important;     /* ✅ ensure black label */
-        font-weight: bold !important;
-        margin-bottom: 5px !important;
-        position: relative !important;
-        top: 0 !important;
-        left: 0 !important;
-        white-space: nowrap !important;
-        line-height: 1 !important;
+        font-size: {FS_LABEL}px !important; color:black !important; font-weight:bold !important;
+        margin-bottom:5px !important; position:relative !important; top:0 !important; left:0 !important;
+        white-space:nowrap !important; line-height:1 !important;
     }
 
-    div[data-testid="stSelectbox"] {
-        position: relative !important;
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-    }
-
-    .model-selection-container {
-        margin-top: -450px !important;
-        padding-top: 0px !important;
-    }
-
-    [data-testid="column"] {
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-    }
-
-    div[data-testid="column"]:first-child {
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-    }
+    /* Your positioning helpers (unchanged) */
+    div[data-testid="stSelectbox"] { position:relative !important; margin-top:-45px !important; padding-top:0 !important; }
+    div[data-testid="stSelectbox"] label { margin-bottom:5px !important; white-space:nowrap !important; display:block !important; }
+    .model-selection-container { margin-top:-450px !important; padding-top:0 !important; }
+    [data-testid="column"] { align-items:flex-start !important; justify-content:flex-start !important; }
+    div[data-testid="column"]:first-child { margin-top:-45px !important; padding-top:0 !important; }
     </style>
     """, unsafe_allow_html=True)
+
 
 
 
@@ -1231,6 +1153,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
