@@ -1031,8 +1031,9 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # MOVE THE ENTIRE SECTION UP USING STREAMLIT'S BUILT-IN METHODS
-    st.markdown("<div style='margin-top: -400px;'>", unsafe_allow_html=True)
+    # USE MULTIPLE EMPTY SPACES TO PUSH CONTENT UP
+    for _ in range(15):  # ADD MORE EMPTY LINES TO PUSH UP
+        st.markdown("<br>", unsafe_allow_html=True)
     
     # SIMPLE ONE LINE WITH COLUMNS
     pred_col, dl_col = st.columns([2, 1.5])
@@ -1045,8 +1046,6 @@ with right:
         if not st.session_state.results_df.empty:
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
     # STYLING
     st.markdown(f"""
@@ -1386,6 +1385,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
