@@ -763,7 +763,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 30px !important;
+        margin-top: 10px !important;
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -1093,6 +1093,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
