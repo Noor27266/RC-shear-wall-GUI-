@@ -960,9 +960,37 @@ with right:
     [style*="border"] {
         border: none !important;
     }
+
+    /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
+    div[data-baseweb="popover"] {
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
+        transform: translateX(0px) !important;
+    }
+
+    div[data-baseweb="menu"] {
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
+    }
+
+    div[role="listbox"] {
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
+    }
+
+    /* Force the popover to stay within the column bounds */
+    div[data-testid="column"] [data-baseweb="popover"] {
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
+        left: 0 !important;
+        right: auto !important;
+    }
     </style>
     """, unsafe_allow_html=True)
-
 
 
 
@@ -1342,6 +1370,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
