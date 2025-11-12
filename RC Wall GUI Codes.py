@@ -992,15 +992,6 @@ with right:
     </style>
     """, unsafe_allow_html=True)
 
-
-
-
-
-
-
-
-
-    
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
@@ -1036,22 +1027,79 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+    
 # =============================================================================
-# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
+# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION - MOVED UP & INLINE
 # =============================================================================
-    # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
-    pred_dl_row = st.columns([1, 1], gap="small")
-    with pred_dl_row[0]:
+    # CREATE A CONTAINER TO HOLD BOTH PREDICTION AND DOWNLOAD IN ONE LINE
+    st.markdown(f"""
+    <style>
+    .prediction-download-row {{
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 15px !important;
+        width: 100% !important;
+        margin-top: -20px !important;  /* MOVE EVERYTHING UP */
+        margin-bottom: 10px !important;
+        padding: 0 10px !important;
+    }}
+    
+    .prediction-result-compact {{
+        font-size: {FS_BADGE}px !important; 
+        font-weight: 700 !important; 
+        color: #2e86ab !important;
+        background: #f1f3f4 !important; 
+        padding: 8px 12px !important; 
+        border-radius: 6px !important; 
+        text-align: center !important;
+        flex: 1 !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }}
+    
+    .download-button-compact {{
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+    }}
+    
+    /* Make the download button smaller to fit inline */
+    .download-button-compact .stDownloadButton button {{
+        height: 40px !important;
+        font-size: {max(14, FS_BUTTON-2)}px !important;
+        white-space: nowrap !important;
+        padding: 0 12px !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # SINGLE ROW CONTAINER FOR PREDICTION + DOWNLOAD
+    st.markdown('<div class="prediction-download-row">', unsafe_allow_html=True)
+    
+    # Use columns with custom ratios to keep them on one line
+    pred_col, dl_col = st.columns([2, 1], gap="small")
+    
+    with pred_col:
         pred_banner = st.empty()
-    with pred_dl_row[1]:
+        
+    with dl_col:
         dl_slot = st.empty()
-    if not st.session_state.results_df.empty:
-        csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
+        if not st.session_state.results_df.empty:
+            csv = st.session_state.results_df.to_csv(index=False)
+            # Use a more compact download button
+            dl_slot.download_button(
+                "📂 Download CSV", 
+                data=csv, 
+                file_name="di_predictions.csv", 
+                mime="text/csv", 
+                use_container_width=True, 
+                key="dl_csv_main"
+            )
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns([0.01, 20])
-    with col2:
-        chart_slot = st.empty()
+    # CHART GOES BELOW
+    chart_slot = st.empty()
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
@@ -1370,6 +1418,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
