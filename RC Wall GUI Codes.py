@@ -967,30 +967,19 @@ with right:
 
 
 
-
-/* === WIDTH FIX FOR MODEL SELECT (keeps grey bg + black label) === */
-:root { --model-select-width: 340px; }  /* <- change this number to your exact width */
-
-.model-selection-container div[data-testid="stSelectbox"] > div {
-    width: var(--model-select-width) !important;   /* visible select box width */
+/* Make dropdown menu same width as selection box */
+[data-baseweb="popover"] {
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
 }
 
-.model-selection-container div[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 100% !important;                        /* inner control matches parent */
+/* Ensure dropdown options container matches */
+[data-baseweb="menu"] > div {
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
 }
-
-/* Make the dropdown menu match the trigger width */
-.model-selection-container [data-baseweb="popover"] > div {
-    min-width: var(--model-select-width) !important;
-    max-width: var(--model-select-width) !important;
-}
-
-.model-selection-container [data-baseweb="menu"] {
-    width: var(--model-select-width) !important;
-    min-width: var(--model-select-width) !important;
-    max-width: var(--model-select-width) !important;
-}
-/* === END WIDTH FIX === */
 
 
 
@@ -1367,6 +1356,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
