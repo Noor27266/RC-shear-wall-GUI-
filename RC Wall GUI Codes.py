@@ -600,6 +600,10 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
+
+# =============================================================================
+# 🎮 SUB STEP 9.1: HERO IMAGE AND INITIAL SETUP
+# =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
@@ -615,6 +619,9 @@ with right:
         unsafe_allow_html=True,
     )
 
+# =============================================================================
+# 🎮 SUB STEP 9.2: STYLING AND CSS CONFIGURATION
+# =============================================================================
     st.markdown(""" 
     <style>
     /* Make all elements in the action row with custom widths */
@@ -831,6 +838,9 @@ with right:
     </style>
     """, unsafe_allow_html=True)
 
+# =============================================================================
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
+# =============================================================================
     # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
@@ -863,6 +873,9 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+# =============================================================================
+# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
+# =============================================================================
     # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
     pred_dl_row = st.columns([1, 1], gap="small")
     with pred_dl_row[0]:
@@ -1136,6 +1149,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
