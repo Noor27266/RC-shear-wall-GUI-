@@ -764,39 +764,44 @@ with right:
     """, unsafe_allow_html=True)
 
 # =============================================================================
-# 🎮 SUB STEP 9.4: ACTION ROW WITH MODEL SELECTION AND BUTTONS
+# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
-    st.markdown("<div id='action-row'>", unsafe_allow_html=True)
-
-    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
-    model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
-
-    with model_col:
-        # FIX: Use negative margin to move everything UP
-        st.markdown('<div class="model-selection-container">', unsafe_allow_html=True)
-        available = set(model_registry.keys())
-        order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
-        ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
-        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
-        _label_to_key = {"RF": "Random Forest"}
-        model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
-        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with calc_col:
-        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-
-    with reset_col:
-        if st.button("Reset", key="reset_btn", use_container_width=True):
-            st.rerun()
-
-    with clear_col:
-        if st.button("Clear All", key="clear_btn", use_container_width=True):
-            st.session_state.results_df = pd.DataFrame()
-            st.success("All predictions cleared.")
+    # MOVE PREDICTION AND DOWNLOAD UP USING EMPTY SPACE ABOVE
+    st.markdown("<div style='margin-top: -350px;'>", unsafe_allow_html=True)
+    
+    # SIMPLE ONE LINE WITH COLUMNS
+    pred_col, dl_col = st.columns([2, 1.5])
+    
+    with pred_col:
+        pred_banner = st.empty()
+        
+    with dl_col:
+        dl_slot = st.empty()
+        if not st.session_state.results_df.empty:
+            csv = st.session_state.results_df.to_csv(index=False)
+            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+    # STYLING
+    st.markdown(f"""
+    <style>
+    .prediction-with-color {{
+        color: #2e86ab !important;
+        font-weight: 700 !important;
+        font-size: {FS_BADGE}px !important;
+        background: #f1f3f4 !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        margin: 0 !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
 
     chart_slot = st.empty()
 
@@ -1116,6 +1121,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
