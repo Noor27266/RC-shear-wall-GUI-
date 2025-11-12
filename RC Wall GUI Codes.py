@@ -726,13 +726,13 @@ with right:
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
-        align-items: flex-start !important; /* CHANGED: center to flex-start */
+        align-items: flex-start !important;
         gap: 8px !important;
         width: 100% !important;
         margin-top: 0px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
+    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
         box-shadow: none !important; 
@@ -768,10 +768,11 @@ with right:
         color: #888888 !important;
     }
     
-    /* Remove ALL focus borders and black outlines */
+    /* Remove ALL focus borders and black outlines - ENHANCED */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover {
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:active {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
@@ -804,17 +805,19 @@ with right:
         color: black !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
-        position: relative !important; /* CHANGED: absolute to relative */
-        top: 0px !important; /* CHANGED: Remove negative positioning */
+        position: relative !important;
+        top: 0px !important;
         left: 0 !important;
         white-space: nowrap !important;
         line-height: 1 !important;
     }
     
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE - ENHANCED */
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] * { 
+    [data-baseweb="menu"] *,
+    [data-baseweb="select"] [role="listbox"],
+    [data-baseweb="select"] [role="combobox"] { 
         color: black !important;
         background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
@@ -823,8 +826,9 @@ with right:
         box-shadow: none !important;
     }
     
-    /* Remove border from popover - NO BLACK BORDERS */
-    [data-baseweb="popover"] {
+    /* Remove border from popover - NO BLACK BORDERS - ENHANCED */
+    [data-baseweb="popover"],
+    [data-baseweb="popover"] > div {
         border-radius: 8px !important;
         overflow: hidden !important;
         border: none !important;
@@ -832,11 +836,23 @@ with right:
         background-color: #D3D3D3 !important;
     }
     
-    /* Remove borders from dropdown menu - FIXED TYPO */
-    [data-baseweb="menu"] {
-        border: none !important;  /* ✅ FIXED: Changed "noe" to "none" */
+    /* Remove borders from dropdown menu - ENHANCED */
+    [data-baseweb="menu"],
+    [data-baseweb="menu"] ul,
+    [data-baseweb="menu"] li,
+    [data-baseweb="menu"] > div {
+        border: none !important;
         border-radius: 8px !important;
         background-color: #D3D3D3 !important;
+        box-shadow: none !important;
+    }
+    
+    /* Target specific dropdown container elements */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="select"] > div > div {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
     
     div[role="option"] { 
@@ -903,7 +919,7 @@ with right:
     /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
     div[data-testid="stSelectbox"] {
         position: relative !important;
-        margin-top: -45px !important; /* CHANGED: Move entire selectbox UP */
+        margin-top: -45px !important;
         padding-top: 0px !important;
     }
     
@@ -919,7 +935,7 @@ with right:
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
-        margin-top: -450px !important; /* CHANGED: Move container UP */
+        margin-top: -450px !important;
         padding-top: 0px !important;
     }
     
@@ -933,6 +949,16 @@ with right:
     div[data-testid="column"]:first-child {
         margin-top: -45px !important;
         padding-top: 0px !important;
+    }
+    
+    /* ADDITIONAL: Target the specific border that's showing */
+    div[data-baseweb="select"] div[style*="border"] {
+        border: none !important;
+    }
+    
+    /* Target any element with border style */
+    [style*="border"] {
+        border: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1306,6 +1332,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
