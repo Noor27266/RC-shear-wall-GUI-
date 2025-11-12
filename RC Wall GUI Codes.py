@@ -658,7 +658,7 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
-        color: #888888 !important;
+        color: black !important;
     }
     
     /* Remove border from the input element inside */
@@ -1149,6 +1149,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
