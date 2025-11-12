@@ -702,7 +702,7 @@ with right:
     /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
-        color: #666666 !important;
+        color: black !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
         position: relative !important; /* CHANGED: absolute to relative */
@@ -1149,6 +1149,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
