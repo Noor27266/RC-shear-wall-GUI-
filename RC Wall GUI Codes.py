@@ -601,6 +601,11 @@ HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
+with right:
+    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    
+    # LOGO REMOVED FROM HERE - ONLY THIS LINE IS REMOVED
+    # The st.markdown with the logo image is removed
 
 
     st.markdown(""" 
@@ -1081,6 +1086,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
