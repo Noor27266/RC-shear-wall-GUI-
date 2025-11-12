@@ -737,7 +737,7 @@ with right:
         border: none !important;
         box-shadow: none !important; 
         background: #D3D3D3 !important;
-        height: 50px !important;
+        height: 35px !important;
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
@@ -750,7 +750,7 @@ with right:
     }
 
     div[data-testid="stSelectbox"] > div > div { 
-        height: 50px !important; 
+        height: 35px !important; 
         display: flex !important; 
         align-items: center !important; 
         margin-top: 0px !important;
@@ -883,7 +883,7 @@ with right:
     
     /* Make buttons smaller in width */
     div.stButton > button { 
-        height: 50px !important; 
+        height: 35px !important; 
         width: 90% !important;
         display:flex !important; 
         align-items:center !important; 
@@ -992,6 +992,95 @@ with right:
     </style>
     """, unsafe_allow_html=True)
 
+
+
+
+
+
+
+
+
+
+
+    st.markdown("""
+    <style>
+    /* REDUCE GAPS BETWEEN RIGHT-SIDE ELEMENTS */
+    .model-selection-container {
+        margin-bottom: -30px !important;
+    }
+    
+    #action-row {
+        margin-bottom: -40px !important;
+    }
+    
+    /* Reduce gap between buttons and prediction section */
+    .element-container:has(div.stButton) {
+        margin-bottom: -35px !important;
+    }
+    
+    /* Reduce gap between prediction and chart */
+    .element-container:has(.prediction-with-color) {
+        margin-bottom: -30px !important;
+    }
+    
+    /* Reduce gap around download button */
+    .element-container:has(.stDownloadButton) {
+        margin-top: -25px !important;
+        margin-bottom: -25px !important;
+    }
+    
+    /* Reduce gap in chart container */
+    .element-container:has([data-testid="stHorizontalBlock"]) {
+        margin-top: -20px !important;
+        margin-bottom: -20px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
@@ -1385,6 +1474,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
