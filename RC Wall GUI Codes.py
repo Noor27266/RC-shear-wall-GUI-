@@ -963,6 +963,24 @@ with right:
     </style>
     """, unsafe_allow_html=True)
 
+
+
+
+
+:root { --model-select-width: 340px; }              /* <- set the width you want */
+div[data-testid="stSelectbox"] > div { width: var(--model-select-width) !important; }
+
+[data-baseweb="menu"]{
+  width: var(--model-select-width) !important;
+  min-width: var(--model-select-width) !important;
+  max-width: var(--model-select-width) !important;
+}
+
+
+
+
+
+    
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
@@ -1332,6 +1350,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
