@@ -883,7 +883,7 @@ with right:
     
     /* Make buttons smaller in width */
     div.stButton > button { 
-        height: 30px !important; 
+        height: 35px !important; 
         width: 90% !important;
         display:flex !important; 
         align-items:center !important; 
@@ -1385,6 +1385,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
