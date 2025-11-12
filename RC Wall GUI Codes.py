@@ -741,12 +741,14 @@ with right:
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
+        width: 100% !important;
     }
     
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
+        width: 100% !important;
     }
 
     div[data-testid="stSelectbox"] > div > div { 
@@ -758,6 +760,7 @@ with right:
         border: none !important;
         outline: none !important;
         color: #888888 !important;
+        width: 100% !important;
     }
     
     /* Remove border from the input element inside */
@@ -834,6 +837,10 @@ with right:
         border: none !important;
         box-shadow: none !important;
         background-color: #D3D3D3 !important;
+        /* FIX DROPDOWN WIDTH - MATCH SELECT BOX */
+        min-width: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     
     /* Remove borders from dropdown menu - ENHANCED */
@@ -845,6 +852,10 @@ with right:
         border-radius: 8px !important;
         background-color: #D3D3D3 !important;
         box-shadow: none !important;
+        /* FIX DROPDOWN WIDTH - MATCH SELECT BOX */
+        min-width: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     
     /* Target specific dropdown container elements */
@@ -853,6 +864,16 @@ with right:
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
+        width: 100% !important;
+    }
+    
+    /* FIX DROPDOWN MENU WIDTH TO MATCH SELECT BOX */
+    div[role="listbox"],
+    div[role="listbox"] > div,
+    [data-baseweb="popover"] [role="listbox"] {
+        width: 100% !important;
+        min-width: auto !important;
+        max-width: 100% !important;
     }
     
     div[role="option"] { 
@@ -862,6 +883,8 @@ with right:
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     /* Remove the last item border */
@@ -921,6 +944,7 @@ with right:
         position: relative !important;
         margin-top: -45px !important;
         padding-top: 0px !important;
+        width: 100% !important;
     }
     
     div[data-testid="stSelectbox"] label {
@@ -931,12 +955,14 @@ with right:
     
     div[data-testid="stSelectbox"] > div {
         margin-top: 0px !important;
+        width: 100% !important;
     }
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
         margin-top: -450px !important;
         padding-top: 0px !important;
+        width: 100% !important;
     }
     
     /* FIX: Ensure columns align at the top */
@@ -959,6 +985,19 @@ with right:
     /* Target any element with border style */
     [style*="border"] {
         border: none !important;
+    }
+    
+    /* SPECIFIC FIX FOR DROPDOWN WIDTH */
+    div[data-baseweb="select"] > div:last-child {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+    
+    /* Ensure the dropdown popup matches the select box width */
+    [data-baseweb="popover"] {
+        width: var(--radix-select-trigger-width) !important;
+        min-width: auto !important;
+        max-width: 100% !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1332,6 +1371,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
