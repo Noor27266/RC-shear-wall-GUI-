@@ -148,7 +148,7 @@ INPUT_H    = max(32, int(FS_INPUT * 2.0))
 # 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION
 # =============================================================================
 # header logo default height (can still be changed by URL param "logo")
-DEFAULT_LOGO_H = 50
+DEFAULT_LOGO_H = 45
 
 PRIMARY   = "#8E44AD"
 SECONDARY = "#f9f9f9"
@@ -365,7 +365,7 @@ except Exception:
 # 🏷️ SUB STEP 6.2: LOGO POSITIONING CONFIGURATION
 # =============================================================================
 # Logo positioning variables - EASY TO MOVE LEFT/RIGHT
-LOGO_SIZE = 50   # Size of the logo
+LOGO_SIZE = 45   # Size of the logo
 LOGO_TOP = 25    # Distance from top of page  
 
 # EASY CONTROL: Change this value to move logo left/right
@@ -1034,15 +1034,16 @@ with right:
     # CREATE A CONTAINER TO HOLD BOTH PREDICTION AND DOWNLOAD IN ONE LINE
     st.markdown(f"""
     <style>
-    .prediction-download-row {{
+    .prediction-download-container {{
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
         gap: 15px !important;
         width: 100% !important;
-        margin-top: -20px !important;  /* MOVE EVERYTHING UP */
-        margin-bottom: 10px !important;
-        padding: 0 10px !important;
+        margin-top: -35px !important;  /* MOVE UP MORE */
+        margin-bottom: 5px !important;
+        padding: 5px 10px !important;
+        background: transparent !important;
     }}
     
     .prediction-result-compact {{
@@ -1050,56 +1051,84 @@ with right:
         font-weight: 700 !important; 
         color: #2e86ab !important;
         background: #f1f3f4 !important; 
-        padding: 8px 12px !important; 
-        border-radius: 6px !important; 
+        padding: 8px 15px !important; 
+        border-radius: 8px !important; 
         text-align: center !important;
         flex: 1 !important;
         margin: 0 !important;
         white-space: nowrap !important;
+        border: 2px solid #2e86ab !important;
+        min-height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }}
     
-    .download-button-compact {{
+    .download-button-wrapper {{
         flex-shrink: 0 !important;
         margin: 0 !important;
+        min-width: 140px !important;
     }}
     
-    /* Make the download button smaller to fit inline */
-    .download-button-compact .stDownloadButton button {{
-        height: 40px !important;
+    /* Force download button styling */
+    .download-button-wrapper .stDownloadButton button {{
+        height: 45px !important;
         font-size: {max(14, FS_BUTTON-2)}px !important;
         white-space: nowrap !important;
-        padding: 0 12px !important;
+        padding: 0 15px !important;
+        margin: 0 !important;
+        background: #4CAF50 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+    }}
+    
+    /* Hide any extra containers */
+    [data-testid="column"] {{
+        margin: 0 !important;
+        padding: 0 !important;
     }}
     </style>
     """, unsafe_allow_html=True)
     
-    # SINGLE ROW CONTAINER FOR PREDICTION + DOWNLOAD
-    st.markdown('<div class="prediction-download-row">', unsafe_allow_html=True)
+    # CREATE SINGLE CONTAINER WITH HTML TO FORCE THEM ON SAME LINE
+    st.markdown("""
+    <div class="prediction-download-container">
+        <div id="prediction-display" class="prediction-result-compact">
+            Predicted Damage Index (DI): --
+        </div>
+        <div class="download-button-wrapper">
+            <!-- Download button will be inserted here -->
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Use columns with custom ratios to keep them on one line
-    pred_col, dl_col = st.columns([2, 1], gap="small")
+    # Create containers for dynamic content
+    col1, col2 = st.columns([1, 1])
     
-    with pred_col:
+    with col1:
+        # This will update the prediction display
         pred_banner = st.empty()
         
-    with dl_col:
+    with col2:
+        # This will update the download button
         dl_slot = st.empty()
         if not st.session_state.results_df.empty:
             csv = st.session_state.results_df.to_csv(index=False)
-            # Use a more compact download button
             dl_slot.download_button(
-                "📂 Download CSV", 
+                "📂 Download as CSV", 
                 data=csv, 
                 file_name="di_predictions.csv", 
                 mime="text/csv", 
                 use_container_width=True, 
                 key="dl_csv_main"
             )
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
-    # CHART GOES BELOW
+    # CHART GOES BELOW - MOVED UP TOO
+    st.markdown('<div style="margin-top: -10px !important;">', unsafe_allow_html=True)
     chart_slot = st.empty()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
@@ -1276,7 +1305,14 @@ else:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(f"<div class='prediction-result'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
+            pred_banner.markdown(
+                f"""
+                <script>
+                document.getElementById('prediction-display').innerHTML = 'Predicted Damage Index (DI): {pred:.4f}';
+                </script>
+                """, 
+                unsafe_allow_html=True
+            )
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
                                     mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
@@ -1418,6 +1454,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
