@@ -124,7 +124,44 @@ def pfind(candidates):
 # 🎨 SUB STEP 3.1: PAGE CONFIGURATION SETUP
 # =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
+# =============================================================================
+# 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
+# =============================================================================
+# Keep header area slim - REDUCED TOP SPACE
+st.markdown("""
+<style>
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 
+/* ADD THIS TO REMOVE HORIZONTAL SCROLL */
+section.main {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+div.stApp {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+.block-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+}
+
+/* Ensure all content fits within viewport */
+[data-testid="stHorizontalBlock"] {
+    max-width: 100% !important;
+    flex-wrap: nowrap !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # =============================================================================
 # 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
 # =============================================================================
@@ -1386,6 +1423,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
