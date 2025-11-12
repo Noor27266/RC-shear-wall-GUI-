@@ -801,7 +801,7 @@ with right:
     /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
-        color: #666666 !important;
+        color: black !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
         position: relative !important; /* CHANGED: absolute to relative */
@@ -815,7 +815,7 @@ with right:
     [data-baseweb="select"] *, 
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
-        color: #888888 !important;
+        color: black !important;
         background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
@@ -840,7 +840,7 @@ with right:
     }
     
     div[role="option"] { 
-        color: #888888 !important;
+        color: black !important;
         font-size: {FS_SELECT}px !important; 
         background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
@@ -861,7 +861,7 @@ with right:
     /* Make dropdown hover effect grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
-        color: #888888 !important;
+        color:black !important;
         border: none !important;
     }
     
@@ -1306,3 +1306,4 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
