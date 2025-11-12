@@ -621,30 +621,7 @@ with right:
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: -50px !important; /* Move entire row up slightly */
-    }
-    
-    /* FIX VERTICAL ALIGNMENT FOR ALL ELEMENTS */
-    #action-row, 
-    .prediction-result,
-    .stDownloadButton {
-        vertical-align: middle !important;
-        align-items: center !important;
-    }
-
-    /* Ensure prediction and download are same height */
-    .prediction-result {
-        display: flex !important;
-        align-items: center !important;
-        height: 50px !important;
-    }
-
-    /* Make download button same height */
-    .stDownloadButton button {
-        height: 50px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+        margin-top: 50px !important; /* MOVED DOWN */
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -714,7 +691,7 @@ with right:
     }
     
     div[data-testid="stSelectbox"] label p { 
-        font-size: """ + str(FS_LABEL) + """px !important; 
+        font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
@@ -726,7 +703,7 @@ with right:
     [data-baseweb="menu"] * { 
         color: #888888 !important;
         background-color: #D3D3D3 !important; /* Light grey */
-        font-size: """ + str(FS_SELECT) + """px !important; 
+        font-size: {FS_SELECT}px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
@@ -750,7 +727,7 @@ with right:
     
     div[role="option"] { 
         color: #888888 !important;
-        font-size: """ + str(FS_SELECT) + """px !important; 
+        font-size: {FS_SELECT}px !important; 
         background-color: #D3D3D3 !important; /* Light grey */
         padding: 12px 16px !important;
         border: none !important;
@@ -781,7 +758,7 @@ with right:
         display:flex !important; 
         align-items:center !important; 
         justify-content:center !important;
-        font-size: """ + str(FS_BUTTON) + """px !important;
+        font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
         margin-top: 30px !important;
@@ -840,18 +817,20 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # SINGLE ROW FOR PREDICTION AND DOWNLOAD - PERFECTLY ALIGNED
-    pred_dl_container = st.container()
-    with pred_dl_container:
-        pred_col, dl_col = st.columns([1, 1])
-        with pred_col:
-            pred_banner = st.empty()
-        with dl_col:
-            dl_slot = st.empty()
+      # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
+    pred_dl_row = st.columns([1, 1], gap="small")
+    with pred_dl_row[0]:
+        pred_banner = st.empty()
+    with pred_dl_row[1]:
+        dl_slot = st.empty()
+    if not st.session_state.results_df.empty:
+        csv = st.session_state.results_df.to_csv(index=False)
+        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=False, key="dl_csv_main")
 
     col1, col2 = st.columns([0.01, 20])
     with col2:
         chart_slot = st.empty()
+
 
 
 
@@ -1112,6 +1091,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
