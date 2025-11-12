@@ -1029,106 +1029,37 @@ with right:
 
     
 # =============================================================================
-# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION - MOVED UP & INLINE
+# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # CREATE A CONTAINER TO HOLD BOTH PREDICTION AND DOWNLOAD IN ONE LINE
-    st.markdown(f"""
+    # ONE LINE LAYOUT - PREDICTION AND DOWNLOAD
+    st.markdown("""
     <style>
-    .prediction-download-container {{
+    .one-line-row {
         display: flex !important;
         align-items: center !important;
-        justify-content: space-between !important;
-        gap: 15px !important;
+        gap: 10px !important;
         width: 100% !important;
-        margin-top: -35px !important;  /* MOVE UP MORE */
-        margin-bottom: 5px !important;
-        padding: 5px 10px !important;
-        background: transparent !important;
-    }}
-    
-    .prediction-result-compact {{
-        font-size: {FS_BADGE}px !important; 
-        font-weight: 700 !important; 
-        color: #2e86ab !important;
-        background: #f1f3f4 !important; 
-        padding: 8px 15px !important; 
-        border-radius: 8px !important; 
-        text-align: center !important;
-        flex: 1 !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-        border: 2px solid #2e86ab !important;
-        min-height: 45px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }}
-    
-    .download-button-wrapper {{
-        flex-shrink: 0 !important;
-        margin: 0 !important;
-        min-width: 140px !important;
-    }}
-    
-    /* Force download button styling */
-    .download-button-wrapper .stDownloadButton button {{
-        height: 45px !important;
-        font-size: {max(14, FS_BUTTON-2)}px !important;
-        white-space: nowrap !important;
-        padding: 0 15px !important;
-        margin: 0 !important;
-        background: #4CAF50 !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 700 !important;
-    }}
-    
-    /* Hide any extra containers */
-    [data-testid="column"] {{
-        margin: 0 !important;
-        padding: 0 !important;
-    }}
+        margin-top: -25px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
-    # CREATE SINGLE CONTAINER WITH HTML TO FORCE THEM ON SAME LINE
-    st.markdown("""
-    <div class="prediction-download-container">
-        <div id="prediction-display" class="prediction-result-compact">
-            Predicted Damage Index (DI): --
-        </div>
-        <div class="download-button-wrapper">
-            <!-- Download button will be inserted here -->
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="one-line-row">', unsafe_allow_html=True)
     
-    # Create containers for dynamic content
-    col1, col2 = st.columns([1, 1])
+    pred_col, dl_col = st.columns([2, 1])
     
-    with col1:
-        # This will update the prediction display
+    with pred_col:
         pred_banner = st.empty()
         
-    with col2:
-        # This will update the download button
+    with dl_col:
         dl_slot = st.empty()
         if not st.session_state.results_df.empty:
             csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button(
-                "📂 Download as CSV", 
-                data=csv, 
-                file_name="di_predictions.csv", 
-                mime="text/csv", 
-                use_container_width=True, 
-                key="dl_csv_main"
-            )
+            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
 
-    # CHART GOES BELOW - MOVED UP TOO
-    st.markdown('<div style="margin-top: -10px !important;">', unsafe_allow_html=True)
-    chart_slot = st.empty()
     st.markdown('</div>', unsafe_allow_html=True)
+
+    chart_slot = st.empty()
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
@@ -1305,14 +1236,7 @@ else:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(
-                f"""
-                <script>
-                document.getElementById('prediction-display').innerHTML = 'Predicted Damage Index (DI): {pred:.4f}';
-                </script>
-                """, 
-                unsafe_allow_html=True
-            )
+            pred_banner.markdown(f"**Predicted Damage Index (DI): {pred:.4f}**")
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
                                     mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
@@ -1454,6 +1378,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
