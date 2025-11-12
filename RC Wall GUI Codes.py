@@ -1032,15 +1032,26 @@ with right:
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
     # ONE LINE LAYOUT - PREDICTION AND DOWNLOAD
-    st.markdown("""
+    st.markdown(f"""
     <style>
-    .one-line-row {
+    .one-line-row {{
         display: flex !important;
         align-items: center !important;
         gap: 10px !important;
         width: 100% !important;
-        margin-top: -25px !important;
-    }
+        margin-top: -40px !important;  /* MOVED UP MORE */
+        margin-bottom: 5px !important;
+    }}
+    .prediction-with-color {{
+        color: #2e86ab !important;
+        font-weight: 700 !important;
+        font-size: {FS_BADGE}px !important;
+        background: #f1f3f4 !important;
+        padding: 8px 12px !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        margin: 0 !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
     
@@ -1236,7 +1247,7 @@ else:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(f"**Predicted Damage Index (DI): {pred:.4f}**")
+            pred_banner.markdown(f"<div class='prediction-with-color'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
                                     mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
@@ -1378,6 +1389,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
