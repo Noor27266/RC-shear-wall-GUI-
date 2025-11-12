@@ -967,19 +967,6 @@ with right:
 
 
 
-/* Make dropdown menu same width as selection box */
-[data-baseweb="popover"] {
-    width: 200px !important;
-    min-width: 200px !important;
-    max-width: 200px !important;
-}
-
-/* Ensure dropdown options container matches */
-[data-baseweb="menu"] > div {
-    width: 200px !important;
-    min-width: 200px !important;
-    max-width: 200px !important;
-}
 
 
 
@@ -1356,6 +1343,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
