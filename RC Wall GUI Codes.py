@@ -992,95 +992,7 @@ with right:
     </style>
     """, unsafe_allow_html=True)
 
-
-
-
-
-
-
-
-
-
-
-    st.markdown("""
-    <style>
-    /* REDUCE GAPS BETWEEN RIGHT-SIDE ELEMENTS */
-    .model-selection-container {
-        margin-bottom: -30px !important;
-    }
-    
-    #action-row {
-        margin-bottom: -40px !important;
-    }
-    
-    /* Reduce gap between buttons and prediction section */
-    .element-container:has(div.stButton) {
-        margin-bottom: -35px !important;
-    }
-    
-    /* Reduce gap between prediction and chart */
-    .element-container:has(.prediction-with-color) {
-        margin-bottom: -30px !important;
-    }
-    
-    /* Reduce gap around download button */
-    .element-container:has(.stDownloadButton) {
-        margin-top: -25px !important;
-        margin-bottom: -25px !important;
-    }
-    
-    /* Reduce gap in chart container */
-    .element-container:has([data-testid="stHorizontalBlock"]) {
-        margin-top: -20px !important;
-        margin-bottom: -20px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+ 
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
@@ -1474,6 +1386,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
