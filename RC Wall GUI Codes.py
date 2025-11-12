@@ -600,7 +600,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, -2, 350
+HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
@@ -620,21 +620,21 @@ with right:
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
-        align-items: flex-start !important; /* CHANGED: center to flex-start */
+        align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: 0px !important; /* MOVED DOWN */
+        margin-top: 0px !important;
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important; /* Remove border */
+        border: none !important;
         box-shadow: none !important; 
-        background: #D3D3D3 !important; /* Light grey background */
+        background: #D3D3D3 !important;
         height: 50px !important;
-        border-radius: 8px !important; /* Rounded corners */
+        border-radius: 8px !important;
         padding: 0px 12px !important;
-        outline: none !important; /* Remove outline */
+        outline: none !important;
     }
     
     div[data-testid="stSelectbox"] > div {
@@ -669,7 +669,7 @@ with right:
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
     
     /* Remove black from dropdown arrow */
@@ -687,9 +687,9 @@ with right:
         stroke: #888888 !important;
     }
     
-    /* MOVE MODEL SELECTION DROPDOWN DOWN */
+    /* MOVE MODEL SELECTION DROPDOWN UP - REMOVE EXTRA MARGIN */
     div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 2px !important;
+        margin-top: 0px !important; /* CHANGED: 2px to 0px */
     }
     
     div[data-testid="stSelectbox"] label p { 
@@ -697,8 +697,8 @@ with right:
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
-        position: absolute !important; /* CHANGED: Make label absolute */
-        top: -25px !important; /* CHANGED: Position above */
+        position: absolute !important;
+        top: -25px !important; /* Position label above */
         left: 0 !important;
         white-space: nowrap !important;
     }
@@ -708,7 +708,7 @@ with right:
     [data-baseweb="popover"] *, 
     [data-baseweb="menu"] * { 
         color: #888888 !important;
-        background-color: #D3D3D3 !important; /* Light grey */
+        background-color: #D3D3D3 !important;
         font-size: {FS_SELECT}px !important; 
         border: none !important;
         outline: none !important;
@@ -721,20 +721,20 @@ with right:
         overflow: hidden !important;
         border: none !important;
         box-shadow: none !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
     
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
         border: noe !important;
         border-radius: 8px !important;
-        background-color: #D3D3D3 !important; /* Keep light grey */
+        background-color: #D3D3D3 !important;
     }
     
     div[role="option"] { 
         color: #888888 !important;
         font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important; /* Light grey */
+        background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
         border: none !important;
         border-bottom: none !important;
@@ -752,12 +752,12 @@ with right:
     
     /* Make dropdown hover effect grey */
     div[role="option"]:hover {
-        background-color: #B8B8B8 !important; /* Darker grey hover */
+        background-color: #B8B8B8 !important;
         color: #888888 !important;
         border: none !important;
     }
     
-    /* Make buttons smaller in width */
+    /* Make buttons smaller in width - REMOVE MARGIN-TOP */
     div.stButton > button { 
         height: 50px !important; 
         width: 90% !important;
@@ -767,7 +767,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 25px !important; /* CHANGED: Added margin to align with dropdown */
+        margin-top: 0px !important; /* CHANGED: Remove margin-top */
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -792,14 +792,15 @@ with right:
         width: 100% !important;
     }
     
-    /* CHANGED: Position selectbox container relative for absolute label positioning */
+    /* POSITION SELECTBOX CONTAINER - MOVE UP */
     div[data-testid="stSelectbox"] {
         position: relative !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        height: 75px !important; /* CHANGED: Increased height for label space */
-        justify-content: flex-end !important;
+        height: 50px !important; /* CHANGED: Reduced height */
+        justify-content: flex-start !important; /* CHANGED: flex-end to flex-start */
+        margin-top: 0px !important; /* Ensure no margin */
     }
     
     div[data-testid="stSelectbox"] label {
@@ -810,15 +811,23 @@ with right:
     div[data-testid="stSelectbox"] > div {
         flex: 1 !important;
         width: 100% !important;
+        margin-top: 0px !important; /* Remove any margin */
     }
     
-    /* NEW: Container for model selection with proper spacing */
+    /* CONTAINER FOR MODEL SELECTION - MOVED UP */
     .model-selection-container {
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        height: 75px !important;
-        justify-content: flex-end !important;
+        height: 50px !important; /* CHANGED: Reduced height */
+        justify-content: flex-start !important; /* CHANGED: Move content up */
+        margin-top: 0px !important;
+    }
+    
+    /* FIX: Ensure all columns align properly */
+    [data-testid="column"] {
+        align-items: center !important;
+        justify-content: center !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -830,7 +839,7 @@ with right:
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
-        # CHANGED: Wrap in container for proper label positioning
+        # Wrap in container for proper positioning - MOVED UP
         st.markdown('<div class="model-selection-container">', unsafe_allow_html=True)
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
@@ -1128,6 +1137,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
