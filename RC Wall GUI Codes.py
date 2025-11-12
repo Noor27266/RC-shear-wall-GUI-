@@ -1036,7 +1036,7 @@ with right:
     <style>
     .prediction-download-container {{
         position: relative !important;
-        top: -300px !important;  /* FORCE MOVE UP */
+        top: -500px !important;  /* FORCE MOVE UP */
         display: flex !important;
         align-items: center !important;
         gap: 10px !important;
@@ -1416,6 +1416,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
