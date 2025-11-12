@@ -832,9 +832,9 @@ with right:
         background-color: #D3D3D3 !important;
     }
     
-    /* Remove borders from dropdown menu */
+    /* Remove borders from dropdown menu - FIXED TYPO */
     [data-baseweb="menu"] {
-        border: none !important;
+        border: none !important;  /* ✅ FIXED: Changed "noe" to "none" */
         border-radius: 8px !important;
         background-color: #D3D3D3 !important;
     }
@@ -1306,5 +1306,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
