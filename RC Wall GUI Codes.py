@@ -281,7 +281,7 @@ except Exception:
         pass
 
 # Defaults (used when sidebar tuning is hidden)
-right_offset = 20
+right_offset = 50
 HEADER_X   = 0
 TITLE_LEFT = 35
 TITLE_TOP  = 60
@@ -1091,6 +1091,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
