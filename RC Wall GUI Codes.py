@@ -1032,7 +1032,7 @@ with right:
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
     # MOVE UP USING NEGATIVE MARGIN ON THE CONTAINER
-    st.markdown("<div style='margin-top: -350px;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: -500px;'>", unsafe_allow_html=True)
     
     # SIMPLE ONE LINE WITH COLUMNS
     pred_col, dl_col = st.columns([2, 1.5])
@@ -1386,6 +1386,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
