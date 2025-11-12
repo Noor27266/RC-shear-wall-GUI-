@@ -1039,7 +1039,7 @@ with right:
         align-items: center !important;
         gap: 10px !important;
         width: 100% !important;
-        margin-top: -50px !important;  /* MOVED UP MORE */
+        margin-top: -80px !important;  /* INCREASED TO -80px */
         margin-bottom: 5px !important;
     }}
     .prediction-with-color {{
@@ -1047,7 +1047,7 @@ with right:
         font-weight: 700 !important;
         font-size: {FS_BADGE}px !important;
         background: #f1f3f4 !important;
-        padding: 10px 12px !important;  /* SMALLER PADDING */
+        padding: 10px 12px !important;
         border-radius: 6px !important;
         text-align: center !important;
         margin: 0 !important;
@@ -1056,14 +1056,14 @@ with right:
         align-items: center !important;
         justify-content: center !important;
         flex: 1 !important;
-        min-width: 200px !important;  /* SMALLER WIDTH */
+        min-width: 200px !important;
     }}
     .download-button-fixed {{
         height: 45px !important;
         display: flex !important;
         align-items: center !important;
         flex: 1 !important;
-        min-width: 150px !important;  /* BIGGER WIDTH */
+        min-width: 150px !important;
     }}
     .download-button-fixed .stDownloadButton button {{
         height: 45px !important;
@@ -1075,7 +1075,7 @@ with right:
     
     st.markdown('<div class="one-line-row">', unsafe_allow_html=True)
     
-    pred_col, dl_col = st.columns([2, 1.5])  # ADJUSTED RATIO
+    pred_col, dl_col = st.columns([2, 1.5])
     
     with pred_col:
         pred_banner = st.empty()
@@ -1408,6 +1408,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
