@@ -1032,7 +1032,7 @@ with right:
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
     # USE MULTIPLE EMPTY SPACES TO PUSH CONTENT UP
-    for _ in range(-20):  # ADD MORE EMPTY LINES TO PUSH UP
+    for _ in range(5):  # ADD MORE EMPTY LINES TO PUSH UP
         st.markdown("<br>", unsafe_allow_html=True)
     
     # SIMPLE ONE LINE WITH COLUMNS
@@ -1385,6 +1385,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
