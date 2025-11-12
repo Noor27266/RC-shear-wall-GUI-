@@ -1031,16 +1031,18 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # ONE LINE LAYOUT - PERFECTLY ALIGNED
+    # ONE LINE LAYOUT - MOVED UP
     st.markdown(f"""
     <style>
-    .one-line-row {{
+    .prediction-download-container {{
+        position: relative !important;
+        top: -300px !important;  /* FORCE MOVE UP */
         display: flex !important;
         align-items: center !important;
         gap: 10px !important;
         width: 100% !important;
-        margin-top: -300px !important;  /* INCREASED TO -80px */
         margin-bottom: 5px !important;
+        z-index: 1000 !important;
     }}
     .prediction-with-color {{
         color: #2e86ab !important;
@@ -1070,25 +1072,31 @@ with right:
         margin: 0 !important;
         width: 100% !important;
     }}
+    
+    /* OVERRIDE STREAMLIT COLUMN MARGINS */
+    [data-testid="column"] {{
+        margin-top: 0px !important;
+        padding-top: 0px !important;
+    }}
     </style>
+    
+    <div class="prediction-download-container">
+        <div id="prediction-slot"></div>
+        <div id="download-slot"></div>
+    </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<div class="one-line-row">', unsafe_allow_html=True)
+    # Create containers for the content
+    col1, col2 = st.columns([2, 1.5])
     
-    pred_col, dl_col = st.columns([2, 1.5])
-    
-    with pred_col:
+    with col1:
         pred_banner = st.empty()
         
-    with dl_col:
+    with col2:
         dl_slot = st.empty()
-        st.markdown('<div class="download-button-fixed">', unsafe_allow_html=True)
         if not st.session_state.results_df.empty:
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
     chart_slot = st.empty()
 
@@ -1408,6 +1416,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
