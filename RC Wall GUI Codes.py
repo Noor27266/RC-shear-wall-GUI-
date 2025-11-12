@@ -313,12 +313,12 @@ except Exception:
     _b64 = ""
 
 # Logo positioning variables - EASY TO MOVE LEFT/RIGHT
-LOGO_SIZE = 40   # Size of the logo
+LOGO_SIZE = 50   # Size of the logo
 LOGO_TOP = 25    # Distance from top of page  
 
 # EASY CONTROL: Change this value to move logo left/right
 # Higher number = more to the LEFT, Lower number = more to the RIGHT
-LOGO_POSITION = 200 # Distance from right edge (10 = far right, 200 = more left)
+LOGO_POSITION = 180 # Distance from right edge (10 = far right, 200 = more left)
 
 st.markdown(f"""
 <style>
@@ -1093,6 +1093,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
