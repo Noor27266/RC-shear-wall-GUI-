@@ -138,27 +138,47 @@ section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 
-/* ADD THIS TO REMOVE HORIZONTAL SCROLL */
-section.main {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
+/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
+html, body, #root, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
 }
 
-div.stApp {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
+section.main {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
 }
 
 .block-container {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: 100% !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
 }
 
-/* Ensure all content fits within viewport */
+/* Remove horizontal scroll */
+section.main, div.stApp {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+/* Compact the layout */
 [data-testid="stHorizontalBlock"] {
-    max-width: 100% !important;
-    flex-wrap: nowrap !important;
+    margin-top: -10px !important;
+    margin-bottom: -10px !important;
+}
+
+/* Reduce spacing in columns */
+[data-testid="column"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Make sure content fits */
+.stNumberInput, .stSelectbox {
+    margin-bottom: 5px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1423,6 +1443,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
