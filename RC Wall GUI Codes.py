@@ -1024,7 +1024,7 @@ with right:
     with clear_col:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
-            st.success("All predictions cleared.")
+            
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1386,6 +1386,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
