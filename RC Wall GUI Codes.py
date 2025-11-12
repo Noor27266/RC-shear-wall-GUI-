@@ -1268,6 +1268,8 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
+    # REDUCE SPACE ABOVE CHART TO MOVE IT UP
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)  # Reduced from larger value
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
@@ -1385,6 +1387,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
