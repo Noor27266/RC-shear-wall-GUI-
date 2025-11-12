@@ -312,8 +312,8 @@ try:
 except Exception:
     _b64 = ""
 
-# Logo positioning variables - MOVED TO RIGHT & BIGGER
-LOGO_SIZE = 40   # Increased from 30 to make it bigger
+# Logo positioning variables - MOVED TO RIGHT
+LOGO_SIZE = 40   # Size of the logo
 LOGO_TOP = 25    # Distance from top of page  
 LOGO_RIGHT = 10  # Distance from right edge
 
@@ -322,7 +322,7 @@ st.markdown(f"""
   .page-header-outer {{
     position: fixed !important;
     top: 0 !important;
-    right: 0 !important;  /* CHANGED: left to right */
+    right: 0 !important;  /* POSITIONED ON RIGHT SIDE */
     width: 100% !important;
     height: 0 !important;
     z-index: 9999 !important;
@@ -331,7 +331,7 @@ st.markdown(f"""
 
   .page-header {{
     display: flex !important;
-    justify-content: flex-end !important;  /* CHANGED: flex-start to flex-end */
+    justify-content: flex-end !important;  /* ALIGN TO RIGHT */
     align-items: flex-start !important;
     width: 100% !important;
     height: 0 !important;
@@ -343,7 +343,7 @@ st.markdown(f"""
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
-    right: {int(LOGO_RIGHT)}px !important;  /* CHANGED: left to right */
+    right: {int(LOGO_RIGHT)}px !important;  /* POSITIONED FROM RIGHT EDGE */
     z-index: 9999 !important;
     pointer-events: auto !important;
   }}
@@ -1091,6 +1091,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
