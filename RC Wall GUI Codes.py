@@ -1039,7 +1039,7 @@ with right:
         align-items: center !important;
         gap: 10px !important;
         width: 100% !important;
-        margin-top: -120px !important;  /* INCREASED TO -80px */
+        margin-top: -300px !important;  /* INCREASED TO -80px */
         margin-bottom: 5px !important;
     }}
     .prediction-with-color {{
@@ -1408,6 +1408,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
