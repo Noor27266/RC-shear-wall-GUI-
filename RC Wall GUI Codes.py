@@ -620,7 +620,7 @@ with right:
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
-        align-items: center !important;
+        align-items: flex-start !important; /* CHANGED: center to flex-start */
         gap: 8px !important;
         width: 100% !important;
         margin-top: 0px !important; /* MOVED DOWN */
@@ -697,6 +697,10 @@ with right:
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
+        position: absolute !important; /* CHANGED: Make label absolute */
+        top: -25px !important; /* CHANGED: Position above */
+        left: 0 !important;
+        white-space: nowrap !important;
     }
     
     /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
@@ -763,7 +767,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 0px !important; /* CHANGED: 10px to 0px */
+        margin-top: 25px !important; /* CHANGED: Added margin to align with dropdown */
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -788,11 +792,14 @@ with right:
         width: 100% !important;
     }
     
-    /* NEW: Align selectbox label and dropdown in same line */
+    /* CHANGED: Position selectbox container relative for absolute label positioning */
     div[data-testid="stSelectbox"] {
+        position: relative !important;
         display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        height: 75px !important; /* CHANGED: Increased height for label space */
+        justify-content: flex-end !important;
     }
     
     div[data-testid="stSelectbox"] label {
@@ -802,6 +809,16 @@ with right:
     
     div[data-testid="stSelectbox"] > div {
         flex: 1 !important;
+        width: 100% !important;
+    }
+    
+    /* NEW: Container for model selection with proper spacing */
+    .model-selection-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        height: 75px !important;
+        justify-content: flex-end !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -813,6 +830,8 @@ with right:
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
+        # CHANGED: Wrap in container for proper label positioning
+        st.markdown('<div class="model-selection-container">', unsafe_allow_html=True)
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
         ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -820,6 +839,7 @@ with right:
         _label_to_key = {"RF": "Random Forest"}
         model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
         model_choice = _label_to_key.get(model_choice_label, model_choice_label)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with calc_col:
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
@@ -835,7 +855,7 @@ with right:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-      # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
+    # SINGLE ROW FOR PREDICTION AND DOWNLOAD BUTTON
     pred_dl_row = st.columns([1, 1], gap="small")
     with pred_dl_row[0]:
         pred_banner = st.empty()
@@ -1108,6 +1128,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
