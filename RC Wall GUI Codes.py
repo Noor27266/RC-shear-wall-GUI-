@@ -313,9 +313,9 @@ except Exception:
     _b64 = ""
 
 # Logo positioning variables - MOVED TO LEFT & SMALLER
-LOGO_SIZE = 20   # Reduced from 30 to make it smaller
+LOGO_SIZE = 40   # Reduced from 30 to make it smaller
 LOGO_TOP = 25    # Distance from top of page  
-LOGO_LEFT = 30   # Distance from left edge
+LOGO_LEFT = 60   # Distance from left edge
 
 st.markdown(f"""
 <style>
@@ -1091,6 +1091,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
