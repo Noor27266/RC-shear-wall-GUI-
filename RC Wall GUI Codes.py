@@ -620,7 +620,7 @@ with right:
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
-        align-items: center !important;
+        align-items: flex-start !important; /* CHANGED: center to flex-start */
         gap: 8px !important;
         width: 100% !important;
         margin-top: 0px !important;
@@ -687,20 +687,22 @@ with right:
         stroke: #888888 !important;
     }
     
-    /* MOVE MODEL SELECTION DROPDOWN UP - REMOVE EXTRA MARGIN */
+    /* MOVE MODEL SELECTION DROPDOWN UP */
     div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 0px !important; /* CHANGED: 2px to 0px */
+        margin-top: 0px !important;
     }
     
+    /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
-        position: absolute !important;
-        top: -25px !important; /* Position label above */
+        position: relative !important; /* CHANGED: absolute to relative */
+        top: 0px !important; /* CHANGED: Remove negative positioning */
         left: 0 !important;
         white-space: nowrap !important;
+        line-height: 1 !important;
     }
     
     /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
@@ -757,7 +759,7 @@ with right:
         border: none !important;
     }
     
-    /* Make buttons smaller in width - REMOVE MARGIN-TOP */
+    /* Make buttons smaller in width */
     div.stButton > button { 
         height: 50px !important; 
         width: 90% !important;
@@ -767,7 +769,7 @@ with right:
         font-size: {FS_BUTTON}px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
-        margin-top: 0px !important; /* CHANGED: Remove margin-top */
+        margin-top: 0px !important;
         border-radius: 8px !important;
         border: none !important;
         font-weight: 700 !important;
@@ -792,42 +794,39 @@ with right:
         width: 100% !important;
     }
     
-    /* POSITION SELECTBOX CONTAINER - MOVE UP */
+    /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
     div[data-testid="stSelectbox"] {
         position: relative !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        height: 50px !important; /* CHANGED: Reduced height */
-        justify-content: flex-start !important; /* CHANGED: flex-end to flex-start */
-        margin-top: 0px !important; /* Ensure no margin */
+        margin-top: -10px !important; /* CHANGED: Move entire selectbox UP */
+        padding-top: 0px !important;
     }
     
     div[data-testid="stSelectbox"] label {
-        margin-bottom: 0 !important;
+        margin-bottom: 5px !important;
         white-space: nowrap !important;
+        display: block !important;
     }
     
     div[data-testid="stSelectbox"] > div {
-        flex: 1 !important;
-        width: 100% !important;
-        margin-top: 0px !important; /* Remove any margin */
-    }
-    
-    /* CONTAINER FOR MODEL SELECTION - MOVED UP */
-    .model-selection-container {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        height: 50px !important; /* CHANGED: Reduced height */
-        justify-content: flex-start !important; /* CHANGED: Move content up */
         margin-top: 0px !important;
     }
     
-    /* FIX: Ensure all columns align properly */
+    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
+    .model-selection-container {
+        margin-top: -15px !important; /* CHANGED: Move container UP */
+        padding-top: 0px !important;
+    }
+    
+    /* FIX: Ensure columns align at the top */
     [data-testid="column"] {
-        align-items: center !important;
-        justify-content: center !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Specifically target model column to move it up */
+    div[data-testid="column"]:first-child {
+        margin-top: -10px !important;
+        padding-top: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -839,7 +838,7 @@ with right:
     model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
 
     with model_col:
-        # Wrap in container for proper positioning - MOVED UP
+        # FIX: Use negative margin to move everything UP
         st.markdown('<div class="model-selection-container">', unsafe_allow_html=True)
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
@@ -1137,6 +1136,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
