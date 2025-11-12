@@ -603,10 +603,14 @@ CHART_W = 300
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
-    
-    # LOGO REMOVED FROM HERE - ONLY THIS LINE IS REMOVED
-    # The st.markdown with the logo image is removed
-
+    st.markdown(
+        f"""
+        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
+            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(""" 
     <style>
@@ -1086,6 +1090,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
