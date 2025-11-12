@@ -601,10 +601,7 @@ with left:
 HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
-/* MOVE ENTIRE RIGHT COLUMN UP */
-div[data-testid="column"]:nth-child(2) {
-    transform: translateY(-400px) !important;
-}
+
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
     st.markdown(
@@ -618,13 +615,18 @@ with right:
 
     st.markdown(""" 
     <style>
+    /* MOVE ENTIRE RIGHT COLUMN UP */
+    div[data-testid="column"]:nth-child(2) {
+        transform: translateY(-400px) !important;
+    }
+    
     /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: -500px !important; /* MOVED DOWN */
+        margin-top: -500px !important;
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -694,7 +696,7 @@ with right:
     }
     
     div[data-testid="stSelectbox"] label p { 
-        font-size: {FS_LABEL}px !important; 
+        font-size: """ + str(FS_LABEL) + """px !important; 
         color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
@@ -706,7 +708,7 @@ with right:
     [data-baseweb="menu"] * { 
         color: #888888 !important;
         background-color: #D3D3D3 !important; /* Light grey */
-        font-size: {FS_SELECT}px !important; 
+        font-size: """ + str(FS_SELECT) + """px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
@@ -730,7 +732,7 @@ with right:
     
     div[role="option"] { 
         color: #888888 !important;
-        font-size: {FS_SELECT}px !important; 
+        font-size: """ + str(FS_SELECT) + """px !important; 
         background-color: #D3D3D3 !important; /* Light grey */
         padding: 12px 16px !important;
         border: none !important;
@@ -761,7 +763,7 @@ with right:
         display:flex !important; 
         align-items:center !important; 
         justify-content:center !important;
-        font-size: {FS_BUTTON}px !important;
+        font-size: """ + str(FS_BUTTON) + """px !important;
         margin: 0 auto !important;
         white-space: nowrap !important;
         margin-top: 30px !important;
@@ -1092,6 +1094,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
