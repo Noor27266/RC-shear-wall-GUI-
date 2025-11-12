@@ -7,9 +7,16 @@ RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 # =============================================================================
 # 🚀 STEP 1: CORE IMPORTS & TENSORFLOW BACKEND SETUP
 # =============================================================================
+
+# =============================================================================
+# 🚀 SUB STEP 1.1: ENVIRONMENT CONFIGURATION
+# =============================================================================
 import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
 
+# =============================================================================
+# 🚀 SUB STEP 1.2: CORE LIBRARY IMPORTS
+# =============================================================================
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -17,12 +24,18 @@ import base64, json
 from pathlib import Path
 from glob import glob
 
+# =============================================================================
+# 🚀 SUB STEP 1.3: MACHINE LEARNING LIBRARY IMPORTS
+# =============================================================================
 # ML libs
 import xgboost as xgb
 import joblib
 import catboost
 import lightgbm as lgb
 
+# =============================================================================
+# 🚀 SUB STEP 1.4: KERAS COMPATIBILITY LOADER SETUP
+# =============================================================================
 # --- Keras compatibility loader (PS/MLP only) ---
 try:
     from tensorflow.keras.models import load_model as _tf_load_model
@@ -48,16 +61,26 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
+# =============================================================================
+# 🚀 SUB STEP 1.5: SESSION STATE INITIALIZATION
+# =============================================================================
 # --- session defaults (prevents AttributeError on first run) ---
 st.session_state.setdefault("results_df", pd.DataFrame())
 
 # =============================================================================
 # 🔧 STEP 2: UTILITY FUNCTIONS & HELPER TOOLS
 # =============================================================================
+
+# =============================================================================
+# 🔧 SUB STEP 2.1: BASIC UTILITY FUNCTIONS
+# =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
+# =============================================================================
+# 🔧 SUB STEP 2.2: PATH FINDING HELPER FUNCTION
+# =============================================================================
 # ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
@@ -96,8 +119,15 @@ def pfind(candidates):
 # =============================================================================
 # 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
 # =============================================================================
+
+# =============================================================================
+# 🎨 SUB STEP 3.1: PAGE CONFIGURATION SETUP
+# =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
+# =============================================================================
+# 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
+# =============================================================================
 # ====== ONLY FONTS/LOGO KNOBS BELOW (smaller defaults) ======
 SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller). Safe at 100% zoom.
 
@@ -114,6 +144,9 @@ FS_BADGE   = s(30)  # predicted badge
 FS_RECENT  = s(20)  # small chips
 INPUT_H    = max(32, int(FS_INPUT * 2.0))
 
+# =============================================================================
+# 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION
+# =============================================================================
 # header logo default height (can still be changed by URL param "logo")
 DEFAULT_LOGO_H = 50
 
@@ -125,6 +158,10 @@ LEFT_BG      = "#e0e4ec"
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
+# =============================================================================
+
+# =============================================================================
+# 🎨 SUB STEP 3.1.1: MAIN CSS STYLING DEFINITION
 # =============================================================================
 css(f"""
 <style>
@@ -250,6 +287,9 @@ css(f"""
 </style>
 """)
 
+# =============================================================================
+# 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
+# =============================================================================
 # Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
@@ -266,6 +306,10 @@ section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
+
+# =============================================================================
+# ⚙️ SUB STEP 5.1: FEATURE TOGGLE CONFIGURATION
+# =============================================================================
 def _is_on(v): return str(v).lower() in {"1","true","yes","on"}
 SHOW_TUNING = _is_on(os.getenv("SHOW_TUNING", "0"))
 try:
@@ -280,6 +324,9 @@ except Exception:
     except Exception:
         pass
 
+# =============================================================================
+# ⚙️ SUB STEP 5.2: DEFAULT VALUES SETUP
+# =============================================================================
 # Defaults (used when sidebar tuning is hidden)
 right_offset = 50
 HEADER_X   = 0
@@ -288,6 +335,9 @@ TITLE_TOP  = 60
 # Logo-related variables removed from here
 _show_recent = False
 
+# =============================================================================
+# ⚙️ SUB STEP 5.3: SIDEBAR CONTROLS SETUP
+# =============================================================================
 if SHOW_TUNING:
     with st.sidebar:
         right_offset = st.slider("Right panel vertical offset (px)", min_value=-200, max_value=1000, value=0, step=2)
@@ -298,13 +348,12 @@ if SHOW_TUNING:
         TITLE_TOP  = st.number_input("Title Y (px)",  min_value=-500,  max_value=500,  value=TITLE_TOP,  step=2)
         _show_recent = st.checkbox("Show Recent Predictions", value=False)
 
-
-
-
-
-
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
+# =============================================================================
+
+# =============================================================================
+# 🏷️ SUB STEP 6.1: LOGO IMAGE LOADING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -312,6 +361,9 @@ try:
 except Exception:
     _b64 = ""
 
+# =============================================================================
+# 🏷️ SUB STEP 6.2: LOGO POSITIONING CONFIGURATION
+# =============================================================================
 # Logo positioning variables - EASY TO MOVE LEFT/RIGHT
 LOGO_SIZE = 50   # Size of the logo
 LOGO_TOP = 25    # Distance from top of page  
@@ -320,6 +372,9 @@ LOGO_TOP = 25    # Distance from top of page
 # Higher number = more to the LEFT, Lower number = more to the RIGHT
 LOGO_POSITION = 130 # Distance from right edge (10 = far right, 200 = more left)
 
+# =============================================================================
+# 🏷️ SUB STEP 6.3: HEADER AND LOGO STYLING IMPLEMENTATION
+# =============================================================================
 st.markdown(f"""
 <style>
   .page-header-outer {{
@@ -369,21 +424,19 @@ HEADER_X = 0
 TITLE_LEFT = 35
 TITLE_TOP = 60
 
-
-
-
-
-
-
-
-
-
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
+# =============================================================================
+
+# =============================================================================
+# 🤖 SUB STEP 7.1: MODEL HEALTH TRACKING SETUP
 # =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
 
+# =============================================================================
+# 🤖 SUB STEP 7.2: SCALER SHIM CLASS DEFINITION
+# =============================================================================
 class _ScalerShim:
     def __init__(self, X_scaler, y_scaler):
         import numpy as _np
@@ -397,6 +450,9 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
+# =============================================================================
+# 🤖 SUB STEP 7.3: PS (ANN) MODEL LOADING
+# =============================================================================
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
@@ -408,6 +464,9 @@ try:
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
+# =============================================================================
+# 🤖 SUB STEP 7.4: MLP (ANN) MODEL LOADING
+# =============================================================================
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
@@ -419,6 +478,9 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
+# =============================================================================
+# 🤖 SUB STEP 7.5: RANDOM FOREST MODEL LOADING
+# =============================================================================
 rf_model = None
 try:
     rf_path = pfind([
@@ -439,6 +501,9 @@ try:
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
+# =============================================================================
+# 🤖 SUB STEP 7.6: XGBOOST MODEL LOADING
+# =============================================================================
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
@@ -447,6 +512,9 @@ try:
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
+# =============================================================================
+# 🤖 SUB STEP 7.7: CATBOOST MODEL LOADING
+# =============================================================================
 cat_model = None
 try:
     cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
@@ -455,6 +523,9 @@ try:
 except Exception as e:
     record_health("CatBoost", False, f"{e}")
 
+# =============================================================================
+# 🤖 SUB STEP 7.8: LIGHTGBM MODEL LOADING
+# =============================================================================
 def load_lightgbm_flex():
     try:
         p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
@@ -472,6 +543,9 @@ try:
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
+# =============================================================================
+# 🤖 SUB STEP 7.9: MODEL REGISTRY POPULATION
+# =============================================================================
 model_registry = {}
 for name, ok, *_ in health:
     if not ok: continue  # FIXED: Changed semicolon ; to colon :
@@ -482,6 +556,9 @@ for name, ok, *_ in health:
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
+# =============================================================================
+# 🤖 SUB STEP 7.10: MODEL HEALTH DISPLAY
+# =============================================================================
 if SHOW_TUNING:
     with st.sidebar:
         st.header("Model Health")
@@ -494,9 +571,12 @@ if SHOW_TUNING:
 if "results_df" not in st.session_state:
     st.session_state.results_df = pd.DataFrame()
 
-
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
+# =============================================================================
+
+# =============================================================================
+# 📊 SUB STEP 8.1: PARAMETER RANGES DEFINITION
 # =============================================================================
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
@@ -508,6 +588,9 @@ R = {
 THETA_MAX = R["theta"][1]
 U = lambda s: rf"\;(\mathrm{{{s}}})"
 
+# =============================================================================
+# 📊 SUB STEP 8.2: GEOMETRY PARAMETERS DEFINITION
+# =============================================================================
 GEOM = [
     (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
     (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
@@ -518,6 +601,9 @@ GEOM = [
     (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
 ]
 
+# =============================================================================
+# 📊 SUB STEP 8.3: MATERIAL PARAMETERS DEFINITION
+# =============================================================================
 MATS = [
     (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
@@ -526,6 +612,9 @@ MATS = [
     (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
 
+# =============================================================================
+# 📊 SUB STEP 8.4: REINFORCEMENT PARAMETERS DEFINITION
+# =============================================================================
 REINF = [
     (r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio"),
     (r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio"),
@@ -536,6 +625,9 @@ REINF = [
     (r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio"),
 ]
 
+# =============================================================================
+# 📊 SUB STEP 8.5: NUMBER INPUT HELPER FUNCTION
+# =============================================================================
 def num(label, key, default, step, fmt, help_):
     return st.number_input(
         label, value=dv(R, key, default), step=step,
@@ -544,8 +636,9 @@ def num(label, key, default, step, fmt, help_):
     )
 
 # =============================================================================
-# 🚫 ADD CSS TO HIDE -/+ BUTTONS IN STEP 8
+# 📊 SUB STEP 8.6: NUMBER INPUT STYLING OVERRIDE
 # =============================================================================
+# 🚫 ADD CSS TO HIDE -/+ BUTTONS IN STEP 8
 css("""
 <style>
 /* HIDE THE -/+ BUTTONS IN NUMBER INPUTS */
@@ -555,8 +648,14 @@ div[data-testid="stNumberInput"] button {
 </style>
 """)
 
+# =============================================================================
+# 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
+# =============================================================================
 left, right = st.columns([1.5, 1], gap="large")
 
+# =============================================================================
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# =============================================================================
 with left:
     # METHOD 1: Remove all empty space first
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
@@ -658,7 +757,7 @@ with right:
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
-        color: black !important;
+        color: #888888 !important;
     }
     
     /* Remove border from the input element inside */
@@ -702,7 +801,7 @@ with right:
     /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
     div[data-testid="stSelectbox"] label p { 
         font-size: {FS_LABEL}px !important; 
-        color: black !important;
+        color: #666666 !important;
         font-weight: bold !important; 
         margin-bottom: 5px !important;
         position: relative !important; /* CHANGED: absolute to relative */
@@ -890,14 +989,12 @@ with right:
     with col2:
         chart_slot = st.empty()
 
-
-
-
-
-
-
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
+# =============================================================================
+
+# =============================================================================
+# 🔮 SUB STEP 10.1: COLUMN MAPPING DEFINITION
 # =============================================================================
 _TRAIN_NAME_MAP = {
     'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
@@ -908,9 +1005,15 @@ _TRAIN_NAME_MAP = {
 }
 _TRAIN_COL_ORDER = ['lw','hw','tw','fc','fyt','fysh','fyl','fybl','pt','psh','pl','pbl','P/(Agfc)','b0','db','s/db','AR','M/Vlw','θ']
 
+# =============================================================================
+# 🔮 SUB STEP 10.2: DATA FRAME PREPROCESSING FUNCTION
+# =============================================================================
 def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
+# =============================================================================
+# 🔮 SUB STEP 10.3: PREDICTION ENGINE FUNCTION
+# =============================================================================
 def predict_di(choice, _unused_array, input_df):
     df_trees = _df_in_train_order(input_df)
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
@@ -945,11 +1048,17 @@ def predict_di(choice, _unused_array, input_df):
     prediction = max(0.035, min(prediction, 1.5))
     return prediction
 
+# =============================================================================
+# 🔮 SUB STEP 10.4: INPUT DATA FRAME CREATION FUNCTION
+# =============================================================================
 def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
     cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
     x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
     return pd.DataFrame(x, columns=cols)
 
+# =============================================================================
+# 🔮 SUB STEP 10.5: CURVE SWEEP GENERATION FUNCTION
+# =============================================================================
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
         return pd.DataFrame(columns=["θ","Predicted_DI"])
@@ -963,6 +1072,9 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
     return pd.DataFrame(rows)
 
+# =============================================================================
+# 🔮 SUB STEP 10.6: CHART RENDERING FUNCTION
+# =============================================================================
 def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
@@ -1016,6 +1128,10 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
 # =============================================================================
 # ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
+
+# =============================================================================
+# ⚡ SUB STEP 11.1: MODEL SELECTION CONFIGURATION
+# =============================================================================
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
 
@@ -1025,6 +1141,9 @@ def _pick_default_model():
             return m
     return None
 
+# =============================================================================
+# ⚡ SUB STEP 11.2: MODEL CHOICE INITIALIZATION
+# =============================================================================
 if 'model_choice' not in locals():
     _label = (st.session_state.get("model_select_compact")
               or st.session_state.get("model_select"))
@@ -1033,6 +1152,9 @@ if 'model_choice' not in locals():
     else:
         model_choice = _pick_default_model()
 
+# =============================================================================
+# ⚡ SUB STEP 11.3: PREDICTION EXECUTION LOGIC
+# =============================================================================
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
@@ -1049,20 +1171,33 @@ else:
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
+# =============================================================================
+# ⚡ SUB STEP 11.4: CURVE DATA GENERATION
+# =============================================================================
     _base_xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
     _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
 
+# =============================================================================
+# ⚡ SUB STEP 11.5: CHART SLOT HANDLING
+# =============================================================================
 try:
     _slot = chart_slot
 except NameError:
     _slot = st.empty()
 
+# =============================================================================
+# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
+# =============================================================================
 with right:
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
+# =============================================================================
+
+# =============================================================================
+# 🎨 SUB STEP 12.1: FORM BANNER STYLING OVERRIDE
 # =============================================================================
 st.markdown("""
 <style>
@@ -1081,6 +1216,10 @@ st.markdown("""
 # =============================================================================
 # 📋 STEP 13: RECENT PREDICTIONS DISPLAY (OPTIONAL)
 # =============================================================================
+
+# =============================================================================
+# 📋 SUB STEP 13.1: RECENT PREDICTIONS DISPLAY LOGIC
+# =============================================================================
 if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
     right_predictions = st.empty()
     with right_predictions:
@@ -1091,8 +1230,13 @@ if SHOW_TUNING and _show_recent and not st.session_state.results_df.empty:
                 f"Pred {i+1} ➔ DI = {row['Predicted_DI']:.4f}</div>",
                 unsafe_allow_html=True
             )
+
 # =============================================================================
 # 🎛️ STEP 14: DYNAMIC STYLE OVERRIDES VIA QUERY PARAMETERS
+# =============================================================================
+
+# =============================================================================
+# 🎛️ SUB STEP 14.1: QUERY PARAMETER EXTRACTION FUNCTION
 # =============================================================================
 def _get_qp():
     try:
@@ -1105,6 +1249,9 @@ def _get_qp():
 
 _qp = _get_qp()
 
+# =============================================================================
+# 🎛️ SUB STEP 14.2: INTEGER PARAMETER PARSING FUNCTION
+# =============================================================================
 def _get_int(name):
     try:
         v = _qp.get(name)
@@ -1113,6 +1260,9 @@ def _get_int(name):
     except Exception:
         return None
 
+# =============================================================================
+# 🎛️ SUB STEP 14.3: QUERY PARAMETER VALUE EXTRACTION
+# =============================================================================
 _FS_TITLE   = _get_int("fs_title")
 _FS_SECTION = _get_int("fs_section")
 _FS_LABEL   = _get_int("fs_label")
@@ -1124,6 +1274,9 @@ _FS_BADGE   = _get_int("fs_badge")
 _FS_RECENT  = _get_int("fs_recent")
 _LOGO_H     = _get_int("logo")
 
+# =============================================================================
+# 🎛️ SUB STEP 14.4: DYNAMIC STYLE RULE GENERATION
+# =============================================================================
 _rules = []
 if _FS_TITLE   is not None: _rules.append(f".page-header__title{{font-size:{_FS_TITLE}px !important;}}")
 if _FS_SECTION is not None: _rules.append(f".section-header{{font-size:{_FS_SECTION}px !important;}}")
@@ -1144,51 +1297,12 @@ if _FS_BADGE  is not None: _rules.append(f".prediction-result{{font-size:{_FS_BA
 if _FS_RECENT is not None: _rules.append(f".recent-box{{font-size:{_FS_RECENT}px !important;}}")
 if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}px !important;}}")
 
+# =============================================================================
+# 🎛️ SUB STEP 14.5: DYNAMIC STYLE APPLICATION
+# =============================================================================
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
+
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
