@@ -723,277 +723,48 @@ with right:
 # =============================================================================
     st.markdown(""" 
     <style>
-    /* Make all elements in the action row with custom widths */
-    #action-row { 
-        display: flex !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: 0px !important;
-    }
-    
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;
-        box-shadow: none !important; 
-        background: #D3D3D3 !important;
-        height: 50px !important;
-        border-radius: 8px !important;
-        padding: 0px 12px !important;
-        outline: none !important;
-    }
-    
-    div[data-testid="stSelectbox"] > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-    div[data-testid="stSelectbox"] > div > div { 
-        height: 50px !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        outline: none !important;
-        color: #888888 !important;
-    }
-    
-    /* Remove border from the input element inside */
-    div[data-testid="stSelectbox"] input {
-        border: none !important;
-        outline: none !important;
-        background: transparent !important;
-        color: #888888 !important;
-    }
-    
-    /* Remove ALL focus borders and black outlines - ENHANCED */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:active {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* Remove black from dropdown arrow */
-    div[data-testid="stSelectbox"] svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-    
-    /* Remove black from dropdown arrow on hover/focus */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-    
-    /* MOVE MODEL SELECTION DROPDOWN UP */
-    div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 0px !important;
-    }
-    
-    /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
-    div[data-testid="stSelectbox"] label p { 
-        font-size: {FS_LABEL}px !important; 
-        color: black !important;
-        font-weight: bold !important; 
-        margin-bottom: 5px !important;
-        position: relative !important;
-        top: 0px !important;
-        left: 0 !important;
-        white-space: nowrap !important;
-        line-height: 1 !important;
-    }
-    
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE - ENHANCED */
-    [data-baseweb="select"] *, 
-    [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] *,
-    [data-baseweb="select"] [role="listbox"],
-    [data-baseweb="select"] [role="combobox"] { 
-        color: black !important;
-        background-color: #D3D3D3 !important;
-        font-size: {FS_SELECT}px !important; 
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove border from popover - NO BLACK BORDERS - ENHANCED */
-    [data-baseweb="popover"],
-    [data-baseweb="popover"] > div {
-        border-radius: 8px !important;
-        overflow: hidden !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* Remove borders from dropdown menu - ENHANCED */
-    [data-baseweb="menu"],
-    [data-baseweb="menu"] ul,
-    [data-baseweb="menu"] li,
-    [data-baseweb="menu"] > div {
-        border: none !important;
-        border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
-        box-shadow: none !important;
-    }
-    
-    /* Target specific dropdown container elements */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="select"] > div > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    
-    div[role="option"] { 
-        color: black !important;
-        font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important;
-        padding: 12px 16px !important;
-        border: none !important;
-        border-bottom: none !important;
-    }
-    
-    /* Remove the last item border */
-    div[role="option"]:last-child {
-        border-bottom: none !important;
-    }
-    
-    /* Remove any separator lines between options */
-    div[role="option"]:not(:last-child) {
-        border-bottom: none !important;
-    }
-    
-    /* Make dropdown hover effect grey */
-    div[role="option"]:hover {
-        background-color: #B8B8B8 !important;
-        color:black !important;
-        border: none !important;
-    }
-    
-    /* Make buttons smaller in width */
-    div.stButton > button { 
-        height: 50px !important; 
-        width: 90% !important;
-        display:flex !important; 
-        align-items:center !important; 
-        justify-content:center !important;
-        font-size: {FS_BUTTON}px !important;
-        margin: 0 auto !important;
-        white-space: nowrap !important;
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        font-weight: 700 !important;
-        outline: none !important;
-    }
-    
-    button[key="calc_btn"] { background:#4CAF50 !important; }
-    button[key="reset_btn"] { background:#2196F3 !important; }
-    button[key="clear_btn"] { background:#f44336 !important; }
-    
-    /* Remove button focus borders */
-    div.stButton > button:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove the margin from the three-btns container */
-    #three-btns {
-        margin-top: 0 !important;
-        display: flex !important;
-        gap: 8px !important;
-        width: 100% !important;
-    }
-    
-    /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
-    div[data-testid="stSelectbox"] {
-        position: relative !important;
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-    }
-    
-    div[data-testid="stSelectbox"] label {
-        margin-bottom: 5px !important;
-        white-space: nowrap !important;
-        display: block !important;
-    }
-    
-    div[data-testid="stSelectbox"] > div {
-        margin-top: 0px !important;
-    }
-    
-    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
-    .model-selection-container {
-        margin-top: -450px !important;
-        padding-top: 0px !important;
-    }
-    
-    /* FIX: Ensure columns align at the top */
-    [data-testid="column"] {
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-    }
-    
-    /* Specifically target model column to move it up */
-    div[data-testid="column"]:first-child {
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-    }
-    
-    /* ADDITIONAL: Target the specific border that's showing */
-    div[data-baseweb="select"] div[style*="border"] {
-        border: none !important;
-    }
-    
-    /* Target any element with border style */
-    [style*="border"] {
-        border: none !important;
-    }
-
-    /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
-    div[data-baseweb="popover"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-    }
-
-    div[data-baseweb="menu"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
-    }
-
-    div[role="listbox"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
-    }
-
-    /* Keep the dropdown positioned relative to the selectbox */
-    div[data-testid="stSelectbox"] [data-baseweb="popover"] {
-        width: 250px !important;
-        min-width: 250px !important;
-        max-width: 250px !important;
-    }
+    /* Your existing CSS styles here - keep them all */
+    /* ... all your existing CSS ... */
     </style>
     """, unsafe_allow_html=True)
 
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
+# 🎮 SUB STEP 9.3: PREDICTION AND DOWNLOAD SECTION - PUT THIS FIRST!
+# =============================================================================
+    # PREDICTION AND DOWNLOAD - MOVED TO TOP
+    pred_col, dl_col = st.columns([2, 1.5])
+    
+    with pred_col:
+        pred_banner = st.empty()
+        
+    with dl_col:
+        dl_slot = st.empty()
+        if not st.session_state.results_df.empty:
+            csv = st.session_state.results_df.to_csv(index=False)
+            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
+
+    # STYLING
+    st.markdown(f"""
+    <style>
+    .prediction-with-color {{
+        color: #2e86ab !important;
+        font-weight: 700 !important;
+        font-size: {FS_BADGE}px !important;
+        background: #f1f3f4 !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        margin: 0 !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+# =============================================================================
+# 🎮 SUB STEP 9.4: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
     # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
@@ -1026,46 +797,6 @@ with right:
             st.success("All predictions cleared.")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-    
-# =============================================================================
-# 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
-# =============================================================================
-    # USE MULTIPLE EMPTY SPACES TO PUSH CONTENT UP
-    for _ in range(-40):  # ADD MORE EMPTY LINES TO PUSH UP
-        st.markdown("<br>", unsafe_allow_html=True)
-    
-    # SIMPLE ONE LINE WITH COLUMNS
-    pred_col, dl_col = st.columns([2, 1.5])
-    
-    with pred_col:
-        pred_banner = st.empty()
-        
-    with dl_col:
-        dl_slot = st.empty()
-        if not st.session_state.results_df.empty:
-            csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
-
-    # STYLING
-    st.markdown(f"""
-    <style>
-    .prediction-with-color {{
-        color: #2e86ab !important;
-        font-weight: 700 !important;
-        font-size: {FS_BADGE}px !important;
-        background: #f1f3f4 !important;
-        padding: 10px 12px !important;
-        border-radius: 6px !important;
-        text-align: center !important;
-        margin: 0 !important;
-        height: 45px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
 
     chart_slot = st.empty()
 
@@ -1385,6 +1116,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
