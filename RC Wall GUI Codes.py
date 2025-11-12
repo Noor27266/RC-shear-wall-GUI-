@@ -623,7 +623,7 @@ with right:
         align-items: center !important;
         gap: 8px !important;
         width: 100% !important;
-        margin-top: 10px !important; /* MOVED DOWN */
+        margin-top: 0px !important; /* MOVED DOWN */
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
@@ -1093,6 +1093,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
