@@ -312,17 +312,17 @@ try:
 except Exception:
     _b64 = ""
 
-# Logo positioning variables - MOVED TO LEFT & SMALLER
-LOGO_SIZE = 40   # Reduced from 30 to make it smaller
+# Logo positioning variables - MOVED TO RIGHT & BIGGER
+LOGO_SIZE = 40   # Increased from 30 to make it bigger
 LOGO_TOP = 25    # Distance from top of page  
-LOGO_LEFT = 60   # Distance from left edge
+LOGO_RIGHT = 60  # Distance from right edge
 
 st.markdown(f"""
 <style>
   .page-header-outer {{
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;  /* CHANGED: right to left */
+    right: 0 !important;  /* CHANGED: left to right */
     width: 100% !important;
     height: 0 !important;
     z-index: 9999 !important;
@@ -331,7 +331,7 @@ st.markdown(f"""
 
   .page-header {{
     display: flex !important;
-    justify-content: flex-start !important;  /* CHANGED: flex-end to flex-start */
+    justify-content: flex-end !important;  /* CHANGED: flex-start to flex-end */
     align-items: flex-start !important;
     width: 100% !important;
     height: 0 !important;
@@ -343,7 +343,7 @@ st.markdown(f"""
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
-    left: {int(LOGO_LEFT)}px !important;  /* CHANGED: right to left */
+    right: {int(LOGO_RIGHT)}px !important;  /* CHANGED: left to right */
     z-index: 9999 !important;
     pointer-events: auto !important;
   }}
@@ -598,7 +598,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 150, -10, 300
+HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 300
 
@@ -1091,6 +1091,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
