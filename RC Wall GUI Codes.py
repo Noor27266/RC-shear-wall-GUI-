@@ -963,7 +963,7 @@ with right:
 
     /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
     div[data-baseweb="popover"] {
-        width: 200px !important;
+        width: 250px !important;
         min-width: 200px !important;
         max-width: 200px !important;
         position: absolute !important;
@@ -985,7 +985,7 @@ with right:
 
     /* Keep the dropdown positioned relative to the selectbox */
     div[data-testid="stSelectbox"] [data-baseweb="popover"] {
-        width: 250px !important;
+        width: 200px !important;
         min-width: 200px !important;
         max-width: 200px !important;
     }
@@ -1370,6 +1370,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
