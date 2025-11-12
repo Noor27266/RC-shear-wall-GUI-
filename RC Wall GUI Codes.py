@@ -723,8 +723,11 @@ with right:
 # =============================================================================
     st.markdown("""
     <style>
-    /* --- Kill the black frame coming from BaseWeb popover styles --- */
-    /* Make popovers (that host the Select menu) transparent and borderless */
+    /* --------------------------------------------------------------
+       ✅ Match dropdown width to select box (same grey, black labels)
+       -------------------------------------------------------------- */
+
+    /* Popover and menu (the dropdown container) */
     [data-baseweb="popover"],
     [data-baseweb="popover"] > div {
         background: transparent !important;
@@ -732,23 +735,37 @@ with right:
         box-shadow: none !important;
         outline: none !important;
         padding: 0 !important;
+        width: auto !important;
     }
 
-    /* The dropdown panel itself */
-    [data-baseweb="menu"],
-    div[role="listbox"] {
+    [data-baseweb="menu"] {
         background: #D3D3D3 !important;
-        border: none !important;        /* remove any visible border */
-        box-shadow: none !important;     /* remove drop shadows that look like borders */
+        border: none !important;
+        box-shadow: none !important;
         outline: none !important;
         border-radius: 8px !important;
-        /* make menu at least as wide as its popover (safe, non-invasive) */
+        width: 100% !important;      /* ✅ same width as select trigger */
         min-width: 100% !important;
+        max-width: 100% !important;
     }
 
-    /* --- Your existing right-panel UI rules (unchanged except for border removal above) --- */
+    div[role="option"] {
+        background: #D3D3D3 !important;
+        color: black !important;
+        font-size: {FS_SELECT}px !important;
+        border: none !important;
+        padding: 12px 16px !important;
+    }
+    div[role="option"]:hover {
+        background: #B8B8B8 !important;
+        color: black !important;
+        border: none !important;
+    }
 
-    /* Action row layout */
+    /* -------------------------------------------------------------- */
+    /* Existing styles below (unchanged except label color confirmation) */
+    /* -------------------------------------------------------------- */
+
     #action-row {
         display: flex !important;
         align-items: flex-start !important;
@@ -757,7 +774,6 @@ with right:
         margin-top: 0px !important;
     }
 
-    /* Select trigger box */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
         box-shadow: none !important;
@@ -772,6 +788,7 @@ with right:
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
+        width: 100% !important;   /* ✅ makes the trigger full width */
     }
 
     div[data-testid="stSelectbox"] > div > div {
@@ -785,7 +802,6 @@ with right:
         color: black !important;
     }
 
-    /* Input inside trigger */
     div[data-testid="stSelectbox"] input {
         border: none !important;
         outline: none !important;
@@ -793,7 +809,6 @@ with right:
         color: black !important;
     }
 
-    /* No focus/hover borders */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
@@ -804,17 +819,15 @@ with right:
         background-color: #D3D3D3 !important;
     }
 
-    /* Arrow icon tone */
     div[data-testid="stSelectbox"] svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
 
-    /* Label appearance */
     div[data-testid="stSelectbox"] label p {
         font-size: {FS_LABEL}px !important;
-        color: black !important;
+        color: black !important;     /* ✅ ensure black label */
         font-weight: bold !important;
         margin-bottom: 5px !important;
         position: relative !important;
@@ -824,56 +837,29 @@ with right:
         line-height: 1 !important;
     }
 
-    /* Menu & options */
-    [data-baseweb="menu"],
-    [data-baseweb="menu"] ul,
-    [data-baseweb="menu"] li,
-    [data-baseweb="menu"] > div {
-        border: none !important;
-        border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
-        box-shadow: none !important;
-    }
-
-    div[role="option"] {
-        color: black !important;
-        font-size: {FS_SELECT}px !important;
-        background-color: #D3D3D3 !important;
-        padding: 12px 16px !important;
-        border: none !important;
-    }
-    div[role="option"]:hover {
-        background-color: #B8B8B8 !important;
-        color: black !important;
-        border: none !important;
-    }
-
-    /* Positioning helpers you already use */
-    div[data-testid="stSelectbox"] > div:first-child { margin-top: 0 !important; }
     div[data-testid="stSelectbox"] {
         position: relative !important;
         margin-top: -45px !important;
-        padding-top: 0 !important;
+        padding-top: 0px !important;
     }
-    div[data-testid="stSelectbox"] label {
-        margin-bottom: 5px !important;
-        white-space: nowrap !important;
-        display: block !important;
-    }
+
     .model-selection-container {
         margin-top: -450px !important;
-        padding-top: 0 !important;
+        padding-top: 0px !important;
     }
+
     [data-testid="column"] {
         align-items: flex-start !important;
         justify-content: flex-start !important;
     }
+
     div[data-testid="column"]:first-child {
         margin-top: -45px !important;
-        padding-top: 0 !important;
+        padding-top: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
@@ -1244,6 +1230,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
