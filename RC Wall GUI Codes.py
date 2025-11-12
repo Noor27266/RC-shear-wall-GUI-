@@ -1268,20 +1268,13 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # MOVE ONLY THE CHART UP - ADD NEGATIVE MARGIN TO THE CHART CONTAINER
-    st.markdown("""
-    <style>
-    .chart-container-up {
-        margin-top: -30px !important;  /* Adjust this value to move up/down */
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
     with _slot:
-        # Wrap the chart in a container with negative margin
-        st.markdown('<div class="chart-container-up">', unsafe_allow_html=True)
+        # Use a container with relative positioning to move ONLY the chart up
+        st.markdown("""
+        <div style='position: relative; top: -20px;'>  /* Adjust -20px to move up/down */
+        """, unsafe_allow_html=True)
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1397,6 +1390,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
