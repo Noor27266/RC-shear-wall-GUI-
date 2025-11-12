@@ -312,17 +312,17 @@ try:
 except Exception:
     _b64 = ""
 
-# Logo positioning variables - MOVED TO LEFT & SMALLER
-LOGO_SIZE = 40   # Reduced from 30 to make it smaller
-LOGO_TOP = 25    # Distance from top of page  
-LOGO_LEFT = 30   # Distance from left edge
+# Logo positioning variables
+LOGO_SIZE = 40
+LOGO_TOP = 25   # Distance from top of page (increase to move down)
+LOGO_RIGHT = 10 # Distance from right edge (decrease to move left)
 
 st.markdown(f"""
 <style>
   .page-header-outer {{
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;
+    right: 0 !important;
     width: 100% !important;
     height: 0 !important;
     z-index: 9999 !important;
@@ -331,7 +331,7 @@ st.markdown(f"""
 
   .page-header {{
     display: flex !important;
-    justify-content: flex-start !important;
+    justify-content: flex-end !important;
     align-items: flex-start !important;
     width: 100% !important;
     height: 0 !important;
@@ -343,7 +343,7 @@ st.markdown(f"""
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
-    left: {int(LOGO_LEFT)}px !important;
+    right: {int(LOGO_RIGHT)}px !important;
     z-index: 9999 !important;
     pointer-events: auto !important;
   }}
@@ -604,6 +604,14 @@ CHART_W = 300
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
+            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(""" 
     <style>
@@ -1083,54 +1091,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
