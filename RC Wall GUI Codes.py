@@ -1031,7 +1031,7 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # ONE LINE LAYOUT - PREDICTION AND DOWNLOAD
+    # ONE LINE LAYOUT - PERFECTLY ALIGNED
     st.markdown(f"""
     <style>
     .one-line-row {{
@@ -1039,7 +1039,7 @@ with right:
         align-items: center !important;
         gap: 10px !important;
         width: 100% !important;
-        margin-top: -40px !important;  /* MOVED UP MORE */
+        margin-top: -35px !important;
         margin-bottom: 5px !important;
     }}
     .prediction-with-color {{
@@ -1047,9 +1047,23 @@ with right:
         font-weight: 700 !important;
         font-size: {FS_BADGE}px !important;
         background: #f1f3f4 !important;
-        padding: 8px 12px !important;
+        padding: 10px 15px !important;
         border-radius: 6px !important;
         text-align: center !important;
+        margin: 0 !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+    }}
+    .download-button-fixed {{
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+    }}
+    .download-button-fixed .stDownloadButton button {{
+        height: 45px !important;
         margin: 0 !important;
     }}
     </style>
@@ -1057,16 +1071,18 @@ with right:
     
     st.markdown('<div class="one-line-row">', unsafe_allow_html=True)
     
-    pred_col, dl_col = st.columns([2, 1])
+    pred_col, dl_col = st.columns([3, 1])
     
     with pred_col:
         pred_banner = st.empty()
         
     with dl_col:
         dl_slot = st.empty()
+        st.markdown('<div class="download-button-fixed">', unsafe_allow_html=True)
         if not st.session_state.results_df.empty:
             csv = st.session_state.results_df.to_csv(index=False)
             dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1234,7 +1250,6 @@ if 'model_choice' not in locals():
         model_choice = _label_to_key.get(_label, _label)
     else:
         model_choice = _pick_default_model()
-
 # =============================================================================
 # ⚡ SUB STEP 11.3: PREDICTION EXECUTION LOGIC
 # =============================================================================
@@ -1389,6 +1404,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
