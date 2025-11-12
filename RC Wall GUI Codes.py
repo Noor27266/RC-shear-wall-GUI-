@@ -721,54 +721,79 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.2: STYLING AND CSS CONFIGURATION
 # =============================================================================
-    st.markdown(""" 
+    st.markdown("""
     <style>
-    /* Make all elements in the action row with custom widths */
-    #action-row { 
+    /* --- Kill the black frame coming from BaseWeb popover styles --- */
+    /* Make popovers (that host the Select menu) transparent and borderless */
+    [data-baseweb="popover"],
+    [data-baseweb="popover"] > div {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding: 0 !important;
+    }
+
+    /* The dropdown panel itself */
+    [data-baseweb="menu"],
+    div[role="listbox"] {
+        background: #D3D3D3 !important;
+        border: none !important;        /* remove any visible border */
+        box-shadow: none !important;     /* remove drop shadows that look like borders */
+        outline: none !important;
+        border-radius: 8px !important;
+        /* make menu at least as wide as its popover (safe, non-invasive) */
+        min-width: 100% !important;
+    }
+
+    /* --- Your existing right-panel UI rules (unchanged except for border removal above) --- */
+
+    /* Action row layout */
+    #action-row {
         display: flex !important;
         align-items: flex-start !important;
         gap: 8px !important;
         width: 100% !important;
         margin-top: 0px !important;
     }
-    
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS */
+
+    /* Select trigger box */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
         border: none !important;
-        box-shadow: none !important; 
+        box-shadow: none !important;
         background: #D3D3D3 !important;
         height: 50px !important;
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
     }
-    
+
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
     }
 
-    div[data-testid="stSelectbox"] > div > div { 
-        height: 50px !important; 
-        display: flex !important; 
-        align-items: center !important; 
+    div[data-testid="stSelectbox"] > div > div {
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
         margin-top: 0px !important;
         border-radius: 8px !important;
         border: none !important;
         outline: none !important;
         color: black !important;
     }
-    
-    /* Remove border from the input element inside */
+
+    /* Input inside trigger */
     div[data-testid="stSelectbox"] input {
         border: none !important;
         outline: none !important;
         background: transparent !important;
         color: black !important;
     }
-    
-    /* Remove ALL focus borders and black outlines */
+
+    /* No focus/hover borders */
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
@@ -778,65 +803,28 @@ with right:
         box-shadow: none !important;
         background-color: #D3D3D3 !important;
     }
-    
-    /* Remove black from dropdown arrow */
+
+    /* Arrow icon tone */
     div[data-testid="stSelectbox"] svg {
         fill: #888888 !important;
         color: #888888 !important;
         stroke: #888888 !important;
     }
-    
-    /* Remove black from dropdown arrow on hover/focus */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-    
-    /* MOVE MODEL SELECTION DROPDOWN UP */
-    div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 0px !important;
-    }
-    
-    /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
-    div[data-testid="stSelectbox"] label p { 
-        font-size: {FS_LABEL}px !important; 
+
+    /* Label appearance */
+    div[data-testid="stSelectbox"] label p {
+        font-size: {FS_LABEL}px !important;
         color: black !important;
-        font-weight: bold !important; 
+        font-weight: bold !important;
         margin-bottom: 5px !important;
         position: relative !important;
-        top: 0px !important;
+        top: 0 !important;
         left: 0 !important;
         white-space: nowrap !important;
         line-height: 1 !important;
     }
-    
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE */
-    [data-baseweb="select"] *, 
-    [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] *,
-    [data-baseweb="select"] [role="listbox"],
-    [data-baseweb="select"] [role="combobox"] { 
-        color: black !important;
-        background-color: #D3D3D3 !important;
-        font-size: {FS_SELECT}px !important; 
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove border from popover - NO BLACK BORDERS */
-    [data-baseweb="popover"],
-    [data-baseweb="popover"] > div {
-        border-radius: 8px !important;
-        overflow: hidden !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* Remove borders from dropdown menu */
+
+    /* Menu & options */
     [data-baseweb="menu"],
     [data-baseweb="menu"] ul,
     [data-baseweb="menu"] li,
@@ -846,154 +834,47 @@ with right:
         background-color: #D3D3D3 !important;
         box-shadow: none !important;
     }
-    
-    /* Target specific dropdown container elements */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="select"] > div > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    
-    div[role="option"] { 
+
+    div[role="option"] {
         color: black !important;
-        font-size: {FS_SELECT}px !important; 
+        font-size: {FS_SELECT}px !important;
         background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
         border: none !important;
-        border-bottom: none !important;
     }
-    
-    /* Remove the last item border */
-    div[role="option"]:last-child {
-        border-bottom: none !important;
-    }
-    
-    /* Remove any separator lines between options */
-    div[role="option"]:not(:last-child) {
-        border-bottom: none !important;
-    }
-    
-    /* Make dropdown hover effect grey */
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
-        color:black !important;
+        color: black !important;
         border: none !important;
     }
-    
-    /* Make buttons smaller in width */
-    div.stButton > button { 
-        height: 50px !important; 
-        width: 90% !important;
-        display:flex !important; 
-        align-items:center !important; 
-        justify-content:center !important;
-        font-size: {FS_BUTTON}px !important;
-        margin: 0 auto !important;
-        white-space: nowrap !important;
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        font-weight: 700 !important;
-        outline: none !important;
-    }
-    
-    button[key="calc_btn"] { background:#4CAF50 !important; }
-    button[key="reset_btn"] { background:#2196F3 !important; }
-    button[key="clear_btn"] { background:#f44336 !important; }
-    
-    /* Remove button focus borders */
-    div.stButton > button:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove the margin from the three-btns container */
-    #three-btns {
-        margin-top: 0 !important;
-        display: flex !important;
-        gap: 8px !important;
-        width: 100% !important;
-    }
-    
-    /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
+
+    /* Positioning helpers you already use */
+    div[data-testid="stSelectbox"] > div:first-child { margin-top: 0 !important; }
     div[data-testid="stSelectbox"] {
         position: relative !important;
         margin-top: -45px !important;
-        padding-top: 0px !important;
+        padding-top: 0 !important;
     }
-    
     div[data-testid="stSelectbox"] label {
         margin-bottom: 5px !important;
         white-space: nowrap !important;
         display: block !important;
     }
-    
-    div[data-testid="stSelectbox"] > div {
-        margin-top: 0px !important;
-    }
-    
-    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
         margin-top: -450px !important;
-        padding-top: 0px !important;
+        padding-top: 0 !important;
     }
-    
-    /* FIX: Ensure columns align at the top */
     [data-testid="column"] {
         align-items: flex-start !important;
         justify-content: flex-start !important;
     }
-    
-    /* Specifically target model column to move it up */
     div[data-testid="column"]:first-child {
         margin-top: -45px !important;
-        padding-top: 0px !important;
-    }
-    
-    /* ADDITIONAL: Target the specific border that's showing */
-    div[data-baseweb="select"] div[style*="border"] {
-        border: none !important;
-    }
-    
-    /* Target any element with border style */
-    [style*="border"] {
-        border: none !important;
-    }
-    
-    /* FIX DROPDOWN WIDTH - SPECIFIC SOLUTION */
-    /* Make the dropdown popup match the select box width */
-    [data-baseweb="popover"] {
-        min-width: unset !important;
-        width: fit-content !important;
-    }
-    
-    /* Force the dropdown to be the same width as the trigger element */
-    div[data-baseweb="select"] div[data-baseweb="popover"] {
-        width: var(--radix-select-trigger-width) !important;
-        min-width: unset !important;
-        max-width: unset !important;
-    }
-    
-    /* Make sure the dropdown menu inside matches */
-    [data-baseweb="popover"] [data-baseweb="menu"] {
-        width: 100% !important;
-        min-width: unset !important;
-    }
-    
-    /* Target the specific dropdown container */
-    div[role="listbox"] {
-        width: 100% !important;
-    }
-    
-    /* Ensure options don't wrap or expand */
-    div[role="option"] {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        padding-top: 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)
+
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
 # =============================================================================
@@ -1363,6 +1244,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
