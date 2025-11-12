@@ -834,7 +834,7 @@ with right:
     
     /* Remove borders from dropdown menu */
     [data-baseweb="menu"] {
-        border: noe !important;
+        border: none !important;
         border-radius: 8px !important;
         background-color: #D3D3D3 !important;
     }
@@ -1306,4 +1306,5 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
