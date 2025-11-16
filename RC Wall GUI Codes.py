@@ -857,327 +857,90 @@ with right:
     #action-row { 
         display: flex !important;
         align-items: flex-start !important;
-        gap: 2px !important;
+        gap: 0px !important;
         width: 100% !important;
         margin-top: 0px !important;
     }
     
-    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
+    /* FIX MODEL SELECTION BOX WIDTH */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        border: none !important;
-        box-shadow: none !important; 
-        background: #D3D3D3 !important;
-        height: 35px !important;
-        border-radius: 6px !important;
-        padding: 0px 8px !important;
-        outline: none !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
+        width: 150px !important;
+        max-width: 150px !important;
+        min-width: 150px !important;
     }
     
     div[data-testid="stSelectbox"] > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
+        width: 150px !important;
+        max-width: 150px !important;
+        min-width: 150px !important;
     }
 
     div[data-testid="stSelectbox"] > div > div { 
-        height: 35px !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        margin-top: 0px !important;
-        border-radius: 6px !important;
-        border: none !important;
-        outline: none !important;
-        color: #888888 !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
+        width: 150px !important;
+        max-width: 150px !important;
+        min-width: 150px !important;
     }
     
-    /* Remove border from the input element inside */
     div[data-testid="stSelectbox"] input {
-        border: none !important;
-        outline: none !important;
-        background: transparent !important;
-        color: #888888 !important;
-        width: 180px !important;
-        font-size: 14px !important;
-    }
-    
-    /* Remove ALL focus borders and black outlines - ENHANCED */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:active {
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }
-    
-    /* Remove black from dropdown arrow */
-    div[data-testid="stSelectbox"] svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-    
-    /* Remove black from dropdown arrow on hover/focus */
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }
-    
-    /* MOVE MODEL SELECTION DROPDOWN UP */
-    div[data-testid="stSelectbox"] > div:first-child {
-        margin-top: 0px !important;
-    }
-    
-    /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
-    div[data-testid="stSelectbox"] label p { 
-        font-size: 14px !important; 
-        color: black !important;
-        font-weight: bold !important; 
-        margin-bottom: 3px !important;
-        position: relative !important;
-        top: 0px !important;
-        left: 0 !important;
-        white-space: nowrap !important;
-        line-height: 1 !important;
-    }
-    
-    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE - ENHANCED */
-    [data-baseweb="select"] *, 
-    [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] *,
-    [data-baseweb="select"] [role="listbox"],
-    [data-baseweb="select"] [role="combobox"] { 
-        color: black !important;
-        background-color: #D3D3D3 !important;
-        font-size: 14px !important; 
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove border from popover - NO BLACK BORDERS - ENHANCED */
-    [data-baseweb="popover"],
-    [data-baseweb="popover"] > div {
-        border-radius: 6px !important;
-        overflow: hidden !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
-    }
-    
-    /* Remove borders from dropdown menu - ENHANCED */
-    [data-baseweb="menu"],
-    [data-baseweb="menu"] ul,
-    [data-baseweb="menu"] li,
-    [data-baseweb="menu"] > div {
-        border: none !important;
-        border-radius: 6px !important;
-        background-color: #D3D3D3 !important;
-        box-shadow: none !important;
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
-    }
-    
-    /* Target specific dropdown container elements */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="select"] > div > div {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    
-    div[role="option"] { 
-        color: black !important;
-        font-size: 14px !important; 
-        background-color: #D3D3D3 !important;
-        padding: 8px 10px !important;
-        border: none !important;
-        border-bottom: none !important;
-    }
-    
-    /* Remove the last item border */
-    div[role="option"]:last-child {
-        border-bottom: none !important;
-    }
-    
-    /* Remove any separator lines between options */
-    div[role="option"]:not(:last-child) {
-        border-bottom: none !important;
-    }
-    
-    /* Make dropdown hover effect grey */
-    div[role="option"]:hover {
-        background-color: #B8B8B8 !important;
-        color:black !important;
-        border: none !important;
-    }
-    
-    /* Make buttons smaller and closer */
-    div.stButton > button { 
-        height: 35px !important; 
-        width: 80px !important;
-        display:flex !important; 
-        align-items:center !important; 
-        justify-content:center !important;
-        font-size: 12px !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-        margin-top: 0px !important;
-        border-radius: 6px !important;
-        border: none !important;
-        font-weight: 600 !important;
-        outline: none !important;
-        padding: 0 5px !important;
-    }
-    
-    button[key="calc_btn"] { background:#4CAF50 !important; }
-    button[key="reset_btn"] { background:#2196F3 !important; }
-    button[key="clear_btn"] { background:#f44336 !important; }
-    
-    /* Remove button focus borders */
-    div.stButton > button:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove the margin from the three-btns container */
-    #three-btns {
-        margin-top: 0 !important;
-        display: flex !important;
-        gap: 2px !important;
-        width: auto !important;
-    }
-    
-    /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
-    div[data-testid="stSelectbox"] {
-        position: relative !important;
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
-    }
-    
-    div[data-testid="stSelectbox"] label {
-        margin-bottom: 3px !important;
-        white-space: nowrap !important;
-        display: block !important;
-    }
-    
-    div[data-testid="stSelectbox"] > div {
-        margin-top: 0px !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
-    }
-    
-    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
-    .model-selection-container {
-        margin-top: -450px !important;
-        padding-top: 0px !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
-    }
-    
-    /* FIX: Ensure columns align at the top */
-    [data-testid="column"] {
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-    }
-    
-    /* Specifically target model column to move it up */
-    div[data-testid="column"]:first-child {
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
-        flex: 0 0 200px !important;
-    }
-    
-    /* Target button columns to make them smaller */
-    div[data-testid="column"]:has(button) {
-        width: 80px !important;
-        max-width: 80px !important;
-        min-width: 80px !important;
-        flex: 0 0 80px !important;
-    }
-    
-    /* ADDITIONAL: Target the specific border that's showing */
-    div[data-baseweb="select"] div[style*="border"] {
-        border: none !important;
-    }
-    
-    /* Target any element with border style */
-    [style*="border"] {
-        border: none !important;
+        width: 130px !important;
     }
 
-    /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
+    /* FIX DROPDOWN WIDTH */
     div[data-baseweb="popover"] {
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
     }
 
     div[data-baseweb="menu"] {
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
     }
 
     div[role="listbox"] {
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
     }
 
-    /* Keep the dropdown positioned relative to the selectbox */
     div[data-testid="stSelectbox"] [data-baseweb="popover"] {
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
     }
     
-    /* FORCE MODEL SELECTION COLUMN TO BE SMALL */
-    div[data-testid="column"]:has(.model-selection-container) {
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
-        flex: 0 0 200px !important;
+    /* FIX BUTTON SPACING - MAKE THEM CLOSE */
+    #action-row {
+        gap: 0px !important;
     }
     
-    /* Make action row columns compact */
+    #three-btns {
+        gap: 0px !important;
+    }
+    
+    div.stButton > button { 
+        width: 70px !important;
+    }
+    
+    /* MAKE COLUMNS TIGHT */
     #action-row [data-testid="column"] {
-        padding: 0 1px !important;
+        padding: 0 !important;
         margin: 0 !important;
     }
     
-    /* Reduce gap between all columns in action row */
-    #action-row {
-        gap: 2px !important;
+    div[data-testid="column"]:first-child {
+        width: 150px !important;
+        max-width: 150px !important;
+        min-width: 150px !important;
+        flex: 0 0 150px !important;
     }
     
-    /* Force the columns to be right next to each other */
-    #action-row > [data-testid="column"] {
-        margin-right: -5px !important;
+    div[data-testid="column"]:has(button) {
+        width: 70px !important;
+        max-width: 70px !important;
+        min-width: 70px !important;
+        flex: 0 0 70px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1576,6 +1339,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
