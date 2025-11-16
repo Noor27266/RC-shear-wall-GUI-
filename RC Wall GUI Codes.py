@@ -871,18 +871,18 @@ with right:
         border-radius: 6px !important;
         padding: 0px 8px !important;
         outline: none !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
     }
     
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
     }
 
     div[data-testid="stSelectbox"] > div > div { 
@@ -894,9 +894,9 @@ with right:
         border: none !important;
         outline: none !important;
         color: #888888 !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
     }
     
     /* Remove border from the input element inside */
@@ -905,7 +905,8 @@ with right:
         outline: none !important;
         background: transparent !important;
         color: #888888 !important;
-        width: 140px !important;
+        width: 180px !important;
+        font-size: 14px !important;
     }
     
     /* Remove ALL focus borders and black outlines - ENHANCED */
@@ -960,7 +961,7 @@ with right:
     [data-baseweb="select"] [role="combobox"] { 
         color: black !important;
         background-color: #D3D3D3 !important;
-        font-size: 12px !important; 
+        font-size: 14px !important; 
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
@@ -974,9 +975,9 @@ with right:
         border: none !important;
         box-shadow: none !important;
         background-color: #D3D3D3 !important;
-        width: 160px !important;
-        min-width: 160px !important;
-        max-width: 160px !important;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
     
     /* Remove borders from dropdown menu - ENHANCED */
@@ -988,9 +989,9 @@ with right:
         border-radius: 6px !important;
         background-color: #D3D3D3 !important;
         box-shadow: none !important;
-        width: 160px !important;
-        min-width: 160px !important;
-        max-width: 160px !important;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
     
     /* Target specific dropdown container elements */
@@ -1003,7 +1004,7 @@ with right:
     
     div[role="option"] { 
         color: black !important;
-        font-size: 12px !important; 
+        font-size: 14px !important; 
         background-color: #D3D3D3 !important;
         padding: 8px 10px !important;
         border: none !important;
@@ -1030,7 +1031,7 @@ with right:
     /* Make buttons smaller and closer */
     div.stButton > button { 
         height: 35px !important; 
-        width: 70px !important;
+        width: 80px !important;
         display:flex !important; 
         align-items:center !important; 
         justify-content:center !important;
@@ -1068,9 +1069,9 @@ with right:
         position: relative !important;
         margin-top: -45px !important;
         padding-top: 0px !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
     }
     
     div[data-testid="stSelectbox"] label {
@@ -1081,18 +1082,18 @@ with right:
     
     div[data-testid="stSelectbox"] > div {
         margin-top: 0px !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
     }
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
         margin-top: -450px !important;
         padding-top: 0px !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
     }
     
     /* FIX: Ensure columns align at the top */
@@ -1105,18 +1106,18 @@ with right:
     div[data-testid="column"]:first-child {
         margin-top: -45px !important;
         padding-top: 0px !important;
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
-        flex: 0 0 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
+        flex: 0 0 200px !important;
     }
     
     /* Target button columns to make them smaller */
     div[data-testid="column"]:has(button) {
-        width: 70px !important;
-        max-width: 70px !important;
-        min-width: 70px !important;
-        flex: 0 0 70px !important;
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        flex: 0 0 80px !important;
     }
     
     /* ADDITIONAL: Target the specific border that's showing */
@@ -1131,36 +1132,36 @@ with right:
 
     /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
     div[data-baseweb="popover"] {
-        width: 160px !important;
-        min-width: 160px !important;
-        max-width: 160px !important;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
 
     div[data-baseweb="menu"] {
-        width: 160px !important;
-        min-width: 160px !important;
-        max-width: 160px !important;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
 
     div[role="listbox"] {
-        width: 160px !important;
-        min-width: 160px !important;
-        max-width: 160px !important;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
 
     /* Keep the dropdown positioned relative to the selectbox */
     div[data-testid="stSelectbox"] [data-baseweb="popover"] {
-        width: 160px !important;
-        min-width: 160px !important;
-        max-width: 160px !important;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
     
     /* FORCE MODEL SELECTION COLUMN TO BE SMALL */
     div[data-testid="column"]:has(.model-selection-container) {
-        width: 160px !important;
-        max-width: 160px !important;
-        min-width: 160px !important;
-        flex: 0 0 160px !important;
+        width: 200px !important;
+        max-width: 200px !important;
+        min-width: 200px !important;
+        flex: 0 0 200px !important;
     }
     
     /* Make action row columns compact */
@@ -1172,6 +1173,11 @@ with right:
     /* Reduce gap between all columns in action row */
     #action-row {
         gap: 2px !important;
+    }
+    
+    /* Force the columns to be right next to each other */
+    #action-row > [data-testid="column"] {
+        margin-right: -5px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1570,6 +1576,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
