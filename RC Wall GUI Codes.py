@@ -871,12 +871,16 @@ with right:
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
     
     div[data-testid="stSelectbox"] > div {
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
 
     div[data-testid="stSelectbox"] > div > div { 
@@ -888,6 +892,8 @@ with right:
         border: none !important;
         outline: none !important;
         color: #888888 !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
     
     /* Remove border from the input element inside */
@@ -1051,6 +1057,8 @@ with right:
         position: relative !important;
         margin-top: -45px !important;
         padding-top: 0px !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
     
     div[data-testid="stSelectbox"] label {
@@ -1061,12 +1069,16 @@ with right:
     
     div[data-testid="stSelectbox"] > div {
         margin-top: 0px !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
     
     /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
         margin-top: -450px !important;
         padding-top: 0px !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
     
     /* FIX: Ensure columns align at the top */
@@ -1079,6 +1091,8 @@ with right:
     div[data-testid="column"]:first-child {
         margin-top: -45px !important;
         padding-top: 0px !important;
+        width: 180px !important;           /* ADDED */
+        max-width: 180px !important;       /* ADDED */
     }
     
     /* ADDITIONAL: Target the specific border that's showing */
@@ -1093,31 +1107,36 @@ with right:
 
     /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
     div[data-baseweb="popover"] {
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
+        width: 180px !important;           /* CHANGED FROM 230px */
+        min-width: 180px !important;       /* CHANGED FROM 230px */
+        max-width: 180px !important;       /* CHANGED FROM 230px */
     }
 
     div[data-baseweb="menu"] {
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
+        width: 180px !important;           /* CHANGED FROM 230px */
+        min-width: 180px !important;       /* CHANGED FROM 230px */
+        max-width: 180px !important;       /* CHANGED FROM 230px */
     }
 
     div[role="listbox"] {
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
+        width: 180px !important;           /* CHANGED FROM 230px */
+        min-width: 180px !important;       /* CHANGED FROM 230px */
+        max-width: 180px !important;       /* CHANGED FROM 230px */
     }
 
     /* Keep the dropdown positioned relative to the selectbox */
     div[data-testid="stSelectbox"] [data-baseweb="popover"] {
+        width: 180px !important;           /* CHANGED FROM 250px */
+        min-width: 180px !important;       /* CHANGED FROM 250px */
+        max-width: 180px !important;       /* CHANGED FROM 250px */
+    }
+    
+    /* FORCE MODEL SELECTION COLUMN TO BE SMALL */
+    div[data-testid="column"]:has(.model-selection-container) {
         width: 180px !important;
-        min-width: 180px !important;
         max-width: 180px !important;
+        min-width: 180px !important;
+        flex: 0 0 180px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1516,6 +1535,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
