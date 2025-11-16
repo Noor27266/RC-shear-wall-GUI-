@@ -127,35 +127,36 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
-# REPLACE JUST THIS PART OF YOUR CSS:
+# Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-/* REMOVE THE FIXED HEIGHTS THAT CAUSE CUT-OFF CONTENT */
-html, body, #root, .stApp {
-    overflow: auto !important;  /* CHANGED FROM hidden */
-    height: auto !important;    /* CHANGED FROM 100vh */
-    min-height: 100vh !important;
-}
-
-section.main {
-    overflow: auto !important;  /* CHANGED FROM hidden */
-    height: auto !important;    /* CHANGED FROM 100vh */
-    min-height: 100vh !important;
-}
-
-.block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    height: auto !important;    /* CHANGED FROM 100vh */
-    overflow: auto !important;  /* CHANGED FROM hidden */
-}
-
-/* KEEP EVERYTHING ELSE THE SAME */
 html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
 div.stApp{ margin-top:-2rem !important; }
 section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+
+/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
+html, body, #root, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+}
+
+section.main {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+}
+
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+}
 
 /* Remove horizontal scroll */
 section.main, div.stApp {
@@ -346,82 +347,16 @@ css(f"""
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
-# KEEP ALL YOUR EXISTING CSS CODE EXACTLY AS IS
-
-# JUST ADD THIS AT THE VERY END:
+# Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-/* ADD ONLY THIS MEDIA QUERY FOR SMALL SCREENS */
-@media (max-width: 768px) {
-    /* Stack columns vertically on mobile */
-    [data-testid="stHorizontalBlock"] {
-        flex-direction: column !important;
-    }
-    
-    /* Make columns full width on mobile */
-    [data-testid="column"] {
-        width: 100% !important;
-        min-width: 100% !important;
-    }
-    
-    /* Reduce padding on mobile */
-    .block-container {
-        padding: 0.5rem !important;
-    }
-    
-    /* Make inputs full width */
-    .stNumberInput, .stSelectbox {
-        width: 100% !important;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-
-
-
-# ADD THIS RIGHT AFTER YOUR MAIN CSS:
-st.markdown("""
-<style>
-/* MOBILE FIXES - ONLY ACTIVATES ON SMALL SCREENS */
-@media (max-width: 768px) {
-    /* Allow scrolling on mobile */
-    .stApp {
-        overflow-y: auto !important;
-    }
-    
-    /* Reduce top spacing on mobile */
-    .main .block-container {
-        padding-top: 60px !important;
-    }
-    
-    /* Make chart area visible */
-    .vega-embed {
-        max-height: 400px !important;
-    }
-    
-    /* Ensure all content is visible */
-    [data-testid="column"] {
-        min-height: auto !important;
-    }
-}
-
-/* FOR VERY SMALL SCREENS */
-@media (max-width: 480px) {
-    .main .block-container {
-        padding-top: 50px !important;
-    }
-    
-    /* Reduce font sizes slightly on very small screens */
-    .section-header {
-        font-size: 16px !important;
-    }
-    
-    .stNumberInput label, .stSelectbox label {
-        font-size: 14px !important;
-    }
-}
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -519,7 +454,7 @@ st.markdown(f"""
   }}
 
   .page-header__logo {{
-    height: 45px !important;
+    height: {int(LOGO_SIZE)}px !important;
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
@@ -532,19 +467,6 @@ st.markdown(f"""
   .main .block-container {{
     padding-top: {int(LOGO_TOP + LOGO_SIZE + 20)}px !important;
   }}
-
-  /* MOBILE: Reduce logo spacing */
-  @media (max-width: 768px) {{
-    .page-header__logo {{
-        height: 35px !important;
-        right: 20px !important;
-        top: 15px !important;
-    }}
-    
-    .main .block-container {{
-        padding-top: 70px !important;
-    }}
-  }}
 </style>
 
 <div class="page-header-outer">
@@ -553,6 +475,11 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Remove the old positioning variables since we're not using them
+HEADER_X = 0
+TITLE_LEFT = 35
+TITLE_TOP = 60
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -857,90 +784,267 @@ with right:
     #action-row { 
         display: flex !important;
         align-items: flex-start !important;
-        gap: 0px !important;
+        gap: 8px !important;
         width: 100% !important;
         margin-top: 0px !important;
     }
     
-    /* FIX MODEL SELECTION BOX WIDTH */
+    /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        width: 150px !important;
-        max-width: 150px !important;
-        min-width: 150px !important;
+        border: none !important;
+        box-shadow: none !important; 
+        background: #D3D3D3 !important;
+        height: 40px !important;
+        border-radius: 8px !important;
+        padding: 0px 12px !important;
+        outline: none !important;
     }
     
     div[data-testid="stSelectbox"] > div {
-        width: 150px !important;
-        max-width: 150px !important;
-        min-width: 150px !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
 
     div[data-testid="stSelectbox"] > div > div { 
-        width: 150px !important;
-        max-width: 150px !important;
-        min-width: 150px !important;
+        height: 40px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        margin-top: 0px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        outline: none !important;
+        color: #888888 !important;
     }
     
+    /* Remove border from the input element inside */
     div[data-testid="stSelectbox"] input {
-        width: 130px !important;
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        color: #888888 !important;
+    }
+    
+    /* Remove ALL focus borders and black outlines - ENHANCED */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:active {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important;
+    }
+    
+    /* Remove black from dropdown arrow */
+    div[data-testid="stSelectbox"] svg {
+        fill: #888888 !important;
+        color: #888888 !important;
+        stroke: #888888 !important;
+    }
+    
+    /* Remove black from dropdown arrow on hover/focus */
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
+    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {
+        fill: #888888 !important;
+        color: #888888 !important;
+        stroke: #888888 !important;
+    }
+    
+    /* MOVE MODEL SELECTION DROPDOWN UP */
+    div[data-testid="stSelectbox"] > div:first-child {
+        margin-top: 0px !important;
+    }
+    
+    /* FIX: REMOVE ABSOLUTE POSITIONING - MOVE LABEL UP PROPERLY */
+    div[data-testid="stSelectbox"] label p { 
+        font-size: {FS_LABEL}px !important; 
+        color: black !important;
+        font-weight: bold !important; 
+        margin-bottom: 5px !important;
+        position: relative !important;
+        top: 0px !important;
+        left: 0 !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
+    }
+    
+    /* MAKE ENTIRE DROPDOWN GREY - NO BLACK ANYWHERE - ENHANCED */
+    [data-baseweb="select"] *, 
+    [data-baseweb="popover"] *, 
+    [data-baseweb="menu"] *,
+    [data-baseweb="select"] [role="listbox"],
+    [data-baseweb="select"] [role="combobox"] { 
+        color: black !important;
+        background-color: #D3D3D3 !important;
+        font-size: {FS_SELECT}px !important; 
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove border from popover - NO BLACK BORDERS - ENHANCED */
+    [data-baseweb="popover"],
+    [data-baseweb="popover"] > div {
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: #D3D3D3 !important;
+    }
+    
+    /* Remove borders from dropdown menu - ENHANCED */
+    [data-baseweb="menu"],
+    [data-baseweb="menu"] ul,
+    [data-baseweb="menu"] li,
+    [data-baseweb="menu"] > div {
+        border: none !important;
+        border-radius: 8px !important;
+        background-color: #D3D3D3 !important;
+        box-shadow: none !important;
+    }
+    
+    /* Target specific dropdown container elements */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="select"] > div > div {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    div[role="option"] { 
+        color: black !important;
+        font-size: {FS_SELECT}px !important; 
+        background-color: #D3D3D3 !important;
+        padding: 12px 16px !important;
+        border: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Remove the last item border */
+    div[role="option"]:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* Remove any separator lines between options */
+    div[role="option"]:not(:last-child) {
+        border-bottom: none !important;
+    }
+    
+    /* Make dropdown hover effect grey */
+    div[role="option"]:hover {
+        background-color: #B8B8B8 !important;
+        color:black !important;
+        border: none !important;
+    }
+    
+    /* Make buttons smaller in width */
+    div.stButton > button { 
+        height: 40px !important; 
+        width: 90% !important;
+        display:flex !important; 
+        align-items:center !important; 
+        justify-content:center !important;
+        font-size: {FS_BUTTON}px !important;
+        margin: 0 auto !important;
+        white-space: nowrap !important;
+        margin-top: 0px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        font-weight: 700 !important;
+        outline: none !important;
+    }
+    
+    button[key="calc_btn"] { background:#4CAF50 !important; }
+    button[key="reset_btn"] { background:#2196F3 !important; }
+    button[key="clear_btn"] { background:#f44336 !important; }
+    
+    /* Remove button focus borders */
+    div.stButton > button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove the margin from the three-btns container */
+    #three-btns {
+        margin-top: 0 !important;
+        display: flex !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    
+    /* FIX: SIMPLIFY SELECTBOX POSITIONING - MOVE EVERYTHING UP */
+    div[data-testid="stSelectbox"] {
+        position: relative !important;
+        margin-top: -45px !important;
+        padding-top: 0px !important;
+    }
+    
+    div[data-testid="stSelectbox"] label {
+        margin-bottom: 5px !important;
+        white-space: nowrap !important;
+        display: block !important;
+    }
+    
+    div[data-testid="stSelectbox"] > div {
+        margin-top: 0px !important;
+    }
+    
+    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
+    .model-selection-container {
+        margin-top: -450px !important;
+        padding-top: 0px !important;
+    }
+    
+    /* FIX: Ensure columns align at the top */
+    [data-testid="column"] {
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Specifically target model column to move it up */
+    div[data-testid="column"]:first-child {
+        margin-top: -45px !important;
+        padding-top: 0px !important;
+    }
+    
+    /* ADDITIONAL: Target the specific border that's showing */
+    div[data-baseweb="select"] div[style*="border"] {
+        border: none !important;
+    }
+    
+    /* Target any element with border style */
+    [style*="border"] {
+        border: none !important;
     }
 
-    /* FIX DROPDOWN WIDTH */
+    /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
     div[data-baseweb="popover"] {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
+        width: 230px !important;
+        min-width: 230px !important;
+        max-width: 230px !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
     }
 
     div[data-baseweb="menu"] {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
+        width: 230px !important;
+        min-width: 230px !important;
+        max-width: 230px !important;
     }
 
     div[role="listbox"] {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
+        width: 230px !important;
+        min-width: 230px !important;
+        max-width: 230px !important;
     }
 
+    /* Keep the dropdown positioned relative to the selectbox */
     div[data-testid="stSelectbox"] [data-baseweb="popover"] {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
-    }
-    
-    /* FIX BUTTON SPACING - MAKE THEM CLOSE */
-    #action-row {
-        gap: 0px !important;
-    }
-    
-    #three-btns {
-        gap: 0px !important;
-    }
-    
-    div.stButton > button { 
-        width: 70px !important;
-    }
-    
-    /* MAKE COLUMNS TIGHT */
-    #action-row [data-testid="column"] {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
-    div[data-testid="column"]:first-child {
-        width: 150px !important;
-        max-width: 150px !important;
-        min-width: 150px !important;
-        flex: 0 0 150px !important;
-    }
-    
-    div[data-testid="column"]:has(button) {
-        width: 70px !important;
-        max-width: 70px !important;
-        min-width: 70px !important;
-        flex: 0 0 70px !important;
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1339,6 +1443,53 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
