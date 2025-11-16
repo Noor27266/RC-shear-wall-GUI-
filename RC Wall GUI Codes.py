@@ -427,7 +427,7 @@ LOGO_TOP = 25    # Distance from top of page
 
 # EASY CONTROL: Change this value to move logo left/right
 # Higher number = more to the LEFT, Lower number = more to the RIGHT
-LOGO_POSITION = 400 # Distance from right edge (10 = far right, 200 = more left)
+LOGO_POSITION = 300 # Distance from right edge (10 = far right, 200 = more left)
 
 # =============================================================================
 # 🏷️ SUB STEP 6.3: HEADER AND LOGO STYLING IMPLEMENTATION
@@ -1443,6 +1443,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
