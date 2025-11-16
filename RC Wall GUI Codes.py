@@ -123,84 +123,64 @@ def pfind(candidates):
 # =============================================================================
 # 🎨 SUB STEP 3.1: PAGE CONFIGURATION SETUP
 # =============================================================================
+st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
-# KEEP ALL YOUR EXISTING CSS CODE EXACTLY AS IS
-
-# JUST ADD THIS AT THE VERY END:
+# Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-/* ADD ONLY THIS MEDIA QUERY FOR SMALL SCREENS */
-@media (max-width: 768px) {
-    /* Stack columns vertically on mobile */
-    [data-testid="stHorizontalBlock"] {
-        flex-direction: column !important;
-    }
-    
-    /* Make columns full width on mobile */
-    [data-testid="column"] {
-        width: 100% !important;
-        min-width: 100% !important;
-    }
-    
-    /* Reduce padding on mobile */
-    .block-container {
-        padding: 0.5rem !important;
-    }
-    
-    /* Make inputs full width */
-    .stNumberInput, .stSelectbox {
-        width: 100% !important;
-    }
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+
+/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
+html, body, #root, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+}
+
+section.main {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+}
+
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+}
+
+/* Remove horizontal scroll */
+section.main, div.stApp {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+/* Compact the layout */
+[data-testid="stHorizontalBlock"] {
+    margin-top: -10px !important;
+    margin-bottom: -10px !important;
+}
+
+/* Reduce spacing in columns */
+[data-testid="column"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Make sure content fits */
+.stNumberInput, .stSelectbox {
+    margin-bottom: 5px !important;
 }
 </style>
-""", unsafe_allow_html=True)
-# 🏷️ SUB STEP 6.3: HEADER AND LOGO STYLING IMPLEMENTATION
-# =============================================================================
-# KEEP YOUR ORIGINAL HEADER CODE EXACTLY AS IT WAS:
-st.markdown(f"""
-<style>
-  .page-header-outer {{
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 0 !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-  }}
-
-  .page-header {{
-    display: flex !important;
-    justify-content: flex-end !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    height: 0 !important;
-    position: relative !important;
-  }}
-
-  .page-header__logo {{
-    height: {int(LOGO_SIZE)}px !important;
-    width: auto !important;
-    position: fixed !important;
-    top: {int(LOGO_TOP)}px !important;
-    right: {int(LOGO_POSITION)}px !important;
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-  }}
-
-  /* Add space at the top so content doesn't get hidden behind fixed logo */
-  .main .block-container {{
-    padding-top: {int(LOGO_TOP + LOGO_SIZE + 20)}px !important;
-  }}
-</style>
-
-<div class="page-header-outer">
-  <div class="page-header">
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
-</div>
 """, unsafe_allow_html=True)
 # =============================================================================
 # 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
@@ -367,16 +347,34 @@ css(f"""
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
-# Keep header area slim - REDUCED TOP SPACE
+# KEEP ALL YOUR EXISTING CSS CODE EXACTLY AS IS
+
+# JUST ADD THIS AT THE VERY END:
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+/* ADD ONLY THIS MEDIA QUERY FOR SMALL SCREENS */
+@media (max-width: 768px) {
+    /* Stack columns vertically on mobile */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    
+    /* Make columns full width on mobile */
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    /* Reduce padding on mobile */
+    .block-container {
+        padding: 0.5rem !important;
+    }
+    
+    /* Make inputs full width */
+    .stNumberInput, .stSelectbox {
+        width: 100% !important;
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -474,7 +472,7 @@ st.markdown(f"""
   }}
 
   .page-header__logo {{
-    height: {int(LOGO_SIZE)}px !important;
+   height: 45px !important;  # Use the actual value instead of variable
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
@@ -728,14 +726,12 @@ div[data-testid="stNumberInput"] button {
 # =============================================================================
 # 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
 # =============================================================================
-# KEEP YOUR ORIGINAL COLUMN RATIOS:
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # KEEP YOUR ORIGINAL CODE EXACTLY AS IT WAS:
     # METHOD 1: Remove all empty space first
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
@@ -1465,62 +1461,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
