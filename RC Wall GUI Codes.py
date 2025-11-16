@@ -123,6 +123,39 @@ def pfind(candidates):
 # =============================================================================
 # 🎨 SUB STEP 3.1: PAGE CONFIGURATION SETUP
 # =============================================================================
+# =============================================================================
+# 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
+# =============================================================================
+# KEEP ALL YOUR EXISTING CSS CODE EXACTLY AS IS
+
+# JUST ADD THIS AT THE VERY END:
+st.markdown("""
+<style>
+/* ADD ONLY THIS MEDIA QUERY FOR SMALL SCREENS */
+@media (max-width: 768px) {
+    /* Stack columns vertically on mobile */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    
+    /* Make columns full width on mobile */
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    /* Reduce padding on mobile */
+    .block-container {
+        padding: 0.5rem !important;
+    }
+    
+    /* Make inputs full width */
+    .stNumberInput, .stSelectbox {
+        width: 100% !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
 # 🏷️ SUB STEP 6.3: HEADER AND LOGO STYLING IMPLEMENTATION
 # =============================================================================
 # KEEP YOUR ORIGINAL HEADER CODE EXACTLY AS IT WAS:
@@ -1432,6 +1465,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
