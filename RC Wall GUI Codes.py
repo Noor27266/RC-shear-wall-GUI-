@@ -423,7 +423,7 @@ except Exception:
 # =============================================================================
 # Logo positioning variables - EASY TO MOVE LEFT/RIGHT
 LOGO_SIZE = 45   # Size of the logo
-LOGO_TOP = 30    # Distance from top of page  
+LOGO_TOP = 35    # Distance from top of page  
 
 # EASY CONTROL: Change this value to move logo left/right
 # Higher number = more to the LEFT, Lower number = more to the RIGHT
@@ -1443,6 +1443,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
