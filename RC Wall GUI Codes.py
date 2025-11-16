@@ -123,62 +123,123 @@ def pfind(candidates):
 # =============================================================================
 # 🎨 SUB STEP 3.1: PAGE CONFIGURATION SETUP
 # =============================================================================
-st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
-# =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
-# Keep header area slim - REDUCED TOP SPACE
+# Replace ALL the current CSS with this responsive version:
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-
-/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
+/* RESPONSIVE ROOT CONTAINERS */
 html, body, #root, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
+    overflow: auto !important;
+    min-height: 100vh !important;
+    height: auto !important;
 }
 
 section.main {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
+    overflow: auto !important;
+    min-height: 100vh !important;
+    height: auto !important;
 }
 
 .block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    max-height: 100vh !important;
-    overflow: hidden !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    max-width: 95vw !important;
 }
 
-/* Remove horizontal scroll */
-section.main, div.stApp {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-}
-
-/* Compact the layout */
+/* COMPACT LAYOUT - KEEP YOUR EXISTING STYLES BUT MAKE THEM RESPONSIVE */
 [data-testid="stHorizontalBlock"] {
     margin-top: -10px !important;
     margin-bottom: -10px !important;
+    flex-wrap: wrap !important;
 }
 
-/* Reduce spacing in columns */
 [data-testid="column"] {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+    min-width: 200px !important;
+    flex: 1 !important;
 }
 
-/* Make sure content fits */
 .stNumberInput, .stSelectbox {
     margin-bottom: 5px !important;
+    width: 100% !important;
+}
+
+/* RESPONSIVE MEDIA QUERIES FOR MOBILE */
+@media (max-width: 768px) {
+    .block-container {
+        padding: 0.5rem !important;
+    }
+    
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .section-header {
+        font-size: 16px !important;
+    }
+    
+    .stNumberInput label, .stSelectbox label {
+        font-size: 14px !important;
+    }
+}
+
+/* KEEP ALL YOUR EXISTING FONT SIZES AND COLORS, JUST ADD RESPONSIVENESS */
+.section-header {
+    font-size: {FS_SECTION}px !important;
+    font-weight: 700; 
+    margin: .35rem 0;
+}
+
+.stNumberInput label, .stSelectbox label {
+    font-size: {FS_LABEL}px !important; 
+    font-weight: 700;
+}
+
+/* RESPONSIVE FORM CONTAINER */
+#compact-form { 
+    max-width: 100% !important; 
+    margin: 0 auto !important; 
+}
+
+#compact-form [data-testid="stHorizontalBlock"] { 
+    gap: .5rem; 
+    flex-wrap: wrap !important;
+}
+
+#compact-form [data-testid="column"] { 
+    width: auto !important; 
+    max-width: none !important; 
+    flex: 1 !important; 
+    min-width: 180px !important;
+}
+
+/* FIXED HEADER - MAKE IT RELATIVE */
+.page-header-outer {
+    position: relative !important;
+    height: auto !important;
+}
+
+.page-header__logo {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 10px auto !important;
+    display: block !important;
+    height: {LOGO_SIZE}px !important;
+}
+
+.main .block-container {
+    padding-top: 1rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -706,52 +767,42 @@ div[data-testid="stNumberInput"] button {
 """)
 
 # =============================================================================
-# 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
+# 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP - MAKE RESPONSIVE
 # =============================================================================
-left, right = st.columns([1.5, 1], gap="large")
+# Change the column ratios to be more flexible
+left, right = st.columns([2, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - MAKE RESPONSIVE
 # =============================================================================
 with left:
-    # METHOD 1: Remove all empty space first
-    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
-    
-    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
-    st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
-            Predict Damage index (DI) for RC Shear Walls
+    # Use container for better responsive control
+    with st.container():
+        st.markdown("""
+        <div style="background:#e0e4ec; border-radius:12px; padding:10px; margin-bottom:15px;">
+            <div style="text-align:center; font-size:20px; font-weight:600; color:#333; margin:0;">
+                Predict Damage Index (DI) for RC Shear Walls
+            </div>
         </div>
-    """, unsafe_allow_html=True)
-    
-    # METHOD 2: Use multiple empty spaces to push content up
-    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
-    
-    # METHOD 3: Combine title and inputs in one container
-    st.markdown("""
-    <div style="margin: -80px 0 0 0; padding: 0;">
-        <div class='form-banner'>Inputs Features</div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="form-banner">Inputs Features</div>', unsafe_allow_html=True)
+        
+        # Make columns responsive - they will stack on mobile
+        c1, c2, c3 = st.columns([1, 1, 1], gap="small")
+        
+        with c1:
+            st.markdown("<div class='section-header'>Geometry</div>", unsafe_allow_html=True)
+            lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
-    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
-    c1, c2, c3 = st.columns([1, 1, 1], gap="small")
+        with c2:
+            st.markdown("<div class='section-header'>Reinf. Ratios</div>", unsafe_allow_html=True)
+            rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
-    with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
-        lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
-
-    with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
-        rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
-
-    with c3:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
-        fyl, fybl = [num(*row) for row in MATS[3:]]
-
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+        with c3:
+            st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
+            fc, fyt, fysh = [num(*row) for row in MATS[:3]]
+            fyl, fybl = [num(*row) for row in MATS[3:]]
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1443,6 +1494,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
