@@ -127,36 +127,35 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
-# Keep header area slim - REDUCED TOP SPACE
+# REPLACE JUST THIS PART OF YOUR CSS:
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-
-/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
+/* REMOVE THE FIXED HEIGHTS THAT CAUSE CUT-OFF CONTENT */
 html, body, #root, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
+    overflow: auto !important;  /* CHANGED FROM hidden */
+    height: auto !important;    /* CHANGED FROM 100vh */
+    min-height: 100vh !important;
 }
 
 section.main {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
+    overflow: auto !important;  /* CHANGED FROM hidden */
+    height: auto !important;    /* CHANGED FROM 100vh */
+    min-height: 100vh !important;
 }
 
 .block-container {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
-    max-height: 100vh !important;
-    overflow: hidden !important;
+    height: auto !important;    /* CHANGED FROM 100vh */
+    overflow: auto !important;  /* CHANGED FROM hidden */
 }
+
+/* KEEP EVERYTHING ELSE THE SAME */
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
 
 /* Remove horizontal scroll */
 section.main, div.stApp {
@@ -378,6 +377,54 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+
+
+
+# ADD THIS RIGHT AFTER YOUR MAIN CSS:
+st.markdown("""
+<style>
+/* MOBILE FIXES - ONLY ACTIVATES ON SMALL SCREENS */
+@media (max-width: 768px) {
+    /* Allow scrolling on mobile */
+    .stApp {
+        overflow-y: auto !important;
+    }
+    
+    /* Reduce top spacing on mobile */
+    .main .block-container {
+        padding-top: 60px !important;
+    }
+    
+    /* Make chart area visible */
+    .vega-embed {
+        max-height: 400px !important;
+    }
+    
+    /* Ensure all content is visible */
+    [data-testid="column"] {
+        min-height: auto !important;
+    }
+}
+
+/* FOR VERY SMALL SCREENS */
+@media (max-width: 480px) {
+    .main .block-container {
+        padding-top: 50px !important;
+    }
+    
+    /* Reduce font sizes slightly on very small screens */
+    .section-header {
+        font-size: 16px !important;
+    }
+    
+    .stNumberInput label, .stSelectbox label {
+        font-size: 14px !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
@@ -472,7 +519,7 @@ st.markdown(f"""
   }}
 
   .page-header__logo {{
-   height: 45px !important;  # Use the actual value instead of variable
+    height: 45px !important;
     width: auto !important;
     position: fixed !important;
     top: {int(LOGO_TOP)}px !important;
@@ -485,6 +532,19 @@ st.markdown(f"""
   .main .block-container {{
     padding-top: {int(LOGO_TOP + LOGO_SIZE + 20)}px !important;
   }}
+
+  /* MOBILE: Reduce logo spacing */
+  @media (max-width: 768px) {{
+    .page-header__logo {{
+        height: 35px !important;
+        right: 20px !important;
+        top: 15px !important;
+    }}
+    
+    .main .block-container {{
+        padding-top: 70px !important;
+    }}
+  }}
 </style>
 
 <div class="page-header-outer">
@@ -493,11 +553,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
-# Remove the old positioning variables since we're not using them
-HEADER_X = 0
-TITLE_LEFT = 35
-TITLE_TOP = 60
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
@@ -1461,6 +1516,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
