@@ -77,18 +77,6 @@ st.session_state.setdefault("results_df", pd.DataFrame())
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
-    css("""
-<style>
-/* Make the whole LEFT column grey */
-.left-panel-wrapper {
-    background:#e0e4ec !important;
-    padding:0 !important;
-    margin:0 !important;
-    border-radius:12px !important;
-}
-</style>
-""")
-
 
 # =============================================================================
 # 🔧 SUB STEP 2.2: PATH FINDING HELPER FUNCTION
@@ -726,48 +714,44 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-
-    # WRAP ENTIRE LEFT SIDE IN A FULL-GREY BACKGROUND
-    st.markdown("<div class='left-panel-wrapper'>", unsafe_allow_html=True)
-
-    # TITLE AREA (keep same style)
+    # METHOD 1: Remove all empty space first
+    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    
+    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:0 0 10px 0;
-                box-shadow:0 1px 3px rgba(0,0,0,.1); text-align:center;">
-        <div style="font-size:25px; font-weight:600; color:#333; padding:5px;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
-    </div>
     """, unsafe_allow_html=True)
-
-    # INPUTS FEATURES BANNER
+    
+    # METHOD 2: Use multiple empty spaces to push content up
+    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
+    
+    # METHOD 3: Combine title and inputs in one container
     st.markdown("""
+    <div style="margin: -80px 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
     """, unsafe_allow_html=True)
 
-    # THREE COLUMNS FOR INPUTS
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
-    # --- COLUMN 1: GEOMETRY ---
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
-    # --- COLUMN 2: REINFORCEMENT ---
     with c2:
         st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
-    # --- COLUMN 3: MATERIAL STRENGTHS ---
     with c3:
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
-    # CLOSE THE GREY BACKGROUND WRAPPER
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1459,7 +1443,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
 
 
 
