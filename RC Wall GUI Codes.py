@@ -1123,26 +1123,13 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # Move prediction and download below the buttons
+    # Move prediction and download below the buttons - aligned to right
     pred_banner = st.empty()
     
     dl_slot = st.empty()
     if not st.session_state.results_df.empty:
         csv = st.session_state.results_df.to_csv(index=False)
         dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
-
-    # USE MULTIPLE EMPTY SPACES TO PUSH CONTENT UP
-    for _ in range(2):  # ADD MORE EMPTY LINES TO PUSH UP
-        st.markdown("<br>", unsafe_allow_html=True)
-    
-    # SIMPLE ONE LINE WITH COLUMNS
-    pred_col, dl_col = st.columns([2, 1.5])
-    
-    with pred_col:
-        pass  # pred_banner is already defined above
-        
-    with dl_col:
-        pass  # dl_slot is already defined above
 
     # STYLING
     st.markdown(f"""
@@ -1160,6 +1147,7 @@ with right:
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        width: 180px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -1482,6 +1470,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
