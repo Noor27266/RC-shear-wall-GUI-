@@ -798,19 +798,7 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-/* REMOVE TOP AND BOTTOM WHITE SPACE SPECIFICALLY */
-section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
-    margin-top: -2rem !important;
-    margin-bottom: -2rem !important;
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-}
 
-/* REMOVE ANY REMAINING VERTICAL PADDING */
-div[data-testid="column"]:first-child > div {
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
-}
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -1501,6 +1489,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
