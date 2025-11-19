@@ -1094,8 +1094,8 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
 # =============================================================================
-    # Create container aligned to right
-    st.markdown('<div style="width: 180px; margin-left: auto; margin-right: 0;">', unsafe_allow_html=True)
+    # Create container aligned to right - MOVED MORE TO RIGHT
+    st.markdown('<div style="width: 180px; margin-left: auto; margin-right: 50px; margin-top: -20px;">', unsafe_allow_html=True)
     
     # Model Selection
     available = set(model_registry.keys())
@@ -1473,6 +1473,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
