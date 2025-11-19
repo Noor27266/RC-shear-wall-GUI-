@@ -711,49 +711,60 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - GUARANTEED FIX
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # THIS WILL DEFINITELY WORK - NO WHITE SPACE
+    # ADD THIS EXACT CSS - IT WILL WORK
     st.markdown("""
     <style>
-    /* NUCLEAR OPTION - REMOVE ALL WHITE SPACE */
-    .stApp {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
-    }
-    
-    .block-container {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
-        max-width: 100% !important;
-    }
-    
-    /* MAKE LEFT COLUMN COMPLETELY GRAY */
-    [data-testid="column"]:nth-of-type(1) {
+    /* TARGET THE MAIN LEFT COLUMN CONTAINER */
+    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
         background-color: #e0e4ec !important;
+        margin: -1rem -1rem -1rem -1rem !important;
         padding: 1rem !important;
+    }
+    
+    /* REMOVE ALL WHITE SPACE FROM STREAMLIT CONTAINERS */
+    .stApp {
+        padding: 0px !important;
         margin: 0px !important;
     }
     
-    /* REMOVE HEADER SPACE */
-    header[data-testid="stHeader"] {
-        display: none !important;
+    .block-container {
+        padding: 0px !important;
+        margin: 0px !important;
+        max-width: 100% !important;
     }
     
-    /* REMOVE ANY REMAINING PADDING */
-    .main .block-container {
+    section.main {
         padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    /* MAKE SURE THE GRAY COVERS EVERYTHING */
+    section.main [data-testid="stHorizontalBlock"] {
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    /* REMOVE TOP AND BOTTOM WHITE SPACE SPECIFICALLY */
+    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
+        margin-top: -2rem !important;
+        margin-bottom: -2rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    
+    /* REMOVE ANY REMAINING VERTICAL PADDING */
+    div[data-testid="column"]:first-child > div {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
     }
     </style>
-    <div style="background-color: #e0e4ec; margin: -1rem -1rem -1rem -1rem; padding: 1rem; height: 100%;">
     """, unsafe_allow_html=True)
 
-    # YOUR EXACT ORIGINAL CONTENT GOES HERE - NO CHANGES
+    # KEEP YOUR EXISTING CONTENT EXACTLY AS IT WAS ORIGINALLY
+    # DON'T CHANGE ANY OF YOUR POSITIONING CODE
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -787,8 +798,19 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the gray container
+/* REMOVE TOP AND BOTTOM WHITE SPACE SPECIFICALLY */
+section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
+    margin-top: -2rem !important;
+    margin-bottom: -2rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
 
+/* REMOVE ANY REMAINING VERTICAL PADDING */
+div[data-testid="column"]:first-child > div {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -1479,6 +1501,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
