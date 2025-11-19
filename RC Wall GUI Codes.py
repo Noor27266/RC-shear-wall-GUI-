@@ -1096,6 +1096,14 @@ with right:
     }
     </style>
     """, unsafe_allow_html=True)
+
+        /* ALIGN ALL CONTENT IN RIGHT PANEL TO THE RIGHT */
+    .stApp [data-testid="column"]:last-child > div {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        width: 100% !important;
+    }
     
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
@@ -1470,6 +1478,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
