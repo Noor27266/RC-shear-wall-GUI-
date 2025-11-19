@@ -1,3 +1,4 @@
+
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
@@ -211,22 +212,6 @@ INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
-# ADD THIS CSS TO MOVE THE CHART UP
-css("""
-<style>
-/* Move the entire right column content up */
-[data-testid="column"]:last-child {
-    margin-top: -100px !important;
-    padding-top: 0px !important;
-}
-
-/* Specifically target the chart container */
-div.element-container:has(> div[data-testid="iframe"]) {
-    margin-top: -100px !important;
-}
-</style>
-""")
-
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
@@ -391,15 +376,15 @@ section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 
-/* ALLOW SCROLLING AND MOVEMENT */
+/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
 html, body, #root, .stApp {
-    overflow: auto !important;
+    overflow: visible !important;
     max-height: none !important;
     height: auto !important;
 }
 
 section.main {
-    overflow: auto !important;
+    overflow: visible !important;
     max-height: none !important;
     height: auto !important;
 }
@@ -408,45 +393,8 @@ section.main {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
     max-height: none !important;
-    overflow: auto !important;
-    min-height: 100vh !important;
-}
-
-/* Remove horizontal scroll */
-section.main, div.stApp {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-}
-
-/* Compact the layout */
-[data-testid="stHorizontalBlock"] {
-    margin-top: -10px !important;
-    margin-bottom: -10px !important;
-}
-
-/* Reduce spacing in columns */
-[data-testid="column"] {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Make sure content fits */
-.stNumberInput, .stSelectbox {
-    margin-bottom: 5px !important;
-}
-
-/* SPECIFICALLY ALLOW THE RIGHT COLUMN TO MOVE */
-[data-testid="column"]:last-child {
     overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-    margin-top: 0px !important;
-    padding-top: 0px !important;
-}
-
-/* Specifically target the chart container */
-div.element-container:has(> iframe) {
-    margin-top: 0px !important;
+    min-height: 100vh !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -851,9 +799,9 @@ with left:
 # =============================================================================
 # 🎮 SUB STEP 9.1: HERO IMAGE AND INITIAL SETUP
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 0, 400  # KEEP HERO_Y AT 0
+HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 400
+CHART_W = 285
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -865,9 +813,6 @@ with right:
         """,
         unsafe_allow_html=True,
     )
-    
-    # ADD SPACING BETWEEN FIGURE AND CONTROLS
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
     
 # =============================================================================
@@ -1185,6 +1130,7 @@ with right:
             csv = st.session_state.results_df.to_csv(index=False)
             st.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", 
                               mime="text/csv", use_container_width=True, key="dl_csv_main")
+    
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
@@ -1209,12 +1155,6 @@ with right:
         align-items: center !important;
         justify-content: center !important;
         width: 180px !important;
-    }}
-    
-    /* MOVE THE CHART DOWN - ADD SOME SPACE */
-    div.element-container:has(> iframe) {{
-        position: relative !important;
-        top: 30px !important;  /* CHANGED FROM 0px TO 30px */
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -1412,16 +1352,14 @@ try:
     _slot = chart_slot
 except NameError:
     _slot = st.empty()
+
 # =============================================================================
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # ADD SIGNIFICANT SPACE ABOVE THE CHART
-    st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
-    
-    # Render the chart WITHOUT any negative margins
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1536,6 +1474,24 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
