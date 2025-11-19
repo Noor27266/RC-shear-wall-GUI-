@@ -1119,19 +1119,26 @@ with right:
             st.rerun()
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
+        
+        # ADDED: Prediction display and download button placed below the Clear All button
+        if not st.session_state.results_df.empty:
+            # Get the latest prediction
+            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+            st.markdown(f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>", unsafe_allow_html=True)
+            
+            # Download button
+            csv = st.session_state.results_df.to_csv(index=False)
+            st.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", 
+                              mime="text/csv", use_container_width=True, key="dl_csv_main")
     
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
-    # Move prediction and download below the buttons - aligned to right
+    # Create containers for prediction and download that we'll fill later
     pred_banner = st.empty()
-    
     dl_slot = st.empty()
-    if not st.session_state.results_df.empty:
-        csv = st.session_state.results_df.to_csv(index=False)
-        dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", mime="text/csv", use_container_width=True, key="dl_csv_main")
-
-    # STYLING
+    
+    # STYLING for prediction display
     st.markdown(f"""
     <style>
     .prediction-with-color {{
@@ -1328,10 +1335,7 @@ else:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy(); row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-            pred_banner.markdown(f"<div class='prediction-with-color'>Predicted Damage Index (DI): {pred:.4f}</div>", unsafe_allow_html=True)
-            csv = st.session_state.results_df.to_csv(index=False)
-            dl_slot.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv",
-                                    mime="text/csv", use_container_width=False, key="dl_csv_after_submit")
+            # Note: We removed the pred_banner and dl_slot updates here since they're now handled in the button section
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
@@ -1470,6 +1474,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
