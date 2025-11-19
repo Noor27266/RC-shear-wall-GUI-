@@ -415,6 +415,22 @@ section.main {
 </style>
 """, unsafe_allow_html=True)
 
+# ADD THIS CSS TO MOVE THE CHART UP
+css("""
+<style>
+/* Move the entire right column content up */
+[data-testid="column"]:last-child {
+    margin-top: -150px !important;
+    padding-top: 0px !important;
+}
+
+/* Specifically target the chart container */
+div.element-container:has(> div[data-testid="iframe"]) {
+    margin-top: -150px !important;
+}
+</style>
+""")
+
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
 # =============================================================================
@@ -1378,9 +1394,17 @@ except NameError:
 # =============================================================================
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
+try:
+    _slot = chart_slot
+except NameError:
+    _slot = st.empty()
+
+# =============================================================================
+# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
+# =============================================================================
 with right:
-    # Move the chart up more significantly
-    st.markdown("<div style='margin-top: -100px;'>", unsafe_allow_html=True)
+    # Move just the chart up a little bit
+    st.markdown("<div style='margin-top: -150px;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1524,6 +1548,7 @@ div.st-emotion-cache-1jicfl2 {
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
