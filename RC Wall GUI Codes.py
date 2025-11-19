@@ -130,11 +130,13 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 # Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
+/* No background color here – keep page background default (white/light) */
 html, body{
     margin:0 !important;
     padding:0 !important;
-    background:#e0e4ec !important;        /* 🔹 make page background grey */
 }
+
+/* Hide the default Streamlit header bar */
 header[data-testid="stHeader"]{
     height:0 !important;
     padding:0 !important;
@@ -143,26 +145,26 @@ header[data-testid="stHeader"]{
 header[data-testid="stHeader"] *{
     display:none !important;
 }
+
+/* Pull the app a bit up */
 div.stApp{
     margin-top:-2rem !important;
-    background:#e0e4ec !important;        /* 🔹 keep app background grey */
 }
-/* 🔹 remove white gaps around the content area and keep same grey */
-section.main{
-    background:#e0e4ec !important;
-}
+
+/* Only control spacing of the main container, no background here */
 section.main > div.block-container{
     padding-top:0.5rem !important;
     margin-top:0 !important;
-    padding-bottom:0 !important;
-    background:#e0e4ec !important;        /* 🔹 extend grey behind left panel */
 }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{
+
+/* Keep Altair charts responsive */
+.vega-embed,
+.vega-embed .chart-wrapper{
     max-width:100% !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 # =============================================================================
 # 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
 # =============================================================================
@@ -1437,6 +1439,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
