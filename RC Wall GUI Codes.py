@@ -711,45 +711,58 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - EXTREME FIX
 # =============================================================================
 with left:
-    # NUCLEAR OPTION - FORCE GRAY BACKGROUND ON EVERYTHING
+    # EXTREME FIX - CSS + JavaScript
     st.markdown("""
+    <script>
+    setTimeout(function() {
+        // Find and color every element in left panel
+        const leftColumn = document.querySelector('[data-testid="column"]:first-child');
+        if (leftColumn) {
+            // Color the column itself
+            leftColumn.style.backgroundColor = '#e0e4ec';
+            leftColumn.style.margin = '0px';
+            leftColumn.style.padding = '0px';
+            leftColumn.style.minHeight = '100vh';
+            
+            // Color all child elements
+            const allChildren = leftColumn.querySelectorAll('*');
+            allChildren.forEach(child => {
+                child.style.backgroundColor = '#e0e4ec';
+                child.style.margin = '0px';
+                child.style.padding = '0px';
+            });
+        }
+    }, 100);
+    </script>
+    
     <style>
-    /* TARGET EVERY POSSIBLE CONTAINER IN LEFT PANEL */
-    div[data-testid="column"]:first-child,
-    div[data-testid="column"]:first-child > div,
-    div[data-testid="column"]:first-child > div > div {
-        background-color: #e0e4ec !important;
+    /* AGGRESSIVE CSS - TARGET EVERYTHING */
+    [data-testid="column"]:first-child,
+    [data-testid="column"]:first-child * {
+        background: #e0e4ec !important;
         margin: 0px !important;
         padding: 0px !important;
-        border-radius: 0px !important;
     }
     
-    /* REMOVE ALL WHITE SPACE FROM MAIN CONTAINER */
-    .main .block-container {
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
-        padding-left: 0px !important;
-        padding-right: 0px !important;
+    /* REMOVE STREAMLIT DEFAULT PADDING */
+    .main .block-container,
+    .main .block-container > div,
+    .main .block-container > div > div {
+        padding: 0px !important;
+        margin: 0px !important;
     }
     
-    /* FORCE LEFT COLUMN TO EXPAND FULL HEIGHT */
-    section.main [data-testid="column"]:first-child {
+    /* FORCE FULL HEIGHT */
+    [data-testid="column"]:first-child {
         min-height: 100vh !important;
-        height: 100% !important;
-    }
-    
-    /* REMOVE ANY REMAINING WHITE SPACES */
-    div[data-testid="stHorizontalBlock"] {
-        margin: 0px !important;
-        padding: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # YOUR EXISTING CONTENT - KEEP IT EXACTLY THE SAME
+    # YOUR EXISTING CONTENT - DON'T CHANGE ANYTHING
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -1474,6 +1487,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
