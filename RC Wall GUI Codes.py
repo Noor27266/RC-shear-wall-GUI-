@@ -1379,11 +1379,18 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Add negative margin to move the chart up
-    st.markdown("<div style='margin-top: -500px;'>", unsafe_allow_html=True)
+    # Add CSS to move the chart container up
+    st.markdown("""
+    <style>
+    div[data-testid="stVerticalBlock"] > div:has(> div[data-testid="stHorizontalBlock"]) > div:last-child > div:last-child {
+        position: relative !important;
+        top: -500px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
-    st.markdown("</div>", unsafe_allow_html=True)
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1498,6 +1505,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
