@@ -828,7 +828,7 @@ with left:
 # =============================================================================
 # 🎮 SUB STEP 9.1: HERO IMAGE AND INITIAL SETUP
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 50, 400
+HERO_X, HERO_Y, HERO_W = 100, 0, 400  # KEEP HERO_Y AT 0
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 400
 
@@ -842,6 +842,9 @@ with right:
         """,
         unsafe_allow_html=True,
     )
+    
+    # ADD SPACING BETWEEN FIGURE AND CONTROLS
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
     
 # =============================================================================
@@ -1390,11 +1393,12 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Move the chart container DOWN
-    st.markdown("<div style='margin-top: 100px; position: relative;'>", unsafe_allow_html=True)
+    # ADD SIGNIFICANT SPACE ABOVE THE CHART
+    st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
+    
+    # Render the chart WITHOUT any negative margins
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
-    st.markdown("</div>", unsafe_allow_html=True)
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1509,6 +1513,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
