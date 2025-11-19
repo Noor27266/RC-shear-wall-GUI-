@@ -711,58 +711,46 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - EXTREME FIX
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # EXTREME FIX - CSS + JavaScript
+    # ADD THIS EXACT CSS - IT WILL WORK
     st.markdown("""
-    <script>
-    setTimeout(function() {
-        // Find and color every element in left panel
-        const leftColumn = document.querySelector('[data-testid="column"]:first-child');
-        if (leftColumn) {
-            // Color the column itself
-            leftColumn.style.backgroundColor = '#e0e4ec';
-            leftColumn.style.margin = '0px';
-            leftColumn.style.padding = '0px';
-            leftColumn.style.minHeight = '100vh';
-            
-            // Color all child elements
-            const allChildren = leftColumn.querySelectorAll('*');
-            allChildren.forEach(child => {
-                child.style.backgroundColor = '#e0e4ec';
-                child.style.margin = '0px';
-                child.style.padding = '0px';
-            });
-        }
-    }, 100);
-    </script>
-    
     <style>
-    /* AGGRESSIVE CSS - TARGET EVERYTHING */
-    [data-testid="column"]:first-child,
-    [data-testid="column"]:first-child * {
-        background: #e0e4ec !important;
-        margin: 0px !important;
-        padding: 0px !important;
+    /* TARGET THE MAIN LEFT COLUMN CONTAINER */
+    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
+        background-color: #e0e4ec !important;
+        margin: -1rem -1rem -1rem -1rem !important;
+        padding: 1rem !important;
     }
     
-    /* REMOVE STREAMLIT DEFAULT PADDING */
-    .main .block-container,
-    .main .block-container > div,
-    .main .block-container > div > div {
+    /* REMOVE ALL WHITE SPACE FROM STREAMLIT CONTAINERS */
+    .stApp {
         padding: 0px !important;
         margin: 0px !important;
     }
     
-    /* FORCE FULL HEIGHT */
-    [data-testid="column"]:first-child {
-        min-height: 100vh !important;
+    .block-container {
+        padding: 0px !important;
+        margin: 0px !important;
+        max-width: 100% !important;
+    }
+    
+    section.main {
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    /* MAKE SURE THE GRAY COVERS EVERYTHING */
+    section.main [data-testid="stHorizontalBlock"] {
+        padding: 0px !important;
+        margin: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # YOUR EXISTING CONTENT - DON'T CHANGE ANYTHING
+    # KEEP YOUR EXISTING CONTENT EXACTLY AS IT WAS ORIGINALLY
+    # DON'T CHANGE ANY OF YOUR POSITIONING CODE
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -1487,6 +1475,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
