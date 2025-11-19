@@ -1380,7 +1380,7 @@ except NameError:
 # =============================================================================
 with right:
     # Add negative margin to move the chart up
-    st.markdown("<div style='margin-top: 50px;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: -400px;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1499,6 +1499,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
