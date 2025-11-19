@@ -331,30 +331,24 @@ css(f"""
       padding:16px !important;
   }} */
 
-  /* Full page left side gray background - covers entire left side and bottom */
-  div.stApp {{
+    /* Full page left side gray background - covers entire left side and bottom */
+  html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
       min-height: 100vh !important;
       height: auto !important;
-  }}
+  }
 
-  /* Ensure the main container extends fully */
-  section.main {{
-      min-height: 100vh !important;
-      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
-  }}
+  /* Remove any bottom margins that create white space */
+  .stApp, .main, .block-container, [data-testid="stHorizontalBlock"] {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+  }
 
-  /* Make sure the block container covers the full height */
-  .block-container {{
+  /* Ensure content containers extend fully */
+  [data-testid="column"]:first-child {
       min-height: 100vh !important;
-      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
-  }}
-
-  /* Specifically target the left side to ensure it extends to bottom */
-  [data-testid="stAppViewContainer"] {{
-      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
-      min-height: 100vh !important;
-  }}
+      background: #e0e4ec !important;
+  }
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
@@ -381,6 +375,27 @@ div.stApp{ margin-top:-2rem !important; }
 section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+
+/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
+html, body, #root, .stApp {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+section.main {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    max-height: none !important;
+    overflow: visible !important;
+    min-height: 100vh !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1467,5 +1482,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
