@@ -1374,15 +1374,23 @@ try:
     _slot = chart_slot
 except NameError:
     _slot = st.empty()
-
 # =============================================================================
-# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
+# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION - SIMPLE FIX
 # =============================================================================
 with right:
-    # Move the chart up more significantly
-    st.markdown("<div style='margin-top: -100px;'>", unsafe_allow_html=True)
-    with _slot:
-        render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+    # METHOD 1: Use multiple empty containers with negative margins
+    for i in range(5):
+        st.markdown("<div style='height: 1px; margin-top: -50px;'></div>", unsafe_allow_html=True)
+    
+    # METHOD 2: Direct container with extreme negative margin
+    st.markdown("<div style='margin-top: -300px; padding-top: 0px;'>", unsafe_allow_html=True)
+    
+    # METHOD 3: Use columns to control positioning
+    col1, col2, col3 = st.columns([1, 8, 1])
+    with col2:
+        with _slot:
+            render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+    
     st.markdown("</div>", unsafe_allow_html=True)
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1495,25 +1503,27 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
 # =============================================================================
-# 🎛️ SUB STEP 14.6: MOVE DI-THETA PLOT UP
+# 🎛️ SUB STEP 14.6: MOVE DI-THETA PLOT UP - AGGRESSIVE SOLUTION
 # =============================================================================
 css("""
 <style>
-/* SPECIFICALLY TARGET AND MOVE THE DI-THETA PLOT UP */
-div.element-container:has(> div[data-testid="iframe"]) {
-    margin-top: -80px !important;
+/* AGGRESSIVE FIX: Move the entire chart area up */
+div[data-testid="column"]:last-child {
     position: relative !important;
-    top: -80px !important;
 }
 
-/* Alternative selector if the above doesn't work */
-div[data-testid="iframe"] {
-    margin-top: -80px !important;
+/* Target the specific div that contains the chart */
+div[data-testid="column"]:last-child > div > div > div:last-child {
+    position: relative !important;
+    top: -250px !important;
+    margin-top: -250px !important;
 }
 
-/* Ensure the chart container moves up */
-div.st-emotion-cache-1jicfl2 {
-    margin-top: -80px !important;
+/* Target the chart container directly */
+div[data-testid="column"]:last-child .element-container {
+    position: relative !important;
+    top: -250px !important;
+    margin-top: -250px !important;
 }
 </style>
 """)
