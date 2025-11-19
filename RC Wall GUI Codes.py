@@ -1089,13 +1089,12 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - VERTICAL RIGHT SIDE
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - FAR RIGHT SIDE
 # =============================================================================
-    # VERTICAL LAYOUT ON RIGHT SIDE - MODEL SELECTION ABOVE BUTTONS
-    st.markdown("<div style='display: flex; flex-direction: column; align-items: flex-end; gap: 15px; width: 100%;'>", unsafe_allow_html=True)
+    # CONTAINER POSITIONED TO FAR RIGHT
+    st.markdown("<div style='position: absolute; right: 20px; top: 120px; display: flex; flex-direction: column; align-items: flex-end; gap: 15px;'>", unsafe_allow_html=True)
 
-    # Model Selection at the top
-    st.markdown('<div style="width: 100%; display: flex; justify-content: flex-end;">', unsafe_allow_html=True)
+    # Model Selection
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
     ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -1103,25 +1102,21 @@ with right:
     _label_to_key = {"RF": "Random Forest"}
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Buttons in a row below Model Selection
-    st.markdown('<div style="width: 100%; display: flex; justify-content: flex-end; gap: 10px;">', unsafe_allow_html=True)
+    # Buttons in a row
+    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 1], gap="small")
     
-    col1, col2, col3 = st.columns([1, 1, 1])
-    
-    with col1:
+    with btn_col1:
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     
-    with col2:
+    with btn_col2:
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
     
-    with col3:
+    with btn_col3:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+
     st.markdown("</div>", unsafe_allow_html=True)
 
     
@@ -1482,6 +1477,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
