@@ -818,15 +818,13 @@ with right:
 # =============================================================================
     st.markdown(""" 
     <style>
-    /* Make all elements in the action row with custom widths - RIGHT ALIGNED */
+    /* Make all elements in the action row with custom widths */
     #action-row { 
         display: flex !important;
-        justify-content: flex-end !important;
-        align-items: center !important;
-        gap: 15px !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
         width: 100% !important;
         margin-top: 0px !important;
-        padding-right: 20px !important;
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
@@ -1030,9 +1028,9 @@ with right:
         margin-top: 0px !important;
     }
     
-    /* FIX: MOVE MODEL SELECTION CONTAINER UP - RIGHT ALIGNED */
+    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
     .model-selection-container {
-        margin-top: -5px !important;
+        margin-top: -450px !important;
         padding-top: 0px !important;
     }
     
@@ -1091,37 +1089,39 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - RIGHT ALIGNED
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - VERTICAL RIGHT SIDE
 # =============================================================================
-    # SINGLE ROW WITH ALL ELEMENTS RIGHT ALIGNED - MODEL SELECTION + 3 BUTTONS
-    st.markdown("<div id='action-row'>", unsafe_allow_html=True)
+    # VERTICAL LAYOUT ON RIGHT SIDE - MODEL SELECTION ABOVE BUTTONS
+    st.markdown("<div style='display: flex; flex-direction: column; align-items: flex-end; gap: 15px; width: 100%;'>", unsafe_allow_html=True)
 
-    # Use columns with custom weights - all elements in one row aligned to right
-    model_col, calc_col, reset_col, clear_col = st.columns([1.8, 1, 1, 1], gap="small")
+    # Model Selection at the top
+    st.markdown('<div style="width: 100%; display: flex; justify-content: flex-end;">', unsafe_allow_html=True)
+    available = set(model_registry.keys())
+    order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
+    ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
+    display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+    _label_to_key = {"RF": "Random Forest"}
+    model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
+    model_choice = _label_to_key.get(model_choice_label, model_choice_label)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    with model_col:
-        # FIX: Use negative margin to move everything UP
-        st.markdown('<div class="model-selection-container">', unsafe_allow_html=True)
-        available = set(model_registry.keys())
-        order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
-        ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
-        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
-        _label_to_key = {"RF": "Random Forest"}
-        model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
-        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with calc_col:
+    # Buttons in a row below Model Selection
+    st.markdown('<div style="width: 100%; display: flex; justify-content: flex-end; gap: 10px;">', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 1, 1])
+    
+    with col1:
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-
-    with reset_col:
+    
+    with col2:
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
-
-    with clear_col:
+    
+    with col3:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
-            
+    
+    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
     
@@ -1482,6 +1482,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
