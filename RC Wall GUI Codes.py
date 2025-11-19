@@ -134,7 +134,14 @@ html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
 div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+section.main > div.block-container{
+    padding-top:0 !important;
+    margin-top:0 !important;
+    background:#e0e4ec !important;   /* extend grey to top-left-bottom */
+    padding-left:0 !important;        /* remove left white space */
+    padding-bottom:0 !important;      /* remove bottom white space */
+}
+
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 
@@ -1443,5 +1450,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
