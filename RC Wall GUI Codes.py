@@ -331,8 +331,8 @@ css(f"""
       padding:16px !important;
   }}
 
-  /* Full page left side gray background - NO POSITION CHANGES */
-  section.main .block-container {{
+  /* Full page left side gray background - covers entire left side */
+  div.stApp {{
       background: linear-gradient(90deg, #e0e4ec 55%, transparent 55%) !important;
   }}
 
@@ -1447,6 +1447,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
