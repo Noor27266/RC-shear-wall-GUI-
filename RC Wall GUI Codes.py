@@ -828,7 +828,7 @@ with left:
 # =============================================================================
 # 🎮 SUB STEP 9.1: HERO IMAGE AND INITIAL SETUP
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, -0, 400
+HERO_X, HERO_Y, HERO_W = 100, 50, 400
 MODEL_X, MODEL_Y = 100, -2
 CHART_W = 400
 
@@ -1185,10 +1185,10 @@ with right:
         width: 180px !important;
     }}
     
-    /* MOVE THE CHART DOWN - CLOSE THE GAP */
+    /* MOVE THE CHART DOWN - ADD SOME SPACE */
     div.element-container:has(> iframe) {{
         position: relative !important;
-        top: 0px !important;
+        top: 30px !important;  /* CHANGED FROM 0px TO 30px */
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -1390,8 +1390,8 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Move the chart container DOWN - VERY LITTLE SPACE
-    st.markdown("<div style='margin-top: 0px; position: relative;'>", unsafe_allow_html=True)
+    # Move the chart container DOWN - ADD SOME SPACE
+    st.markdown("<div style='margin-top: 50px; position: relative;'>", unsafe_allow_html=True)  # CHANGED FROM 0px TO 50px
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1509,6 +1509,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
