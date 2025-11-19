@@ -976,7 +976,7 @@ with right:
     div[role="option"]:hover {
         background-color: #B8B8B8 !important;
         color:black !important;
-        border: none !important;
+        border: no
     }
     
     /* Make buttons smaller in width */
@@ -1094,16 +1094,16 @@ with right:
     div[data-testid="column"]:last-child {
         width: 100% !important;
     }
-    </style>
-    """, unsafe_allow_html=True)
 
-        /* ALIGN ALL CONTENT IN RIGHT PANEL TO THE RIGHT */
+    /* ALIGN ALL CONTENT IN RIGHT PANEL TO THE RIGHT */
     .stApp [data-testid="column"]:last-child > div {
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-end !important;
         width: 100% !important;
     }
+    </style>
+    """, unsafe_allow_html=True)
     
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
@@ -1478,6 +1478,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
