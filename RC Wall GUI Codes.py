@@ -1172,6 +1172,12 @@ with right:
         justify-content: center !important;
         width: 180px !important;
     }}
+    
+    /* MOVE THE CHART UP */
+    div.element-container:has(> iframe) {{
+        position: relative !important;
+        top: -150px !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -1493,6 +1499,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
