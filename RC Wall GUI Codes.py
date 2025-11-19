@@ -1089,29 +1089,29 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT SIZE
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - PROPER SIZES
 # =============================================================================
-    # Add CSS to make everything compact - FORCEFUL
+    # Add CSS to set proper sizes
     st.markdown("""
     <style>
     div[data-testid="stSelectbox"] > div,
     div[data-testid="stSelectbox"] [data-baseweb="select"] {
-        width: 120px !important;
-        min-width: 120px !important;
-        max-width: 120px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
     }
     div[data-testid="column"]:last-child .stButton > button {
-        width: 120px !important;
-        min-width: 120px !important;
-        max-width: 120px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Create narrow container
-    st.markdown('<div style="width: 120px; margin-left: auto; margin-right: 0;">', unsafe_allow_html=True)
+    # Create container with proper width
+    st.markdown('<div style="width: 180px; margin-left: auto; margin-right: 0;">', unsafe_allow_html=True)
     
-    # Model Selection - compact
+    # Model Selection - proper size
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
     ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -1120,7 +1120,7 @@ with right:
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Buttons in vertical stack - compact
+    # Buttons in vertical stack - proper size
     submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     if st.button("Reset", key="reset_btn", use_container_width=True):
         st.rerun()
@@ -1487,6 +1487,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
