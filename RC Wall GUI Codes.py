@@ -1394,23 +1394,28 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Remove all height restrictions and move chart up
+    # COMPLETELY REMOVE ALL HEIGHT RESTRICTIONS FOR THE CHART
     st.markdown("""
     <style>
-    .chart-container {
-        margin-top: -400px !important;
-        height: 500px !important;
-        position: relative !important;
-        z-index: 1000 !important;
+    /* OVERRIDE ALL STREAMLIT HEIGHT RESTRICTIONS FOR CHART AREA */
+    div[data-testid="column"]:last-child {
         overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
+    }
+    
+    div.element-container:has(> div[data-testid="iframe"]) {
+        margin-top: -400px !important;
+        position: relative !important;
+        z-index: 9999 !important;
     }
     </style>
-    <div class="chart-container">
     """, unsafe_allow_html=True)
     
+    # Force the chart to render in a movable container
+    st.markdown("<div style='margin-top: -400px; position: relative; z-index: 9999;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
-    
     st.markdown("</div>", unsafe_allow_html=True)
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1526,6 +1531,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
