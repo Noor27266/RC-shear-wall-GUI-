@@ -734,13 +734,23 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # Apply gray background to entire left panel - SIMPLE FIX
+    # METHOD 1: Remove all empty space first
+    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    
+    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
     st.markdown("""
-    <div style="background:#e0e4ec; margin:0; padding:1rem; border-radius:12px; height:100%;">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0 0 0.5rem 0; padding:0;">
+    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px -20px -20px -20px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
-        
+    """, unsafe_allow_html=True)
+    
+    # METHOD 2: Use multiple empty spaces to push content up
+    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
+    
+    # METHOD 3: Combine title and inputs in one container
+    st.markdown("""
+    <div style="margin: -80px 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
     """, unsafe_allow_html=True)
 
@@ -760,7 +770,8 @@ with left:
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the gray background div
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -1479,6 +1490,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
