@@ -1089,11 +1089,11 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - VERTICAL RIGHT COLUMN
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - INTEGRATED RIGHT SIDE
 # =============================================================================
-    # VERTICAL COLUMN ON FAR RIGHT SIDE
-    st.markdown("<div style='position: absolute; right: 20px; top: 120px; display: flex; flex-direction: column; align-items: flex-end; gap: 20px; width: 200px;'>", unsafe_allow_html=True)
-
+    # Create vertical space first
+    st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
+    
     # Model Selection
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
@@ -1104,15 +1104,16 @@ with right:
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
     # Buttons in vertical stack
+    st.markdown("<div style='height: 10px'></div>", unsafe_allow_html=True)
     submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     
+    st.markdown("<div style='height: 5px'></div>", unsafe_allow_html=True)
     if st.button("Reset", key="reset_btn", use_container_width=True):
         st.rerun()
     
+    st.markdown("<div style='height: 5px'></div>", unsafe_allow_html=True)
     if st.button("Clear All", key="clear_btn", use_container_width=True):
         st.session_state.results_df = pd.DataFrame()
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
     
 # =============================================================================
@@ -1472,6 +1473,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
