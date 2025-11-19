@@ -714,57 +714,22 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # ADD THIS EXACT CSS - IT WILL WORK
+    # SIMPLIFIED CSS - NO SYNTAX ERRORS
     st.markdown("""
     <style>
-    /* TARGET THE MAIN LEFT COLUMN CONTAINER */
     section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
         background-color: #e0e4ec !important;
-        margin: -1rem -1rem -1rem -1rem !important;
+        margin: -2rem -1rem -2rem -1rem !important;
         padding: 1rem !important;
     }
-    
-    /* REMOVE ALL WHITE SPACE FROM STREAMLIT CONTAINERS */
-    .stApp {
+    .stApp, .block-container, section.main {
         padding: 0px !important;
         margin: 0px !important;
-    }
-    
-    .block-container {
-        padding: 0px !important;
-        margin: 0px !important;
-        max-width: 100% !important;
-    }
-    
-    section.main {
-        padding: 0px !important;
-        margin: 0px !important;
-    }
-    
-    /* MAKE SURE THE GRAY COVERS EVERYTHING */
-    section.main [data-testid="stHorizontalBlock"] {
-        padding: 0px !important;
-        margin: 0px !important;
-    }
-    
-    /* REMOVE TOP AND BOTTOM WHITE SPACE SPECIFICALLY */
-    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
-        margin-top: -2rem !important;
-        margin-bottom: -2rem !important;
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-    }
-    
-    /* REMOVE ANY REMAINING VERTICAL PADDING */
-    div[data-testid="column"]:first-child > div {
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # KEEP YOUR EXISTING CONTENT EXACTLY AS IT WAS ORIGINALLY
-    # DON'T CHANGE ANY OF YOUR POSITIONING CODE
+    # KEEP YOUR EXISTING CONTENT EXACTLY AS IT WAS
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -1489,6 +1454,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
