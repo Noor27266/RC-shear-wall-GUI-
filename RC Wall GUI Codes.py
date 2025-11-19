@@ -417,26 +417,16 @@ section.main {
     overflow: visible !important;
     max-height: none !important;
     height: auto !important;
+    margin-top: -150px !important;
+    padding-top: 0px !important;
+}
+
+/* Specifically target the chart container */
+div.element-container:has(> iframe) {
+    margin-top: -150px !important;
 }
 </style>
 """, unsafe_allow_html=True)
-
-# REMOVE THIS CONFLICTING CSS - DELETE THESE LINES:
-# ADD THIS CSS TO MOVE THE CHART UP
-# css("""
-# <style>
-# /* Move the entire right column content up */
-# [data-testid="column"]:last-child {
-#     margin-top: -50px !important;
-#     padding-top: 0px !important;
-# }
-# 
-# /* Specifically target the chart container */
-# div.element-container:has(> div[data-testid="iframe"]) {
-#     margin-top: -50px !important;
-# }
-# </style>
-# """)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -1169,7 +1159,6 @@ with right:
             csv = st.session_state.results_df.to_csv(index=False)
             st.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", 
                               mime="text/csv", use_container_width=True, key="dl_csv_main")
-    
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
@@ -1199,7 +1188,7 @@ with right:
     /* MOVE THE CHART UP */
     div.element-container:has(> iframe) {{
         position: relative !important;
-        top: -150px !important;
+        top: -200px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -1402,7 +1391,7 @@ except NameError:
 # =============================================================================
 with right:
     # Move the chart container UP MUCH MORE
-    st.markdown("<div style='margin-top: -800px; position: relative;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: -900px; position: relative;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
