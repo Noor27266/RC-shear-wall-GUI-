@@ -1089,10 +1089,10 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - FAR RIGHT SIDE
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - VERTICAL RIGHT COLUMN
 # =============================================================================
-    # CONTAINER POSITIONED TO FAR RIGHT
-    st.markdown("<div style='position: absolute; right: 20px; top: 120px; display: flex; flex-direction: column; align-items: flex-end; gap: 15px;'>", unsafe_allow_html=True)
+    # VERTICAL COLUMN ON FAR RIGHT SIDE
+    st.markdown("<div style='position: absolute; right: 20px; top: 120px; display: flex; flex-direction: column; align-items: flex-end; gap: 20px; width: 200px;'>", unsafe_allow_html=True)
 
     # Model Selection
     available = set(model_registry.keys())
@@ -1103,19 +1103,14 @@ with right:
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Buttons in a row
-    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 1], gap="small")
+    # Buttons in vertical stack
+    submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     
-    with btn_col1:
-        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+    if st.button("Reset", key="reset_btn", use_container_width=True):
+        st.rerun()
     
-    with btn_col2:
-        if st.button("Reset", key="reset_btn", use_container_width=True):
-            st.rerun()
-    
-    with btn_col3:
-        if st.button("Clear All", key="clear_btn", use_container_width=True):
-            st.session_state.results_df = pd.DataFrame()
+    if st.button("Clear All", key="clear_btn", use_container_width=True):
+        st.session_state.results_df = pd.DataFrame()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1477,6 +1472,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
