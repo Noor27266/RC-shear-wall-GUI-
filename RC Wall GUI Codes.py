@@ -1089,12 +1089,12 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - INTEGRATED RIGHT SIDE
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
 # =============================================================================
-    # Create vertical space first
-    st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
+    # Compact container on right side
+    st.markdown("<div style='text-align: right;'>", unsafe_allow_html=True)
     
-    # Model Selection
+    # Model Selection - compact
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
     ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -1103,24 +1103,28 @@ with right:
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Buttons in vertical stack
-    st.markdown("<div style='height: 10px'></div>", unsafe_allow_html=True)
-    submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+    # Compact buttons in a row
+    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 1])
     
-    st.markdown("<div style='height: 5px'></div>", unsafe_allow_html=True)
-    if st.button("Reset", key="reset_btn", use_container_width=True):
-        st.rerun()
+    with btn_col1:
+        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     
-    st.markdown("<div style='height: 5px'></div>", unsafe_allow_html=True)
-    if st.button("Clear All", key="clear_btn", use_container_width=True):
-        st.session_state.results_df = pd.DataFrame()
+    with btn_col2:
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            st.rerun()
+    
+    with btn_col3:
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
+            st.session_state.results_df = pd.DataFrame()
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
     
 # =============================================================================
 # 🎮 SUB STEP 9.4: PREDICTION AND DOWNLOAD SECTION
 # =============================================================================
     # USE MULTIPLE EMPTY SPACES TO PUSH CONTENT UP
-    for _ in range(-40):  # ADD MORE EMPTY LINES TO PUSH UP
+    for _ in range(2):  # ADD MORE EMPTY LINES TO PUSH UP
         st.markdown("<br>", unsafe_allow_html=True)
     
     # SIMPLE ONE LINE WITH COLUMNS
@@ -1473,6 +1477,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
