@@ -817,7 +817,7 @@ with left:
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -10, 300
 MODEL_X, MODEL_Y = 100, -2
-CHART_W = 285
+CHART_W = 400
 
 with right:
     st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
@@ -1499,6 +1499,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
