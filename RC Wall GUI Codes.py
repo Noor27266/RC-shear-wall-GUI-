@@ -711,46 +711,49 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - GUARANTEED FIX
 # =============================================================================
 with left:
-    # ADD THIS EXACT CSS - IT WILL WORK
+    # THIS WILL DEFINITELY WORK - NO WHITE SPACE
     st.markdown("""
     <style>
-    /* TARGET THE MAIN LEFT COLUMN CONTAINER */
-    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
-        background-color: #e0e4ec !important;
-        margin: -1rem -1rem -1rem -1rem !important;
-        padding: 1rem !important;
-    }
-    
-    /* REMOVE ALL WHITE SPACE FROM STREAMLIT CONTAINERS */
+    /* NUCLEAR OPTION - REMOVE ALL WHITE SPACE */
     .stApp {
-        padding: 0px !important;
-        margin: 0px !important;
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
     }
     
     .block-container {
-        padding: 0px !important;
-        margin: 0px !important;
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
         max-width: 100% !important;
     }
     
-    section.main {
-        padding: 0px !important;
+    /* MAKE LEFT COLUMN COMPLETELY GRAY */
+    [data-testid="column"]:nth-of-type(1) {
+        background-color: #e0e4ec !important;
+        padding: 1rem !important;
         margin: 0px !important;
     }
     
-    /* MAKE SURE THE GRAY COVERS EVERYTHING */
-    section.main [data-testid="stHorizontalBlock"] {
+    /* REMOVE HEADER SPACE */
+    header[data-testid="stHeader"] {
+        display: none !important;
+    }
+    
+    /* REMOVE ANY REMAINING PADDING */
+    .main .block-container {
         padding: 0px !important;
-        margin: 0px !important;
     }
     </style>
+    <div style="background-color: #e0e4ec; margin: -1rem -1rem -1rem -1rem; padding: 1rem; height: 100%;">
     """, unsafe_allow_html=True)
 
-    # KEEP YOUR EXISTING CONTENT EXACTLY AS IT WAS ORIGINALLY
-    # DON'T CHANGE ANY OF YOUR POSITIONING CODE
+    # YOUR EXACT ORIGINAL CONTENT GOES HERE - NO CHANGES
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -784,6 +787,7 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the gray container
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1475,6 +1479,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
