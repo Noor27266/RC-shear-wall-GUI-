@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
@@ -324,16 +323,17 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+  /* REMOVED: The duplicate gray background rule */
+  /* .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:#e0e4ec !important;
       border-radius:12px !important;
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
-  }}
+  }} */
 
   /* Full page left side gray background - covers entire left side */
   div.stApp {{
-      background: linear-gradient(90deg, #e0e4ec 55%, transparent 55%) !important;
+      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -723,7 +723,7 @@ with left:
     
     # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
     st.markdown("""
-   # <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
@@ -1447,81 +1447,3 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
