@@ -417,13 +417,13 @@ section.main {
     overflow: visible !important;
     max-height: none !important;
     height: auto !important;
-    margin-top: 50px !important;
+    margin-top: 0px !important;
     padding-top: 0px !important;
 }
 
 /* Specifically target the chart container */
 div.element-container:has(> iframe) {
-    margin-top: 50px !important;
+    margin-top: 0px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1185,10 +1185,10 @@ with right:
         width: 180px !important;
     }}
     
-    /* MOVE THE CHART DOWN */
+    /* MOVE THE CHART DOWN - CLOSE THE GAP */
     div.element-container:has(> iframe) {{
         position: relative !important;
-        top: 100px !important;
+        top: 0px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -1390,8 +1390,8 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Move the chart container DOWN
-    st.markdown("<div style='margin-top: 200px; position: relative;'>", unsafe_allow_html=True)
+    # Move the chart container DOWN - VERY LITTLE SPACE
+    st.markdown("<div style='margin-top: 0px; position: relative;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1509,6 +1509,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
