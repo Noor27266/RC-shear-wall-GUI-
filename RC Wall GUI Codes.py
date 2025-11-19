@@ -391,7 +391,7 @@ section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 
-/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
+/* REMOVE ALL HEIGHT RESTRICTIONS TO ALLOW CHART MOVEMENT */
 html, body, #root, .stApp {
     overflow: visible !important;
     max-height: none !important;
@@ -411,24 +411,32 @@ section.main {
     overflow: visible !important;
     min-height: 100vh !important;
 }
+
+/* SPECIFICALLY ALLOW THE RIGHT COLUMN TO MOVE */
+[data-testid="column"]:last-child {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
+# REMOVE THIS CONFLICTING CSS - DELETE THESE LINES:
 # ADD THIS CSS TO MOVE THE CHART UP
-css("""
-<style>
-/* Move the entire right column content up */
-[data-testid="column"]:last-child {
-    margin-top: -150px !important;
-    padding-top: 0px !important;
-}
-
-/* Specifically target the chart container */
-div.element-container:has(> div[data-testid="iframe"]) {
-    margin-top: -150px !important;
-}
-</style>
-""")
+# css("""
+# <style>
+# /* Move the entire right column content up */
+# [data-testid="column"]:last-child {
+#     margin-top: -150px !important;
+#     padding-top: 0px !important;
+# }
+# 
+# /* Specifically target the chart container */
+# div.element-container:has(> div[data-testid="iframe"]) {
+#     margin-top: -150px !important;
+# }
+# </style>
+# """)
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -1394,26 +1402,8 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # COMPLETELY REMOVE ALL HEIGHT RESTRICTIONS FOR THE CHART
-    st.markdown("""
-    <style>
-    /* OVERRIDE ALL STREAMLIT HEIGHT RESTRICTIONS FOR CHART AREA */
-    div[data-testid="column"]:last-child {
-        overflow: visible !important;
-        max-height: none !important;
-        height: auto !important;
-    }
-    
-    div.element-container:has(> div[data-testid="iframe"]) {
-        margin-top: -400px !important;
-        position: relative !important;
-        z-index: 9999 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Force the chart to render in a movable container
-    st.markdown("<div style='margin-top: -400px; position: relative; z-index: 9999;'>", unsafe_allow_html=True)
+    # Move the chart container UP - SIMPLE AND DIRECT
+    st.markdown("<div style='margin-top: -300px;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1531,6 +1521,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
