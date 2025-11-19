@@ -1139,10 +1139,10 @@ with right:
     pred_col, dl_col = st.columns([2, 1.5])
     
     with pred_col:
-        # pred_banner is already defined above
+        pass  # pred_banner is already defined above
         
     with dl_col:
-        # dl_slot is already defined above
+        pass  # dl_slot is already defined above
 
     # STYLING
     st.markdown(f"""
@@ -1482,6 +1482,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
