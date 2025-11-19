@@ -1087,14 +1087,14 @@ with right:
         min-width: 180px !important;
         max-width: 180px !important;
     }
-    </style>
-    """, unsafe_allow_html=True)
 
-     /* MOVE MODEL SELECTION AND BUTTONS TO THE RIGHT */
+    /* MOVE MODEL SELECTION AND BUTTONS TO THE RIGHT */
     div[data-testid="column"]:nth-child(2) {
         margin-left: auto !important;
         margin-right: 80px !important;
     }
+    </style>
+    """, unsafe_allow_html=True)
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
 # =============================================================================
@@ -1476,6 +1476,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
