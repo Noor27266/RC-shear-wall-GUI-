@@ -1089,12 +1089,15 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - VERTICAL RIGHT SIDE
 # =============================================================================
-    # Compact container on right side
-    st.markdown("<div style='text-align: right;'>", unsafe_allow_html=True)
+    # Create a container that pushes everything to the right
+    st.markdown("<div style='display: flex; justify-content: flex-end;'>", unsafe_allow_html=True)
     
-    # Model Selection - compact
+    # Create a narrow column for vertical stacking
+    st.markdown("<div style='width: 200px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;'>", unsafe_allow_html=True)
+    
+    # Model Selection
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
     ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -1103,21 +1106,15 @@ with right:
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Compact buttons in a row
-    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 1])
-    
-    with btn_col1:
-        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-    
-    with btn_col2:
-        if st.button("Reset", key="reset_btn", use_container_width=True):
-            st.rerun()
-    
-    with btn_col3:
-        if st.button("Clear All", key="clear_btn", use_container_width=True):
-            st.session_state.results_df = pd.DataFrame()
+    # Buttons in vertical stack
+    submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+    if st.button("Reset", key="reset_btn", use_container_width=True):
+        st.rerun()
+    if st.button("Clear All", key="clear_btn", use_container_width=True):
+        st.session_state.results_df = pd.DataFrame()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)  # Close narrow column
+    st.markdown("</div>", unsafe_allow_html=True)  # Close flex container
 
     
 # =============================================================================
@@ -1477,6 +1474,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
