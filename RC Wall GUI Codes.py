@@ -1394,25 +1394,9 @@ except NameError:
 # =============================================================================
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
-try:
-    _slot = chart_slot
-except NameError:
-    _slot = st.empty()
-
-# =============================================================================
-# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
-# =============================================================================
-try:
-    _slot = chart_slot
-except NameError:
-    _slot = st.empty()
-
-# =============================================================================
-# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
-# =============================================================================
 with right:
     # Move the chart up significantly
-    st.markdown("<div style='margin-top: -800px;'>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: -400px;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1556,6 +1540,7 @@ div.st-emotion-cache-1jicfl2 {
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
