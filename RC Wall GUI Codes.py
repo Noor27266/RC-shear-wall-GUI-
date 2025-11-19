@@ -1088,10 +1088,11 @@ with right:
         max-width: 180px !important;
     }
 
-    /* MOVE MODEL SELECTION AND BUTTONS TO THE RIGHT */
+        /* MOVE MODEL SELECTION AND BUTTONS TO THE RIGHT - FIXED */
     div[data-testid="column"]:nth-child(2) {
         margin-left: auto !important;
         margin-right: 100px !important;
+        transform: translateX(50px) !important;
     }
     
     /* Specifically target the right panel container */
@@ -1103,26 +1104,25 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
 # =============================================================================
-    # Create container aligned to right
-    st.markdown('<div style="width: 180px; margin-left: auto; margin-right: 0;">', unsafe_allow_html=True)
+    # Use Streamlit columns to force right alignment
+    col1, col2, col3 = st.columns([1, 180, 1])
     
-    # Model Selection
-    available = set(model_registry.keys())
-    order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
-    ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
-    display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
-    _label_to_key = {"RF": "Random Forest"}
-    model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
-    model_choice = _label_to_key.get(model_choice_label, model_choice_label)
+    with col2:
+        # Model Selection
+        available = set(model_registry.keys())
+        order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
+        ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
+        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+        _label_to_key = {"RF": "Random Forest"}
+        model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
+        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Buttons in vertical stack
-    submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-    if st.button("Reset", key="reset_btn", use_container_width=True):
-        st.rerun()
-    if st.button("Clear All", key="clear_btn", use_container_width=True):
-        st.session_state.results_df = pd.DataFrame()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+        # Buttons in vertical stack
+        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            st.rerun()
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
+            st.session_state.results_df = pd.DataFrame()
 
     
 # =============================================================================
@@ -1482,6 +1482,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
