@@ -1089,30 +1089,30 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - ABSOLUTE RIGHT POSITION
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT SIZE
 # =============================================================================
-    # Add CSS for absolute positioning
+    # Add CSS to make everything compact
     st.markdown("""
     <style>
-    .right-side-controls {
-        position: absolute !important;
-        right: 30px !important;
-        top: 200px !important;
-        width: 180px !important;
-        z-index: 1000 !important;
+    .compact-controls {
+        width: 150px !important;
     }
-    .right-side-controls .stSelectbox,
-    .right-side-controls .stButton {
-        width: 100% !important;
-        margin-bottom: 10px !important;
+    .compact-controls .stSelectbox > div,
+    .compact-controls .stSelectbox [data-baseweb="select"] {
+        width: 150px !important;
+        min-width: 150px !important;
+    }
+    .compact-controls .stButton > button {
+        width: 150px !important;
+        min-width: 150px !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Create the absolutely positioned container
-    st.markdown('<div class="right-side-controls">', unsafe_allow_html=True)
+    # Create compact container
+    st.markdown('<div class="compact-controls" style="margin-left: auto; margin-right: 0; width: 150px;">', unsafe_allow_html=True)
     
-    # Model Selection
+    # Model Selection - compact
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
     ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -1121,7 +1121,7 @@ with right:
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Buttons in vertical stack
+    # Buttons in vertical stack - compact
     submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     if st.button("Reset", key="reset_btn", use_container_width=True):
         st.rerun()
@@ -1488,6 +1488,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
