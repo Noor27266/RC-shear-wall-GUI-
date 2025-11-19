@@ -222,7 +222,21 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 css(f"""
 <style>
-  .block-container {{ padding-top: 0.5rem !important; }}
+  .block-container {{ 
+    padding-top: 0rem !important; 
+    padding-bottom: 0rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    margin: 0rem !important;
+  }}
+
+  section.main > div.block-container {{ 
+    padding-top:0rem !important; 
+    padding-bottom:0rem !important;
+    margin-top:0 !important; 
+    margin-bottom:0 !important;
+  }}
+
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
@@ -714,17 +728,22 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # SIMPLIFIED CSS - NO SYNTAX ERRORS
+    # ADD THIS CSS TO REMOVE WHITE SPACE
     st.markdown("""
     <style>
-    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
+    /* REMOVE ALL PADDING FROM LEFT COLUMN */
+    div[data-testid="column"]:first-child {
         background-color: #e0e4ec !important;
-        margin: -2rem -1rem -2rem -1rem !important;
-        padding: 1rem !important;
-    }
-    .stApp, .block-container, section.main {
-        padding: 0px !important;
         margin: 0px !important;
+        padding: 0px !important;
+    }
+    
+    /* REMOVE SPECIFIC WHITE SPACE AROUND LEFT COLUMN */
+    section.main [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child {
+        margin-top: -1rem !important;
+        margin-bottom: -1rem !important;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1454,6 +1473,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
