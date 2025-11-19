@@ -326,13 +326,14 @@ css(f"""
 
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:#e0e4ec !important;
-      border-radius:0 !important;
+      border-radius:12px !important;
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
-      margin: -100px 0px -100px -100px !important;
-      padding-left: 32px !important;
-      min-height: 150vh !important;
-      width: calc(100% + 100px) !important;
+  }}
+
+  /* Full left side gray background */
+  section.main .block-container {{
+      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -1446,6 +1447,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
