@@ -307,12 +307,12 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* 🔴 IMPORTANT: disable the old small grey background.
-     We let the big HTML wrapper in STEP 8.8 handle the grey card. */
+  /* 🔴 REMOVE the small gray wrapper – let the big wrapper in STEP 8.8 handle background */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:transparent !important;
-      box-shadow:none !important;
       padding:0 !important;
+      border:none !important;
+      box-shadow:none !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -322,11 +322,11 @@ css(f"""
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
+  /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
-
 
 
 
@@ -1460,6 +1460,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
