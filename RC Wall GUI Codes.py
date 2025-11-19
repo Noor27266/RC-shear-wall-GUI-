@@ -341,14 +341,6 @@ css(f"""
   /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
-
-  /* REMOVE WHITE SPACE FROM LEFT PANEL - ONLY CHANGE ADDED */
-  [data-testid="column"]:first-child > div {{
-      background: #e0e4ec !important;
-      margin: -1rem !important;
-      padding: 1rem !important;
-      border-radius: 12px !important;
-  }}
 </style>
 """)
 
@@ -760,6 +752,7 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -1341,46 +1334,18 @@ with right:
 # =============================================================================
 
 # =============================================================================
-# 🎨 SUB STEP 12.1: FORM BANNER STYLING OVERRIDE - ENHANCED FOR FULL GRAY
+# 🎨 SUB STEP 12.1: FORM BANNER STYLING OVERRIDE
 # =============================================================================
 st.markdown("""
 <style>
-/* Remove all white space from left panel */
-[data-testid="column"]:first-child {
-    background: #e0e4ec !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Ensure left panel takes full height */
-section.main [data-testid="column"]:first-child > div {
-    background: #e0e4ec !important;
-    margin: -1rem !important;
-    padding: 1rem !important;
-    border-radius: 12px !important;
-    min-height: calc(100vh - 2rem) !important;
-}
-
-/* Remove any gaps between columns */
-[data-testid="stHorizontalBlock"] {
-    gap: 0 !important;
-}
-
-/* Ensure the gray background covers top to bottom */
-[data-testid="column"]:first-child .stNumberInput,
-[data-testid="column"]:first-child .stSelectbox,
-[data-testid="column"]:first-child .section-header,
-[data-testid="column"]:first-child .form-banner {
-    background: transparent !important;
-}
-
 .form-banner{
   background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
   color: #fff !important;
   text-align: center !important;
   border-radius: 10px !important;
   padding: .45rem .75rem !important;
-  margin: 0 0 1rem 0 !important;
+  margin-top: 65px !important;
+  transform: translateY(0) !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1478,12 +1443,6 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-
-
-
-
-
-
 
 
 
