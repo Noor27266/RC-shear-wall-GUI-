@@ -1395,8 +1395,16 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Move the chart up significantly
-    st.markdown("<div style='margin-top: -400px;'>", unsafe_allow_html=True)
+    # Move the chart up significantly - REMOVE ALL HEIGHT RESTRICTIONS
+    st.markdown("""
+    <div style='
+        margin-top: -500px !important; 
+        position: relative !important;
+        z-index: 1000 !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    '>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1540,6 +1548,7 @@ div.st-emotion-cache-1jicfl2 {
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
