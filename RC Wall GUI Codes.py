@@ -714,64 +714,96 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # FIX: Apply gray background to the entire left column container
+    # FIRST: Apply CSS to make entire left column gray and remove all white space
     st.markdown("""
     <style>
-    /* MAKE ENTIRE LEFT COLUMN GRAY */
-    div[data-testid="column"]:first-child {
+    /* TARGET THE LEFT COLUMN SPECIFICALLY AND MAKE IT COMPLETELY GRAY */
+    div[data-testid="column"]:nth-child(1) {
         background-color: #e0e4ec !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
-        margin: -15px 0 -15px -15px !important;
-        min-height: 100vh !important;
+        margin: -30px -20px -30px -30px !important;
+        padding: 30px 25px 30px 30px !important;
+        border-radius: 0px !important;
+        min-height: calc(100vh + 60px) !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
     
-    /* Remove all white spaces and padding from left container */
-    .main .block-container {
+    /* REMOVE ALL WHITE SPACE FROM MAIN CONTAINER */
+    section.main {
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    .block-container {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+    
+    /* REMOVE HEADER SPACE COMPLETELY */
+    header[data-testid="stHeader"] {
+        height: 0px !important;
+        min-height: 0px !important;
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    /* REMOVE SPACING AROUND COLUMNS */
+    [data-testid="column"] {
         padding-top: 0px !important;
         padding-bottom: 0px !important;
     }
     
-    /* Ensure the gray background covers everything */
-    div[data-testid="column"]:first-child > div {
+    /* ENSURE ALL CONTENT IN LEFT COLUMN IS VISIBLE */
+    div[data-testid="column"]:nth-child(1) > div {
         background: transparent !important;
+        margin: 0px !important;
+        padding: 0px !important;
     }
     
-    /* Remove any remaining white spaces */
-    .stNumberInput, .stSelectbox, .section-header, .form-banner {
-        margin-bottom: 5px !important;
-        padding-bottom: 0px !important;
+    /* COMPACT ALL ELEMENTS */
+    .stNumberInput, .stSelectbox {
+        margin-bottom: 8px !important;
+        padding: 0px !important;
+    }
+    
+    .section-header {
+        margin: 5px 0 8px 0 !important;
+        padding: 0px !important;
+    }
+    
+    .form-banner {
+        margin: 0px 0 15px 0 !important;
+        padding: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Remove the individual gray containers and use one continuous gray background
+    # SIMPLIFIED CONTENT - NO EXTRA CONTAINERS
     st.markdown("""
-    <div style="background:transparent; margin:-20px 0 0 0; padding:0;">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0 0 10px 0; padding:0;">
-            Predict Damage index (DI) for RC Shear Walls
-        </div>
+    <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0 0 15px 0; padding:0;">
+        Predict Damage index (DI) for RC Shear Walls
+    </div>
     """, unsafe_allow_html=True)
     
     st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
 
-    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
+    # Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Geometry</div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
     with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>Reinf. Ratios</div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
     with c3:
         st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1463,6 +1495,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
