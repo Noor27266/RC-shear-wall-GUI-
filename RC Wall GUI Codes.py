@@ -130,41 +130,58 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 # Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-/* No background color here – keep page background default (white/light) */
-html, body{
-    margin:0 !important;
-    padding:0 !important;
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+
+/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
+html, body, #root, .stApp {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
 }
 
-/* Hide the default Streamlit header bar */
-header[data-testid="stHeader"]{
-    height:0 !important;
-    padding:0 !important;
-    background:transparent !important;
-}
-header[data-testid="stHeader"] *{
-    display:none !important;
+section.main {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
 }
 
-/* Pull the app a bit up */
-div.stApp{
-    margin-top:-2rem !important;
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
 }
 
-/* Only control spacing of the main container, no background here */
-section.main > div.block-container{
-    padding-top:0.5rem !important;
-    margin-top:0 !important;
+/* Remove horizontal scroll */
+section.main, div.stApp {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
 }
 
-/* Keep Altair charts responsive */
-.vega-embed,
-.vega-embed .chart-wrapper{
-    max-width:100% !important;
+/* Compact the layout */
+[data-testid="stHorizontalBlock"] {
+    margin-top: -10px !important;
+    margin-bottom: -10px !important;
+}
+
+/* Reduce spacing in columns */
+[data-testid="column"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Make sure content fits */
+.stNumberInput, .stSelectbox {
+    margin-bottom: 5px !important;
 }
 </style>
 """, unsafe_allow_html=True)
-
 # =============================================================================
 # 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
 # =============================================================================
@@ -199,6 +216,7 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
+
 # =============================================================================
 # 🎨 SUB STEP 3.1.1: MAIN CSS STYLING DEFINITION
 # =============================================================================
@@ -306,12 +324,11 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* 🔴 REMOVE the small gray wrapper – let the big wrapper in STEP 8.8 handle background */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:transparent !important;
-      padding:0 !important;
-      border:none !important;
-      box-shadow:none !important;
+      background:{LEFT_BG} !important;
+      border-radius:12px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -327,48 +344,21 @@ css(f"""
 </style>
 """)
 
-
-
-
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
 # =============================================================================
 # Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-html, body{
-    margin:0 !important;
-    padding:0 !important;
-}
-
-/* Hide Streamlit default header */
-header[data-testid="stHeader"]{
-    height:0 !important;
-    padding:0 !important;
-    background:transparent !important;
-}
-header[data-testid="stHeader"] *{
-    display:none !important;
-}
-
-/* Pull app slightly up */
-div.stApp{
-    margin-top:-2rem !important;
-}
-
-/* Control only spacing, not background */
-section.main > div.block-container{
-    padding-top:0.5rem !important;
-    margin-top:0 !important;
-}
-
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+div.stApp{ margin-top:-2rem !important; }
+section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
 /* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{
-    max-width:100% !important;
-}
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 </style>
 """, unsafe_allow_html=True)
-
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -724,33 +714,28 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-
-    # MAIN WRAPPER FOR LEFT GREY BACKGROUND — EXPANDED TO TOP/LEFT/BOTTOM
+    # METHOD 1: Remove all empty space first
+    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    
+    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
     st.markdown("""
-    <div style="
-        background:#e0e4ec;
-        border-radius:12px;
-        padding:25px;
-        margin:-40px -30px -40px -40px;  /* TOP, RIGHT, BOTTOM, LEFT */
-        width:calc(100% + 40px);
-    ">
-        <div style="
-            text-align:center;
-            font-size:25px;
-            font-weight:600;
-            color:#333;
-            margin:0;
-            padding-bottom:15px;
-        ">
+    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
+    
+    # METHOD 2: Use multiple empty spaces to push content up
+    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
+    
+    # METHOD 3: Combine title and inputs in one container
+    st.markdown("""
+    <div style="margin: -80px 0 0 0; padding: 0;">
+        <div class='form-banner'>Inputs Features</div>
+    """, unsafe_allow_html=True)
 
-    # Banner
-    st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
-
-    # Columns
-    c1, c2, c3 = st.columns([1,1,1], gap="small")
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
+    c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
         st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
@@ -765,10 +750,8 @@ with left:
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
-    # CLOSE THE WRAPPER
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1460,6 +1443,58 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
