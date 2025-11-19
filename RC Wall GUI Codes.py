@@ -199,10 +199,6 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 
 # =============================================================================
-# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
-# =============================================================================
-
-# =============================================================================
 # 🎨 SUB STEP 3.1.1: MAIN CSS STYLING DEFINITION
 # =============================================================================
 css(f"""
@@ -309,16 +305,15 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* 🔽 THIS RULE IS THE ONLY ONE CHANGED */
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
-      background:{LEFT_BG} !important;
+  /* ⭐⭐⭐ THE ONLY FIX YOU NEED ⭐⭐⭐ */
+  /* Make ONLY LEFT COLUMN grey (right column stays white) */
+  div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-of-type(1) {{
+      background:#e0e4ec !important;
       border-radius:12px !important;
-      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-      padding:16px !important;
-      /* extend grey outward without moving inner content */
-      margin-top:-20px !important;
-      margin-bottom:-20px !important;
-      margin-left:-20px !important;
+      padding:20px !important;
+      margin-left:-15px !important;
+      margin-top:-15px !important;
+      margin-bottom:-15px !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -328,11 +323,11 @@ css(f"""
   }}
   [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
 
-  /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
+
 
 
 # =============================================================================
@@ -1442,6 +1437,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
