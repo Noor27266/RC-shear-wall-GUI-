@@ -1091,26 +1091,25 @@ with right:
 # =============================================================================
 # 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT SIZE
 # =============================================================================
-    # Add CSS to make everything compact
+    # Add CSS to make everything compact - FORCEFUL
     st.markdown("""
     <style>
-    .compact-controls {
-        width: 150px !important;
+    div[data-testid="stSelectbox"] > div,
+    div[data-testid="stSelectbox"] [data-baseweb="select"] {
+        width: 120px !important;
+        min-width: 120px !important;
+        max-width: 120px !important;
     }
-    .compact-controls .stSelectbox > div,
-    .compact-controls .stSelectbox [data-baseweb="select"] {
-        width: 150px !important;
-        min-width: 150px !important;
-    }
-    .compact-controls .stButton > button {
-        width: 150px !important;
-        min-width: 150px !important;
+    div[data-testid="column"]:last-child .stButton > button {
+        width: 120px !important;
+        min-width: 120px !important;
+        max-width: 120px !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Create compact container
-    st.markdown('<div class="compact-controls" style="margin-left: auto; margin-right: 0; width: 150px;">', unsafe_allow_html=True)
+    # Create narrow container
+    st.markdown('<div style="width: 120px; margin-left: auto; margin-right: 0;">', unsafe_allow_html=True)
     
     # Model Selection - compact
     available = set(model_registry.keys())
@@ -1488,6 +1487,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
