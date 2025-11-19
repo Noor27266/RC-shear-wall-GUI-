@@ -307,15 +307,12 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* ⭐⭐⭐ THE ONLY FIX YOU NEED ⭐⭐⭐ */
-  /* Make ONLY LEFT COLUMN grey (right column stays white) */
-  div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-of-type(1) {{
-      background:#e0e4ec !important;
+  /* 🔹 Make ONLY the left input block grey (block that contains .form-banner) */
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:{LEFT_BG} !important;
       border-radius:12px !important;
-      padding:20px !important;
-      margin-left:-15px !important;
-      margin-top:-15px !important;
-      margin-bottom:-15px !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -338,15 +335,39 @@ css(f"""
 # Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+html, body{
+    margin:0 !important;
+    padding:0 !important;
+}
+
+/* Hide Streamlit default header */
+header[data-testid="stHeader"]{
+    height:0 !important;
+    padding:0 !important;
+    background:transparent !important;
+}
+header[data-testid="stHeader"] *{
+    display:none !important;
+}
+
+/* Pull app slightly up */
+div.stApp{
+    margin-top:-2rem !important;
+}
+
+/* Control only spacing, not background */
+section.main > div.block-container{
+    padding-top:0.5rem !important;
+    margin-top:0 !important;
+}
+
 /* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+.vega-embed, .vega-embed .chart-wrapper{
+    max-width:100% !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -1439,6 +1460,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
