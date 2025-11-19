@@ -1089,12 +1089,30 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - COMPACT RIGHT SIDE
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - ABSOLUTE RIGHT POSITION
 # =============================================================================
-    # Compact container pushed to far right
-    st.markdown("<div style='position: absolute; right: 50px; top: 150px; width: 150px;'>", unsafe_allow_html=True)
+    # Add CSS for absolute positioning
+    st.markdown("""
+    <style>
+    .right-side-controls {
+        position: absolute !important;
+        right: 30px !important;
+        top: 200px !important;
+        width: 180px !important;
+        z-index: 1000 !important;
+    }
+    .right-side-controls .stSelectbox,
+    .right-side-controls .stButton {
+        width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
-    # Model Selection - compact
+    # Create the absolutely positioned container
+    st.markdown('<div class="right-side-controls">', unsafe_allow_html=True)
+    
+    # Model Selection
     available = set(model_registry.keys())
     order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
     ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -1103,14 +1121,14 @@ with right:
     model_choice_label = st.selectbox("Model Selection", display_labels, key="model_select_compact")
     model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
-    # Buttons in vertical stack - compact
+    # Buttons in vertical stack
     submit = st.button("Calculate", key="calc_btn", use_container_width=True)
     if st.button("Reset", key="reset_btn", use_container_width=True):
         st.rerun()
     if st.button("Clear All", key="clear_btn", use_container_width=True):
         st.session_state.results_df = pd.DataFrame()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     
 # =============================================================================
@@ -1470,6 +1488,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
