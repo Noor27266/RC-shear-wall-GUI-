@@ -212,6 +212,22 @@ INPUT_BG     = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG      = "#e0e4ec"
 
+# ADD THIS CSS TO MOVE THE CHART UP
+css("""
+<style>
+/* Move the entire right column content up */
+[data-testid="column"]:last-child {
+    margin-top: -100px !important;
+    padding-top: 0px !important;
+}
+
+/* Specifically target the chart container */
+div.element-container:has(> div[data-testid="iframe"]) {
+    margin-top: -100px !important;
+}
+</style>
+""")
+
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
@@ -1477,6 +1493,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
