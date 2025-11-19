@@ -1094,23 +1094,6 @@ with right:
     div[data-testid="column"]:last-child {
         width: 100% !important;
     }
-
-    /* ALIGN ALL CONTENT IN RIGHT PANEL TO THE RIGHT - FIXED */
-    div[data-testid="column"]:last-child > div > div {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-end !important;
-        width: 100% !important;
-        margin-left: auto !important;
-    }
-    
-    /* Specifically target Streamlit elements in right panel */
-    div[data-testid="column"]:last-child .stSelectbox,
-    div[data-testid="column"]:last-child .stButton,
-    div[data-testid="column"]:last-child .stEmpty {
-        margin-left: auto !important;
-        margin-right: 0 !important;
-    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -1487,6 +1470,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
