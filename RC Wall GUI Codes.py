@@ -180,26 +180,6 @@ section.main, div.stApp {
 .stNumberInput, .stSelectbox {
     margin-bottom: 5px !important;
 }
-
-/* Remove white spaces from left panel */
-[data-testid="column"]:first-child {
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* Make sure the gray background covers everything */
-[data-testid="column"]:first-child > div {
-    background: #e0e4ec !important;
-    border-radius: 12px !important;
-    padding: 1rem !important;
-    margin: 0 !important;
-    height: 100% !important;
-}
-
-/* Remove any gaps */
-[data-testid="stHorizontalBlock"] {
-    gap: 0rem !important;
-}
 </style>
 """, unsafe_allow_html=True)
 # =============================================================================
@@ -361,6 +341,14 @@ css(f"""
   /* Keep consistent sizes for model select label and buttons */
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
+
+  /* REMOVE WHITE SPACE FROM LEFT PANEL - ONLY CHANGE ADDED */
+  [data-testid="column"]:first-child > div {{
+      background: #e0e4ec !important;
+      margin: -1rem !important;
+      padding: 1rem !important;
+      border-radius: 12px !important;
+  }}
 </style>
 """)
 
@@ -739,7 +727,7 @@ with left:
     
     # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px -20px -20px -20px; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
@@ -1490,6 +1478,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
