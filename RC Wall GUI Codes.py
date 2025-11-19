@@ -331,24 +331,24 @@ css(f"""
       padding:16px !important;
   }} */
 
-    /* Full page left side gray background - covers entire left side and bottom */
-  html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {
+  /* Full page left side gray background - covers entire left side and bottom */
+  html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {{
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
       min-height: 100vh !important;
       height: auto !important;
-  }
+  }}
 
   /* Remove any bottom margins that create white space */
-  .stApp, .main, .block-container, [data-testid="stHorizontalBlock"] {
+  .stApp, .main, .block-container, [data-testid="stHorizontalBlock"] {{
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
-  }
+  }}
 
   /* Ensure content containers extend fully */
-  [data-testid="column"]:first-child {
+  [data-testid="column"]:first-child {{
       min-height: 100vh !important;
       background: #e0e4ec !important;
-  }
+  }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
@@ -1482,6 +1482,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
