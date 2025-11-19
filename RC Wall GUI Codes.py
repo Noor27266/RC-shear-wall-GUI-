@@ -412,18 +412,41 @@ section.main {
     min-height: 100vh !important;
 }
 
+/* Remove horizontal scroll */
+section.main, div.stApp {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+/* Compact the layout */
+[data-testid="stHorizontalBlock"] {
+    margin-top: -10px !important;
+    margin-bottom: -10px !important;
+}
+
+/* Reduce spacing in columns */
+[data-testid="column"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Make sure content fits */
+.stNumberInput, .stSelectbox {
+    margin-bottom: 5px !important;
+}
+
 /* SPECIFICALLY ALLOW THE RIGHT COLUMN TO MOVE */
 [data-testid="column"]:last-child {
     overflow: visible !important;
     max-height: none !important;
     height: auto !important;
-    margin-top: 50px !important;
+    margin-top: 0px !important;
     padding-top: 0px !important;
 }
 
 /* Specifically target the chart container */
 div.element-container:has(> iframe) {
-    margin-top: 50px !important;
+    margin-top: 0px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1513,6 +1536,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
