@@ -391,15 +391,15 @@ section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 
 /* Keep Altair responsive */
 .vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
 
-/* REMOVE ALL HEIGHT RESTRICTIONS TO ALLOW CHART MOVEMENT */
+/* ALLOW SCROLLING AND MOVEMENT */
 html, body, #root, .stApp {
-    overflow: visible !important;
+    overflow: auto !important;
     max-height: none !important;
     height: auto !important;
 }
 
 section.main {
-    overflow: visible !important;
+    overflow: auto !important;
     max-height: none !important;
     height: auto !important;
 }
@@ -408,7 +408,7 @@ section.main {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
     max-height: none !important;
-    overflow: visible !important;
+    overflow: auto !important;
     min-height: 100vh !important;
 }
 
@@ -417,13 +417,13 @@ section.main {
     overflow: visible !important;
     max-height: none !important;
     height: auto !important;
-    margin-top: 0px !important;
+    margin-top: 50px !important;
     padding-top: 0px !important;
 }
 
 /* Specifically target the chart container */
 div.element-container:has(> iframe) {
-    margin-top: 0px !important;
+    margin-top: 50px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1390,8 +1390,8 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Move the chart container DOWN - ADD SOME SPACE
-    st.markdown("<div style='margin-top: 50px; position: relative;'>", unsafe_allow_html=True)  # CHANGED FROM 0px TO 50px
+    # Move the chart container DOWN
+    st.markdown("<div style='margin-top: 100px; position: relative;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1509,6 +1509,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
