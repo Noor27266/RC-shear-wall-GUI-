@@ -324,14 +324,14 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {
-    background:#e0e4ec !important;
-    border-radius:0 !important;
-    box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
-    padding:16px !important;
-    margin: -200px 0px -200px -200px !important;
-    min-height: 150vh !important;
-}
+  .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
+      background:#e0e4ec !important;
+      border-radius:0 !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
+      padding:16px !important;
+      margin: -200px 0px -200px -200px !important;
+      min-height: 150vh !important;
+  }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
   [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
@@ -1444,6 +1444,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
