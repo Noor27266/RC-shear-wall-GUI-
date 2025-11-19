@@ -1,4 +1,3 @@
-
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
@@ -414,6 +413,22 @@ section.main {
 }
 </style>
 """, unsafe_allow_html=True)
+
+# ADD THIS CSS TO MOVE THE CHART UP
+css("""
+<style>
+/* Move the entire right column content up */
+[data-testid="column"]:last-child {
+    margin-top: -150px !important;
+    padding-top: 0px !important;
+}
+
+/* Specifically target the chart container */
+div.element-container:has(> div[data-testid="iframe"]) {
+    margin-top: -150px !important;
+}
+</style>
+""")
 
 # =============================================================================
 # ⚙️ STEP 5: FEATURE FLAGS & SIDEBAR TUNING CONTROLS
@@ -1379,8 +1394,8 @@ except NameError:
 # ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION
 # =============================================================================
 with right:
-    # Move the chart up more significantly
-    st.markdown("<div style='margin-top: -100px;'>", unsafe_allow_html=True)
+    # Move the chart up significantly
+    st.markdown("<div style='margin-top: -500px;'>", unsafe_allow_html=True)
     with _slot:
         render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1494,85 +1509,7 @@ if _LOGO_H    is not None: _rules.append(f".page-header__logo{{height:{_LOGO_H}p
 # =============================================================================
 if _rules:
     css("<style id='late-font-logo-overrides'>" + "\n".join(_rules) + "</style>")
-# =============================================================================
-# 🎛️ SUB STEP 14.6: MOVE DI-THETA PLOT UP
-# =============================================================================
-css("""
-<style>
-/* SPECIFICALLY TARGET AND MOVE THE DI-THETA PLOT UP */
-div.element-container:has(> div[data-testid="iframe"]) {
-    margin-top: -80px !important;
-    position: relative !important;
-    top: -80px !important;
-}
-
-/* Alternative selector if the above doesn't work */
-div[data-testid="iframe"] {
-    margin-top: -80px !important;
-}
-
-/* Ensure the chart container moves up */
-div.st-emotion-cache-1jicfl2 {
-    margin-top: -80px !important;
-}
-</style>
-""")
 
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
-# =============================================================================
-# ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
-# =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
