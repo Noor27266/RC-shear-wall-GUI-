@@ -813,19 +813,20 @@ with right:
         """,
         unsafe_allow_html=True,
     )
-
 # =============================================================================
 # 🎮 SUB STEP 9.2: STYLING AND CSS CONFIGURATION
 # =============================================================================
     st.markdown(""" 
     <style>
-    /* Make all elements in the action row with custom widths */
+    /* Make all elements in the action row with custom widths - RIGHT ALIGNED */
     #action-row { 
         display: flex !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 15px !important;
         width: 100% !important;
         margin-top: 0px !important;
+        padding-right: 20px !important;
     }
     
     /* COMPLETELY REMOVE ALL BLACK BORDERS AND BLACK ELEMENTS - ENHANCED */
@@ -1029,9 +1030,9 @@ with right:
         margin-top: 0px !important;
     }
     
-    /* FIX: MOVE MODEL SELECTION CONTAINER UP */
+    /* FIX: MOVE MODEL SELECTION CONTAINER UP - RIGHT ALIGNED */
     .model-selection-container {
-        margin-top: -450px !important;
+        margin-top: -5px !important;
         padding-top: 0px !important;
     }
     
@@ -1090,13 +1091,13 @@ with right:
 
  
 # =============================================================================
-# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS
+# 🎮 SUB STEP 9.3: ACTION ROW WITH MODEL SELECTION AND BUTTONS - RIGHT ALIGNED
 # =============================================================================
-    # SINGLE ROW WITH CUSTOM WIDTHS - MODEL SELECTION LARGER, BUTTONS SMALLER
+    # SINGLE ROW WITH ALL ELEMENTS RIGHT ALIGNED - MODEL SELECTION + 3 BUTTONS
     st.markdown("<div id='action-row'>", unsafe_allow_html=True)
 
-    # Use custom weights: Model selection larger (1.5), buttons smaller (1 each)
-    model_col, calc_col, reset_col, clear_col = st.columns([1.5, 1, 1, 1], gap="small")
+    # Use columns with custom weights - all elements in one row aligned to right
+    model_col, calc_col, reset_col, clear_col = st.columns([1.8, 1, 1, 1], gap="small")
 
     with model_col:
         # FIX: Use negative margin to move everything UP
@@ -1121,7 +1122,6 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
             
-
     st.markdown("</div>", unsafe_allow_html=True)
 
     
@@ -1482,6 +1482,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
