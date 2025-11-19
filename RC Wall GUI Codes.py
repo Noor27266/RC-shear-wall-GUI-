@@ -708,9 +708,16 @@ with left:
     # METHOD 1: Remove all empty space first
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
-    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
+    # MOVE THE TITLE INSIDE THE GREY AREA
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+    <div style="
+        background:#e0e4ec;
+        border-radius:12px;
+        padding:0px;
+        margin:-20px 0 -20px -20px;     /* top, right, bottom, left */
+        width:calc(100% + 20px);        /* extend to the left edge */
+        box-shadow:0 1px 3px rgba(0,0,0,.1);
+    ">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
@@ -743,6 +750,7 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
     st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1434,6 +1442,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
