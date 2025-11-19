@@ -199,6 +199,10 @@ LEFT_BG      = "#e0e4ec"
 # =============================================================================
 
 # =============================================================================
+# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
+# =============================================================================
+
+# =============================================================================
 # 🎨 SUB STEP 3.1.1: MAIN CSS STYLING DEFINITION
 # =============================================================================
 css(f"""
@@ -305,11 +309,16 @@ css(f"""
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
+  /* 🔽 THIS RULE IS THE ONLY ONE CHANGED */
   .block-container [data-testid="stHorizontalBlock"] > div:has(.form-banner) {{
       background:{LEFT_BG} !important;
       border-radius:12px !important;
       box-shadow:0 1px 3px rgba(0,0,0,.1) !important;
       padding:16px !important;
+      /* extend grey outward without moving inner content */
+      margin-top:-20px !important;
+      margin-bottom:-20px !important;
+      margin-left:-20px !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -324,6 +333,7 @@ css(f"""
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
 """)
+
 
 # =============================================================================
 # 🎨 SUB STEP 3.1.2: HEADER AND SPACING OPTIMIZATION
@@ -1424,6 +1434,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
