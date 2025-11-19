@@ -130,62 +130,36 @@ st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_
 # Keep header area slim - REDUCED TOP SPACE
 st.markdown("""
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
+html, body{
+    margin:0 !important;
+    padding:0 !important;
+    background:#e0e4ec !important;        /* 🔹 make page background grey */
+}
+header[data-testid="stHeader"]{
+    height:0 !important;
+    padding:0 !important;
+    background:transparent !important;
+}
+header[data-testid="stHeader"] *{
+    display:none !important;
+}
+div.stApp{
+    margin-top:-2rem !important;
+    background:#e0e4ec !important;        /* 🔹 keep app background grey */
+}
+/* 🔹 remove white gaps around the content area and keep same grey */
+section.main{
+    background:#e0e4ec !important;
+}
 section.main > div.block-container{
-    padding-top:0 !important;
+    padding-top:0.5rem !important;
     margin-top:0 !important;
-    background:#e0e4ec !important;   /* extend grey to top-left-bottom */
-    padding-left:0 !important;        /* remove left white space */
-    padding-bottom:0 !important;      /* remove bottom white space */
+    padding-bottom:0 !important;
+    background:#e0e4ec !important;        /* 🔹 extend grey behind left panel */
 }
-
 /* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-
-/* ADD THIS TO REMOVE ALL SCROLLING - ENTIRE INTERFACE IN ONE SCREEN */
-html, body, #root, .stApp {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
-}
-
-section.main {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
-}
-
-.block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    max-height: 100vh !important;
-    overflow: hidden !important;
-}
-
-/* Remove horizontal scroll */
-section.main, div.stApp {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-}
-
-/* Compact the layout */
-[data-testid="stHorizontalBlock"] {
-    margin-top: -10px !important;
-    margin-bottom: -10px !important;
-}
-
-/* Reduce spacing in columns */
-[data-testid="column"] {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Make sure content fits */
-.stNumberInput, .stSelectbox {
-    margin-bottom: 5px !important;
+.vega-embed, .vega-embed .chart-wrapper{
+    max-width:100% !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1450,6 +1424,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
