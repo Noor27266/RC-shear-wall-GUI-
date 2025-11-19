@@ -714,25 +714,27 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # METHOD 1: Remove all empty space first
-    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
-    
-    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
+    # ONE BIG GREY CONTAINER FOR THE WHOLE LEFT SIDE
     st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
+    <div style="
+        background:#e0e4ec;
+        border-radius:12px;
+        padding:16px 20px 20px 20px;
+        margin-top:-20px;
+        box-shadow:0 1px 3px rgba(0,0,0,.1);
+    ">
+    """, unsafe_allow_html=True)
+
+    # TITLE INSIDE GREY AREA
+    st.markdown("""
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333;
+                    margin:0; padding:2px 0 8px 0;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
-    
-    # METHOD 2: Use multiple empty spaces to push content up
-    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
-    
-    # METHOD 3: Combine title and inputs in one container
-    st.markdown("""
-    <div style="margin: -80px 0 0 0; padding: 0;">
-        <div class='form-banner'>Inputs Features</div>
-    """, unsafe_allow_html=True)
+
+    # INPUTS BANNER
+    st.markdown("<div class='form-banner'>Inputs Features</div>", unsafe_allow_html=True)
 
     # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
@@ -750,8 +752,9 @@ with left:
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+    # CLOSE GREY CONTAINER
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1443,6 +1446,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
