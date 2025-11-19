@@ -833,6 +833,7 @@ with right:
         box-shadow: none !important; 
         background: #D3D3D3 !important;
         height: 40px !important;
+        width: 180px !important;
         border-radius: 8px !important;
         padding: 0px 12px !important;
         outline: none !important;
@@ -1060,31 +1061,31 @@ with right:
 
     /* === FIX DROPDOWN WIDTH TO MATCH SELECTION BOX === */
     div[data-baseweb="popover"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
         position: absolute !important;
         top: 100% !important;
         left: 0 !important;
     }
 
     div[data-baseweb="menu"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
     }
 
     div[role="listbox"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
     }
 
     /* Keep the dropdown positioned relative to the selectbox */
     div[data-testid="stSelectbox"] [data-baseweb="popover"] {
-        width: 250px !important;
-        min-width: 250px !important;
-        max-width: 250px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1472,6 +1473,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
