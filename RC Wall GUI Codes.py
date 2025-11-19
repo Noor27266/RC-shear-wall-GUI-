@@ -711,35 +711,22 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - SIMPLE FIX
 # =============================================================================
 with left:
-    # Apply gray background to entire left column WITHOUT moving any elements
+    # Simple CSS to make left column gray - NO POSITION CHANGES
     st.markdown("""
     <style>
-    /* MAKE ENTIRE LEFT COLUMN GRAY WITHOUT MOVING CONTENT */
+    /* Simple gray background for left column */
     div[data-testid="column"]:first-child {
         background-color: #e0e4ec !important;
-        margin: 0px !important;
-        padding: 20px 15px 20px 15px !important;
+        padding: 15px !important;
         border-radius: 12px !important;
-    }
-    
-    /* Remove any white space around the left column */
-    section.main .block-container {
-        padding-top: 0.5rem !important;
-    }
-    
-    /* Ensure content stays in same position */
-    div[data-testid="column"]:first-child > div {
-        background: transparent !important;
-        margin: 0px !important;
-        padding: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # KEEP ALL YOUR EXISTING CONTENT EXACTLY AS IT WAS
+    # YOUR EXISTING CODE EXACTLY AS IT WAS BEFORE
     # METHOD 1: Remove all empty space first
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
     
@@ -1469,6 +1456,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
