@@ -180,6 +180,26 @@ section.main, div.stApp {
 .stNumberInput, .stSelectbox {
     margin-bottom: 5px !important;
 }
+
+/* Remove white spaces from left panel */
+[data-testid="column"]:first-child {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Make sure the gray background covers everything */
+[data-testid="column"]:first-child > div {
+    background: #e0e4ec !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+    height: 100% !important;
+}
+
+/* Remove any gaps */
+[data-testid="stHorizontalBlock"] {
+    gap: 0rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 # =============================================================================
@@ -714,14 +734,14 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # Apply gray background to entire left panel with no white space
+    # Apply gray background to entire left panel - SIMPLE FIX
     st.markdown("""
-    <div style="background:#e0e4ec; margin:-1rem -1rem -1rem -1rem; padding:1rem; border-radius:12px; min-height:100vh;">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0 0 1rem 0; padding:0;">
+    <div style="background:#e0e4ec; margin:0; padding:1rem; border-radius:12px; height:100%;">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0 0 0.5rem 0; padding:0;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
         
-        <div class='form-banner' style="margin:0 0 1rem 0;">Inputs Features</div>
+        <div class='form-banner'>Inputs Features</div>
     """, unsafe_allow_html=True)
 
     # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
@@ -1459,6 +1479,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
