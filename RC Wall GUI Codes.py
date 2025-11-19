@@ -711,7 +711,7 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION - FULL GRAY BACKGROUND
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
     # Apply gray background to entire left panel with no white space
@@ -741,7 +741,6 @@ with left:
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
     st.markdown("</div>", unsafe_allow_html=True)  # Close the gray background div
-
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -1460,6 +1459,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
