@@ -331,9 +331,29 @@ css(f"""
       padding:16px !important;
   }} */
 
-  /* Full page left side gray background - covers entire left side */
+  /* Full page left side gray background - covers entire left side and bottom */
   div.stApp {{
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
+      min-height: 100vh !important;
+      height: auto !important;
+  }}
+
+  /* Ensure the main container extends fully */
+  section.main {{
+      min-height: 100vh !important;
+      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
+  }}
+
+  /* Make sure the block container covers the full height */
+  .block-container {{
+      min-height: 100vh !important;
+      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
+  }}
+
+  /* Specifically target the left side to ensure it extends to bottom */
+  [data-testid="stAppViewContainer"] {{
+      background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
+      min-height: 100vh !important;
   }}
 
   [data-baseweb="popover"], [data-baseweb="tooltip"],
@@ -1447,4 +1467,5 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
