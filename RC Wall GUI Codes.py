@@ -711,47 +711,49 @@ div[data-testid="stNumberInput"] button {
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 🎨 SUB STEP 12.1: FORM BANNER STYLING OVERRIDE - ENHANCED FOR FULL GRAY
 # =============================================================================
-with left:
-    # METHOD 1: Remove all empty space first
-    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
-    
-    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
-    st.markdown("""
-    <div style="background:#e0e4ec; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:0 1px 3px rgba(0,0,0,.1);">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
-            Predict Damage index (DI) for RC Shear Walls
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # METHOD 2: Use multiple empty spaces to push content up
-    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
-    
-    # METHOD 3: Combine title and inputs in one container
-    st.markdown("""
-    <div style="margin: -80px 0 0 0; padding: 0;">
-        <div class='form-banner'>Inputs Features</div>
-    """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Remove all white space from left panel */
+[data-testid="column"]:first-child {
+    background: #e0e4ec !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
 
-    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
-    c1, c2, c3 = st.columns([1, 1, 1], gap="small")
+/* Ensure left panel takes full height */
+section.main [data-testid="column"]:first-child > div {
+    background: #e0e4ec !important;
+    margin: -1rem !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    min-height: calc(100vh - 2rem) !important;
+}
 
-    with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
-        lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
+/* Remove any gaps between columns */
+[data-testid="stHorizontalBlock"] {
+    gap: 0 !important;
+}
 
-    with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
-        rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
+/* Ensure the gray background covers top to bottom */
+[data-testid="column"]:first-child .stNumberInput,
+[data-testid="column"]:first-child .stSelectbox,
+[data-testid="column"]:first-child .section-header,
+[data-testid="column"]:first-child .form-banner {
+    background: transparent !important;
+}
 
-    with c3:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fc, fyt, fysh = [num(*row) for row in MATS[:3]]
-        fyl, fybl = [num(*row) for row in MATS[3:]]
-
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
-    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
+.form-banner{
+  background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
+  color: #fff !important;
+  text-align: center !important;
+  border-radius: 10px !important;
+  padding: .45rem .75rem !important;
+  margin: 0 0 1rem 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
@@ -1443,6 +1445,7 @@ if _rules:
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
 
 
