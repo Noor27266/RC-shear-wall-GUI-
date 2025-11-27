@@ -1242,9 +1242,10 @@ else:
 
     with chart_slot.container():
         st.markdown(
-            f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
-            unsafe_allow_html=True,
-        )
+    f"<div style='margin-top:{DI_CHART_OFFSET}px; margin-left:40px;'>",
+    unsafe_allow_html=True,
+)
+
         render_di_chart(
             _curve_df,
             theta_max=THETA_MAX,
@@ -1272,6 +1273,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
