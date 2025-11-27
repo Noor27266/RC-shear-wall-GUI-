@@ -767,7 +767,7 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # --------- CALCULATE BUTTON (used directly in STEP 11) ---------
+        # --------- CALCULATE BUTTON (used in STEP 11) ---------
         calc_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
 
         # --------- OTHER BUTTONS (unchanged) ---------
@@ -1252,6 +1252,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
