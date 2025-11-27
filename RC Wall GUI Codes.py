@@ -810,11 +810,16 @@ with right:
 css(
     """
 <style>
+/* move only the selectbox + buttons up/right */
 div[data-testid="stSelectbox"],
-div.stButton,
+div.stButton {
+    transform: translate(40px, -230px);
+}
+
+/* leave DI label & CSV in normal flow so they stay visible */
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(40px, -230px);
+    transform: none;
 }
 </style>
 """
@@ -1257,6 +1262,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
