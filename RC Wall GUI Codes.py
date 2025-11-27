@@ -793,17 +793,10 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 0, 400   # logo position
-right_offset = 0
 CHART_W = 400
 
 with right:
-    # small vertical spacer above logo (if needed)
-    st.markdown(
-        f"<div style='height:{int(right_offset)}px'></div>",
-        unsafe_allow_html=True,
-    )
-
-    # logo image (same as before)
+    # --- logo ---
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -813,14 +806,20 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # small spacer between logo and Model Selection / buttons
-    st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True)
+    # small spacer between logo and row (you can reduce this if you want it even higher)
+    st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
-    # two columns: (left for future use / empty, right for controls)
-    col1_r, col2_r = st.columns([3, 1])
+    # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
+    col_plot, col_controls = st.columns([3, 1])
 
-    with col2_r:
-        # ---------------- Model selection ----------------
+    # ---------------- LEFT: slot for DI–θ chart ----------------
+    with col_plot:
+        # this is where STEP 11 will render the Altair plot
+        chart_slot = st.empty()
+
+    # ---------------- RIGHT: Model Selection + buttons ---------
+    with col_controls:
+        # Model selection (kept exactly like your working version)
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
@@ -832,7 +831,7 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # ---------------- Buttons ----------------
+        # Buttons
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
 
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -841,7 +840,7 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # ---------------- Latest DI + CSV download ----------------
+        # Latest DI + CSV download
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
             st.markdown(
@@ -859,7 +858,7 @@ with right:
                 key="dl_csv_main",
             )
 
-    # styling for the blue DI label (same as before)
+    # styling for the blue DI label (unchanged)
     st.markdown(
         f"""
     <style>
@@ -883,8 +882,6 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # reserved slot for DI–θ chart (used later in STEP 11)
-    chart_slot = st.empty()
 
 
 # =============================================================================
@@ -1310,6 +1307,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
