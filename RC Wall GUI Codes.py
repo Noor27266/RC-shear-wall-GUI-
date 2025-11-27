@@ -718,7 +718,7 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -0, 400
-right_offset = 0
+right_offset = -20
 CHART_W = 400
 
 with right:
@@ -1466,4 +1466,5 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
