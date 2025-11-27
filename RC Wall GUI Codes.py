@@ -185,7 +185,7 @@ FS_RECENT = s(20)
 INPUT_H = max(32, int(FS_INPUT * 2.0))
 
 # =============================================================================
-# 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION + RIGHT COLUMN SHIFT
+# 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION
 # =============================================================================
 DEFAULT_LOGO_H = 45
 PRIMARY = "#8E44AD"
@@ -194,7 +194,7 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
-# ---- SMALL RIGHT-COLUMN SHIFT ONLY ----
+# ---- SMALL RIGHT-COLUMN SHIFT + SINGLE CHART OFFSET ----
 css(
     """
 <style>
@@ -202,6 +202,11 @@ css(
 [data-testid="column"]:last-child {
     margin-top: -100px !important;
     padding-top: 0px !important;
+}
+
+/* SINGLE place to move the DI–θ plot (Altair iframe) up/down */
+div[data-testid="stIFrame"] {
+    margin-top: -260px !important;   /* more negative = plot higher, less negative = lower */
 }
 </style>
 """
@@ -578,7 +583,21 @@ for name, ok, *_ in health:
     elif name == "Random Forest" and rf_model is not None:
         model_registry["Random Forest"] = rf_model
 
-# (DEBUG EXPANDER REMOVED AS YOU ASKED)
+# =============================================================================
+# 🔍 TEMP DEBUG: SEE WHICH MODELS LOADED (YOU CAN DELETE THIS LATER)
+# =============================================================================
+with st.expander("DEBUG: model loading status (temporary, safe to delete once OK)", expanded=False):
+    st.write("Models available in model_registry:", list(model_registry.keys()))
+    try:
+        import pandas as _pd_debug
+        st.dataframe(
+            _pd_debug.DataFrame(
+                health, columns=["Name", "OK", "Message", "Status"]
+            )
+        )
+    except Exception:
+        st.write(health)
+
 
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
@@ -1450,11 +1469,6 @@ else:
 
     # ---- SINGLE place where DI–θ chart is rendered ----
     with chart_slot.container():
-        # negative margin moves the plot UP; adjust -260px to fine-tune spacing
-        st.markdown(
-            "<div style='margin-top:-460px;'>",
-            unsafe_allow_html=True,
-        )
         render_di_chart(
             st.session_state.results_df,
             _curve_df,
@@ -1462,7 +1476,6 @@ else:
             di_max=1.5,
             size=CHART_W,
         )
-        st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1483,4 +1496,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
