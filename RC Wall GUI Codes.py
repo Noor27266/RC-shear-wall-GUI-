@@ -741,7 +741,7 @@ left, right = st.columns([1.5, 1], gap="large")
 with left:
 
     # 🔽 MOVE THE SCHEMATIC DOWN (adjust 60 → 80 → 100 as needed)
-    st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:-20px;'></div>", unsafe_allow_html=True)
 
     st.markdown(
         "<div style='height: 0px; margin: 0; padding: 0;'>",
@@ -1311,6 +1311,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
