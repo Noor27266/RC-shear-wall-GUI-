@@ -768,7 +768,8 @@ with right:
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
         # --------- CALCULATE BUTTON (only sets flag; STEP 11 does prediction) ---------
-        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+        if st.button("Calculate", key="calc_btn", use_container_width=True):
+    st.session_state.do_predict = True
 
         # --------- OTHER BUTTONS (unchanged) ---------
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -1163,7 +1164,8 @@ if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
     # ---------- Prediction on submit (single DI point) ----------
-    if "submit" in locals() and submit:
+    if st.session_state.get("do_predict", False):
+
         xdf = _make_input_df(
             lw,
             hw,
@@ -1238,6 +1240,7 @@ else:
             size=CHART_W,
         )
         st.markdown("</div>", unsafe_allow_html=True)
+st.session_state.do_predict = False
 
 
 
@@ -1260,6 +1263,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
