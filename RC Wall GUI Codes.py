@@ -125,7 +125,9 @@ def pfind(candidates):
 # 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
 # =============================================================================
 
-st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
+st.set_page_config(
+    page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱"
+)
 
 # Header / spacing
 st.markdown(
@@ -192,7 +194,7 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
-# Small right-column shift (no iframe pinning)
+# ---- SMALL RIGHT-COLUMN SHIFT + SINGLE CHART OFFSET ----
 css(
     """
 <style>
@@ -200,6 +202,11 @@ css(
 [data-testid="column"]:last-child {
     margin-top: -100px !important;
     padding-top: 0px !important;
+}
+
+/* SINGLE place to move the DI–θ plot (Altair iframe) up/down */
+div[data-testid="stIFrame"] {
+    margin-top: -260px !important;   /* more negative = plot higher, less negative = lower */
 }
 </style>
 """
@@ -334,7 +341,11 @@ css(
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
-    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
+    _b64 = (
+        base64.b64encode(_logo_path.read_bytes()).decode("ascii")
+        if _logo_path.exists()
+        else ""
+    )
 except Exception:
     _b64 = ""
 
@@ -391,17 +402,17 @@ st.markdown(
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
-health = []
-
 
 def record_health(name, ok, msg=""):
+    """Keep a log of which models loaded successfully."""
     health.append((name, ok, msg, "ok" if ok else "err"))
 
+health = []
 
 class _ScalerShim:
+    """Wrapper to keep X / y scalers together for ANN models."""
     def __init__(self, X_scaler, Y_scaler):
         import numpy as _np
-
         self._np = _np
         self.Xs = X_scaler
         self.Ys = Y_scaler
@@ -415,62 +426,76 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
-
-# PS (ANN)
+# ---------------------------- PS (ANN) ---------------------------------------
 ann_ps_model = None
-ann_ps_proc = None
+ann_ps_proc  = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = _load_keras_model(ps_model_path)
+    ann_ps_model  = _load_keras_model(ps_model_path)
+
     sx = joblib.load(
-        pfind(["ANN_PS_Scaler_X.save", "ANN_PS_Scaler_X.pkl", "ANN_PS_Scaler_X.joblib"])
+        pfind([
+            "ANN_PS_Scaler_X.save",
+            "ANN_PS_Scaler_X.pkl",
+            "ANN_PS_Scaler_X.joblib",
+        ])
     )
     sy = joblib.load(
-        pfind(["ANN_PS_Scaler_y.save", "ANN_PS_Scaler_y.pkl", "ANN_PS_Scaler_y.joblib"])
+        pfind([
+            "ANN_PS_Scaler_y.save",
+            "ANN_PS_Scaler_y.pkl",
+            "ANN_PS_Scaler_y.joblib",
+        ])
     )
     ann_ps_proc = _ScalerShim(sx, sy)
     record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
-# MLP (ANN)
+# ---------------------------- MLP (ANN) --------------------------------------
 ann_mlp_model = None
-ann_mlp_proc = None
+ann_mlp_proc  = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = _load_keras_model(mlp_model_path)
+    ann_mlp_model  = _load_keras_model(mlp_model_path)
+
     sx = joblib.load(
-        pfind(["ANN_MLP_Scaler_X.save", "ANN_MLP_Scaler_X.pkl", "ANN_MLP_Scaler_X.joblib"])
+        pfind([
+            "ANN_MLP_Scaler_X.save",
+            "ANN_MLP_Scaler_X.pkl",
+            "ANN_MLP_Scaler_X.joblib",
+        ])
     )
     sy = joblib.load(
-        pfind(["ANN_MLP_Scaler_y.save", "ANN_MLP_Scaler_y.pkl", "ANN_MLP_Scaler_y.joblib"])
+        pfind([
+            "ANN_MLP_Scaler_y.save",
+            "ANN_MLP_Scaler_y.pkl",
+            "ANN_MLP_Scaler_y.joblib",
+        ])
     )
     ann_mlp_proc = _ScalerShim(sx, sy)
     record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# Random Forest
+# ---------------------------- Random Forest ----------------------------------
 rf_model = None
 try:
-    rf_path = pfind(
-        [
-            "random_forest_model.pkl",
-            "random_forest_model.joblib",
-            "rf_model.pkl",
-            "RF_model.pkl",
-            "Best_RF_Model.json",
-            "best_rf_model.json",
-            "RF_model.json",
-        ]
-    )
+    rf_path = pfind([
+        "random_forest_model.pkl",
+        "random_forest_model.joblib",
+        "rf_model.pkl",
+        "RF_model.pkl",
+        "Best_RF_Model.json",
+        "best_rf_model.json",
+        "RF_model.json",
+    ])
     try:
         rf_model = joblib.load(rf_path)
         record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
     except Exception as e_joblib:
         try:
             import skops.io as sio
-
             rf_model = sio.load(rf_path, trusted=True)
             record_health("Random Forest", True, f"loaded via skops from {rf_path}")
         except Exception as e_skops:
@@ -482,44 +507,48 @@ try:
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
-# XGBoost
+# ---------------------------- XGBoost ----------------------------------------
 xgb_model = None
 try:
-    xgb_path = pfind(
-        ["XGBoost_trained_model_for_DI.json", "Best_XGBoost_Model.json", "xgboost_model.json"]
-    )
+    xgb_path = pfind([
+        "XGBoost_trained_model_for_DI.json",
+        "Best_XGBoost_Model.json",
+        "xgboost_model.json",
+    ])
     xgb_model = xgb.XGBRegressor()
     xgb_model.load_model(xgb_path)
     record_health("XGBoost", True, f"loaded from {xgb_path}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
-# CatBoost
+# ---------------------------- CatBoost ---------------------------------------
 cat_model = None
 try:
-    cat_path = pfind(["CatBoost.cbm", "Best_CatBoost_Model.cbm", "catboost.cbm"])
+    cat_path = pfind([
+        "CatBoost.cbm",
+        "Best_CatBoost_Model.cbm",
+        "catboost.cbm",
+    ])
     cat_model = catboost.CatBoostRegressor()
     cat_model.load_model(cat_path)
     record_health("CatBoost", True, f"loaded from {cat_path}")
 except Exception as e:
     record_health("CatBoost", False, f"{e}")
 
-
-# LightGBM
+# ---------------------------- LightGBM ---------------------------------------
 def load_lightgbm_flex():
     try:
-        p = pfind(
-            [
-                "LightGBM_model.txt",
-                "Best_LightGBM_Model.txt",
-                "LightGBM_model.bin",
-                "LightGBM_model.pkl",
-                "LightGBM_model.joblib",
-                "LightGBM_model",
-            ]
-        )
+        p = pfind([
+            "LightGBM_model.txt",
+            "Best_LightGBM_Model.txt",
+            "LightGBM_model.bin",
+            "LightGBM_model.pkl",
+            "LightGBM_model.joblib",
+            "LightGBM_model",
+        ])
     except Exception:
         raise FileNotFoundError("No LightGBM model file found.")
+
     try:
         return lgb.Booster(model_file=str(p)), "booster", p
     except Exception:
@@ -528,7 +557,6 @@ def load_lightgbm_flex():
         except Exception as e:
             raise e
 
-
 try:
     lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
     record_health("LightGBM", True, f"loaded as {lgb_kind} from {lgb_path}")
@@ -536,8 +564,9 @@ except Exception as e:
     lgb_model = None
     record_health("LightGBM", False, str(e))
 
-# Registry
+# ---------------------------- Registry ---------------------------------------
 model_registry = {}
+
 for name, ok, *_ in health:
     if not ok:
         continue
@@ -553,6 +582,22 @@ for name, ok, *_ in health:
         model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None:
         model_registry["Random Forest"] = rf_model
+
+# =============================================================================
+# 🔍 TEMP DEBUG: SEE WHICH MODELS LOADED (YOU CAN DELETE THIS LATER)
+# =============================================================================
+with st.expander("DEBUG: model loading status (temporary, safe to delete once OK)", expanded=False):
+    st.write("Models available in model_registry:", list(model_registry.keys()))
+    try:
+        import pandas as _pd_debug
+        st.dataframe(
+            _pd_debug.DataFrame(
+                health, columns=["Name", "OK", "Message", "Status"]
+            )
+        )
+    except Exception:
+        st.write(health)
+
 
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
@@ -594,14 +639,7 @@ GEOM = [
 MATS = [
     (rf"$f'_c{U('MPa')}$", "fc", 40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$", "fyt", 400.0, 1.0, None, "Transverse web yield strength"),
-    (
-        rf"$f_{{ysh}}{U('MPa')}$",
-        "fysh",
-        400.0,
-        1.0,
-        None,
-        "Transverse boundary yield strength",
-    ),
+    (rf"$f_{{ysh}}{U('MPa')}$", "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
     (rf"$f_{{yl}}{U('MPa')}$", "fyl", 400.0, 1.0, None, "Vertical web yield strength"),
     (rf"$f_{{ybl}}{U('MPa')}$", "fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
@@ -649,7 +687,10 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    st.markdown(
+        "<div style='height: 0px; margin: 0; padding: 0;'>",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
@@ -687,7 +728,8 @@ with left:
 
     with c3:
         st.markdown(
-            "<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True
+            "<div class='section-header'>Material Strengths</div>",
+            unsafe_allow_html=True,
         )
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
@@ -699,11 +741,14 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -0, 400
-right_offset = 0  # keep, but now 0 so it doesn't add space
+right_offset = 0
 CHART_W = 400
 
 with right:
-    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"<div style='height:{int(right_offset)}px'></div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -970,11 +1015,11 @@ with right:
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
         ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
-        _label_to_key_local = {"RF": "Random Forest"}
+        _label_to_key = {"RF": "Random Forest"}
         model_choice_label = st.selectbox(
             "Model Selection", display_labels, key="model_select_compact"
         )
-        model_choice = _label_to_key_local.get(model_choice_label, model_choice_label)
+        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
 
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -1025,7 +1070,7 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # THIS is the placeholder for the DI–θ chart; we use it later
+    # reserved slot for DI–θ chart (stays in this column)
     chart_slot = st.empty()
 
 # =============================================================================
@@ -1306,12 +1351,7 @@ def render_di_chart(
     text_layer = (
         alt.Chart(curve)
         .mark_text(
-            align="left",
-            dx=8,
-            dy=-8,
-            fontSize=14,
-            fontWeight="bold",
-            color="red",
+            align="left", dx=8, dy=-8, fontSize=14, fontWeight="bold", color="red"
         )
         .encode(
             x="θ:Q",
@@ -1352,7 +1392,7 @@ def _pick_default_model():
     return None
 
 
-# determine model choice (fallback if not set in right-panel block)
+# determine model choice
 if "model_choice" not in locals():
     _label = st.session_state.get("model_select_compact") or st.session_state.get(
         "model_select"
@@ -1424,25 +1464,11 @@ else:
     )
 
     _curve_df = _sweep_curve_df(
-        model_choice,
-        _base_xdf,
-        theta_max=THETA_MAX,
-        step=0.1,
+        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
     )
 
-    # Use the existing chart_slot that lives inside the RIGHT column
-    try:
-        _slot = chart_slot
-    except NameError:
-        _slot = st.empty()
-
-    # === This controls the vertical spacing between logo/buttons and DI–θ plot ===
-    with _slot.container():
-        st.markdown(
-            "<div id='di_theta_chart_wrapper' style='margin-top:-800px;'>",
-            unsafe_allow_html=True,
-        )
-
+    # ---- SINGLE place where DI–θ chart is rendered (no wrappers, no extra margins) ----
+    with chart_slot.container():
         render_di_chart(
             st.session_state.results_df,
             _curve_df,
@@ -1450,8 +1476,6 @@ else:
             di_max=1.5,
             size=CHART_W,
         )
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1472,5 +1496,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
