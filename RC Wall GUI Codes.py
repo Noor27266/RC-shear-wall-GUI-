@@ -728,7 +728,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 35, 400   # logo position
+HERO_X, HERO_Y, HERO_W = 100, 35, 400
 CHART_W = 400
 
 with right:
@@ -743,30 +743,23 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # small spacer
     st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
-    # one row: left plot, right controls
     col_plot, col_controls = st.columns([3, 1])
 
-
-    # =============================================================================
-    # ⭐ SUB-STEP 9.2 — DI–θ PLOT (LEFT)
-    # =============================================================================
+    # ---------------- LEFT: DI–θ PLOT ----------------
     with col_plot:
         chart_slot = st.empty()
 
-
-    # =============================================================================
-    # ⭐ SUB-STEP 9.1 — MODEL SELECTION + BUTTONS (RIGHT)
-    # =============================================================================
+    # ---------------- RIGHT: MODEL + BUTTONS ----------
     with col_controls:
 
-        # MOVE ONLY THIS BLOCK UP
-            st.markdown("<div style='margin-top:-140px'>", unsafe_allow_html=True)
+        # ⭐ MOVE ONLY THIS BLOCK UP
+        st.markdown(
+            "<div style='margin-top:-140px'>", 
+            unsafe_allow_html=True
+        )
 
-
-        # model select
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
@@ -778,14 +771,14 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # buttons
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
+
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # DI + CSV
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
             st.markdown(
@@ -804,8 +797,6 @@ with right:
             )
 
         st.markdown("</div>", unsafe_allow_html=True)
-
-
 
 
 
@@ -1232,6 +1223,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
