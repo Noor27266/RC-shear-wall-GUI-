@@ -413,9 +413,9 @@ try:
 except Exception:
     _b64 = ""
 
-LOGO_SIZE = 45
+LOGO_SIZE = 60
 LOGO_TOP = 35
-LOGO_POSITION = 150
+LOGO_POSITION = 100
 
 st.markdown(
     f"""
@@ -1311,6 +1311,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
