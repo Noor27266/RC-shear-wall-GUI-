@@ -1452,7 +1452,7 @@ else:
     with chart_slot.container():
         # negative margin moves the plot UP; adjust -260px to fine-tune spacing
         st.markdown(
-            "<div style='margin-top:-260px;'>",
+            "<div style='margin-top:-460px;'>",
             unsafe_allow_html=True,
         )
         render_di_chart(
@@ -1483,3 +1483,4 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
