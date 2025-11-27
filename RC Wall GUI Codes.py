@@ -340,7 +340,7 @@ except Exception:
 
 LOGO_SIZE = 50
 LOGO_TOP = 20
-LOGO_POSITION = 10
+LOGO_POSITION = 30
 
 st.markdown(
     f"""
@@ -828,7 +828,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(30px, -50px);   /* (X , Y) */
+    transform: translate(40px, -50px);   /* (X , Y) */
     /* X = right/left, Y = up/down */
 }
 </style>
@@ -1271,6 +1271,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
