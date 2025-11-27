@@ -152,22 +152,7 @@ section.main > div.block-container{
     max-width:100% !important;
 }
 
-/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
-html, body, #root, .stApp {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
 
-section.main {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-</style>
-""",
-    unsafe_allow_html=True,
-)
 
 # =============================================================================
 # 🎨 SUB STEP 3.1: FONT SIZE SCALING CONFIGURATION
@@ -1257,6 +1242,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
