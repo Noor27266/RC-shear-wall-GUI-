@@ -672,7 +672,7 @@ left, right = st.columns([1.5, 1], gap="large")
 with left:
 
     # 🔽 MOVE THE SCHEMATIC DOWN (adjust 60 → 80 → 100 as needed)
-    st.markdown("<div style='margin-top:-100px;'></div>", unsafe_allow_html=True)
+    st.markdown(argin-top:-100px;'></div>", unsafe_allow_html=True)
 
     st.markdown(
         "<div style='height: 0px; margin: 0; padding: 0;'>",
@@ -760,12 +760,16 @@ with right:
     # =============================================================================
     with col_controls:
 
-        # 🔼 WRAPPER TO MOVE ONLY THIS BLOCK UP
-        st.markdown(
-            "<div style='margin-top:-80px;'>",   # make more negative to move higher
-            unsafe_allow_html=True,
-        )
+      # === FORCE MOVE CONTROL BLOCK UP ===
+st.markdown("""
+<style>
+#control-wrapper {
+    margin-top: -200px !important;  /* adjust this value */
+}
+</style>
+""", unsafe_allow_html=True)
 
+       
         # Model selection
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
@@ -1260,6 +1264,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
