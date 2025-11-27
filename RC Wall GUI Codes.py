@@ -581,22 +581,6 @@ MODEL_ORDER = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 LABEL_TO_KEY = {"RF": "Random Forest"}
 
 # =============================================================================
-# 🔍 TEMP DEBUG: SEE WHICH MODELS LOADED (YOU CAN DELETE THIS LATER)
-# =============================================================================
-with st.expander("DEBUG: model loading status (temporary, safe to delete once OK)", expanded=False):
-    st.write("Models available in model_registry:", list(model_registry.keys()))
-    try:
-        import pandas as _pd_debug
-        st.dataframe(
-            _pd_debug.DataFrame(
-                health, columns=["Name", "OK", "Message", "Status"]
-            )
-        )
-    except Exception:
-        st.write(health)
-
-
-# =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
@@ -1488,3 +1472,4 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
