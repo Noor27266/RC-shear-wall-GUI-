@@ -197,9 +197,6 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
-# =============================================================================
-# 🎨 STEP 3.3: COMPREHENSIVE CSS STYLING & THEME SETUP
-# =============================================================================
 css(
     f"""
 <style>
@@ -308,83 +305,80 @@ css(
       min-height: 100vh !important;
       background: #e0e4ec !important;
   }}
+
+  /* SUB STEP 3.4: RESPONSIVE FIXED LAYOUT CONFIGURATION */
+  /* Lock all elements in place regardless of zoom level */
+  html, body, #root, .stApp, section.main, .block-container {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      transform-origin: 0 0 !important;
+  }}
+
+  /* Prevent any scaling of UI elements */
+  .stNumberInput, .stSelectbox, .stButton, .stMarkdown {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
+
+  /* Fix font sizes - prevent browser zoom from affecting them */
+  .stNumberInput label,
+  .stSelectbox label,
+  .stNumberInput input,
+  .stSelectbox select,
+  .stButton button,
+  .section-header,
+  .form-banner,
+  .prediction-with-color {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      font-size: inherit !important;
+  }}
+
+  /* Lock images and logos in place */
+  .page-header__logo,
+  img[alt="Logo"] {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      position: fixed !important;
+  }}
+
+  /* Ensure the DI-θ chart maintains its position */
+  .vega-embed, .vega-embed .chart-wrapper {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
+
+  /* Prevent any layout shifting */
+  [data-testid="column"],
+  [data-testid="stHorizontalBlock"] {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
+
+  /* Additional protection against browser zoom */
+  @media screen and (max-width: 768px) {{
+      html, body {{
+          zoom: 1 !important;
+          transform: scale(1) !important;
+      }}
+  }}
+
+  /* Force all elements to maintain exact positioning */
+  * {{
+      box-sizing: border-box !important;
+  }}
+
+  /* Specific protection for the controls section */
+  div[data-testid="stSelectbox"],
+  div.stButton,
+  div[data-testid="stDownloadButton"],
+  .prediction-with-color {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
 </style>
 """
 )
-
-# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
-css(
-    """
-<style>
-/* parent column  →  inner columns; last inner column is the controls */
-[data-testid="column"] [data-testid="column"]:last-child {
-    margin-top: -150px !important;   /* make more negative if you want higher */
-}
-</style>
-"""
-)
-/* Lock all elements in place regardless of zoom level */
-html, body, #root, .stApp, section.main, .block-container {
-    zoom: 1 !important;
-    transform: scale(1) !important;
-    transform-origin: 0 0 !important;
-}
-
-/* Prevent any scaling of UI elements */
-.stNumberInput, .stSelectbox, .stButton, .stMarkdown {
-    zoom: 1 !important;
-    transform: scale(1) !important;
-}
-
-/* Fix font sizes - prevent browser zoom from affecting them */
-.stNumberInput label,
-.stSelectbox label,
-.stNumberInput input,
-.stSelectbox select,
-.stButton button,
-.section-header,
-.form-banner,
-.prediction-with-color {
-    zoom: 1 !important;
-    transform: scale(1) !important;
-    font-size: inherit !important;
-}
-
-/* Lock images and logos in place */
-.page-header__logo,
-img[alt="Logo"] {
-    zoom: 1 !important;
-    transform: scale(1) !important;
-    position: fixed !important;
-}
-
-# =============================================================================
-# 🎨 STEP 3.4: LAYOUT LOCK VS ZOOM (KEEP ELEMENTS FIXED)
-# =============================================================================
-css(
-    """
-<style>
-/* Fix the main content to a constant width so zoom does not distort layout */
-[data-testid="stAppViewContainer"] > .main > div.block-container {
-    max-width: 1500px !important;   /* adjust if you want a bit wider/narrower */
-    min-width: 1500px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-
-/* Prevent left/right main columns from stacking or shrinking when zooming */
-[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-    flex: 0 0 auto !important;
-}
-
-/* Allow horizontal scrolling instead of squashing everything together */
-[data-testid="stAppViewContainer"] {
-    overflow-x: auto !important;
-}
-</style>
-"""
-)
-
 
 # =============================================================================
 # 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
@@ -1332,6 +1326,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
