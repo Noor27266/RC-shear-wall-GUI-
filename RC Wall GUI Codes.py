@@ -130,7 +130,7 @@ st.set_page_config(
     page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱"
 )
 
-# Header / spacing  ★★★ FIXED VERSION ★★★
+# Header / spacing
 st.markdown(
     """
 <style>
@@ -245,7 +245,7 @@ css(
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{INPUT_H}px !important;
+      font-size:{FS_INPUT}px !important;        /* <<< back to FS_INPUT */
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
@@ -308,11 +308,21 @@ css(
       min-height: 100vh !important;
       background: #e0e4ec !important;
   }}
-
 </style>
 """
 )
 
+# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
+css(
+    """
+<style>
+/* parent column  →  inner columns; last inner column is the controls */
+[data-testid="column"] [data-testid="column"]:last-child {
+    margin-top: -180px !important;   /* make more negative if you want higher */
+}
+</style>
+"""
+)
 
 
 # =============================================================================
@@ -364,7 +374,6 @@ st.markdown(
     pointer-events: auto !important;
   }}
 
-  /* only this line changed: fixed smaller padding so content moves up */
   .main .block-container {{
     padding-top: 40px !important;
   }}
@@ -746,12 +755,6 @@ with right:
     # =============================================================================
     with col_controls:
 
-        # 🔼 WRAPPER TO MOVE ONLY THIS BLOCK UP
-        st.markdown(
-            "<div style='margin-top:-320px;'>",   # more negative = higher
-            unsafe_allow_html=True,
-        )
-
         # Model selection
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
@@ -790,9 +793,6 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
-
-        # close wrapper div
-        st.markdown("</div>", unsafe_allow_html=True)
 
     # styling for the blue DI label (unchanged)
     st.markdown(
