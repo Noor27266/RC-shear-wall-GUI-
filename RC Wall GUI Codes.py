@@ -170,7 +170,7 @@ section.main {
 )
 
 # =============================================================================
-# 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
+# 🎨 SUB STEP 3.1: FONT SIZE SCALING CONFIGURATION
 # =============================================================================
 SCALE_UI = 0.36
 
@@ -188,7 +188,7 @@ FS_RECENT = s(20)
 INPUT_H = max(32, int(FS_INPUT * 2.0))
 
 # =============================================================================
-# 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION
+# 🎨 SUB STEP 3.2: COLOR SCHEME DEFINITION
 # =============================================================================
 DEFAULT_LOGO_H = 45
 PRIMARY = "#8E44AD"
@@ -198,7 +198,7 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
 # =============================================================================
-# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
+# 🎨 STEP 3.3: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
 css(
     f"""
@@ -326,7 +326,7 @@ css(
 
 
 # =============================================================================
-# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
+# 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -390,7 +390,7 @@ st.markdown(
 
 
 # =============================================================================
-# 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
+# 🤖 STEP 5: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
 
 def record_health(name, ok, msg=""):
@@ -578,7 +578,7 @@ MODEL_ORDER = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 LABEL_TO_KEY = {"RF": "Random Forest"}
 
 # =============================================================================
-# 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
+# 📊 STEP 6: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
     "lw": (400.0, 3500.0),
@@ -657,12 +657,12 @@ div[data-testid="stNumberInput"] button {
 )
 
 # =============================================================================
-# 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
+# 📊 SUB STEP 6.1: LAYOUT COLUMNS SETUP
 # =============================================================================
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
 
@@ -720,7 +720,7 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 35, 400   # logo position
 CHART_W = 400
@@ -744,14 +744,14 @@ with right:
     col_plot, col_controls = st.columns([3, 1])
 
     # =============================================================================
-    # ⭐ SUB-STEP 9.2 — DI–θ PLOT (LEFT SIDE)
+    # ⭐ SUB-STEP 7.1 — DI–θ PLOT (LEFT SIDE)
     # =============================================================================
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
     # =============================================================================
-    # ⭐ SUB-STEP 9.1 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
 
@@ -836,7 +836,7 @@ div[data-testid="stDownloadButton"],
 
 
 # =============================================================================
-# ⚡ STEP 11: DI–θ PREDICTION & PLOT (ALL CODE HERE)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -1253,7 +1253,7 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
+# 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
 st.markdown(
     """
@@ -1271,5 +1271,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
