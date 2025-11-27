@@ -819,20 +819,20 @@ with right:
     )
 css("""
 <style>
-/* Move the whole controls stack up: 
-   - Model Selection box
-   - Calculate / Reset / Clear All buttons
-   - Predicted Damage Index label
-   - Download as CSV button
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
 */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translateY(-250px);   /* make more negative to move higher */
+    transform: translate(-230px, -140px);   /* (X , Y) */
+    /* X = right/left, Y = up/down */
 }
 </style>
 """)
+
 
 
 
@@ -1259,6 +1259,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
