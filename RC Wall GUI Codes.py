@@ -770,7 +770,7 @@ with right:
         # Buttons
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
         if submit:
-            # <-- NEW: event flag so STEP 11 knows to run prediction once
+            # flag for STEP 11
             st.session_state.do_predict = True
 
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -779,23 +779,8 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # Latest DI + CSV download
-        if not st.session_state.results_df.empty:
-            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-            st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
-                unsafe_allow_html=True,
-            )
-
-            csv = st.session_state.results_df.to_csv(index=False)
-            st.download_button(
-                "📂 Download as CSV",
-                data=csv,
-                file_name="di_predictions.csv",
-                mime="text/csv",
-                use_container_width=True,
-                key="dl_csv_main",
-            )
+        # 🔹 PLACEHOLDER for DI label + CSV (STEP 11 will fill this)
+        di_slot = st.empty()
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -1250,6 +1235,27 @@ else:
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
+    # 🔹 NOW draw latest DI + CSV into the placeholder from STEP 9
+    if "di_slot" in locals():
+        with di_slot:
+            if not st.session_state.results_df.empty:
+                latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+                st.markdown(
+                    f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
+                    unsafe_allow_html=True,
+                )
+
+                csv = st.session_state.results_df.to_csv(index=False)
+                st.download_button(
+                    "📂 Download as CSV",
+                    data=csv,
+                    file_name="di_predictions.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                    key="dl_csv_main",
+                )
+
+
 
 
 
@@ -1274,6 +1280,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
