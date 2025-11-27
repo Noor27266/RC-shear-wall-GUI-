@@ -808,19 +808,20 @@ with right:
 
 css("""
 <style>
-/* Move the whole controls stack:
-   - Up (translateY)
-   - Right (translateX)
-*/
+/* Move model select + buttons + CSV up/right */
 div[data-testid="stSelectbox"],
 div.stButton,
-div[data-testid="stDownloadButton"],
+div[data-testid="stDownloadButton"] {
+    transform: translate(40px, -230px);
+}
+
+/* ⚠️ Do NOT move the DI label, keep it just under Clear All */
 .prediction-with-color {
-    transform: translate(40px, -150px);   /* (X , Y) */
-    /* X = right/left, Y = up/down */
+    transform: none;
 }
 </style>
 """)
+
 
 
 
@@ -1280,6 +1281,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
