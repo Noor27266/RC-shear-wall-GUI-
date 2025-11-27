@@ -1374,20 +1374,15 @@ try:
 except NameError:
     _slot = st.empty()
 # =============================================================================
-# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION - SIMPLE FIX
+# ⚡ SUB STEP 11.6: CHART RENDERING EXECUTION - FIXED POSITION
 # =============================================================================
 with right:
-    # METHOD 1: Use multiple empty containers with negative margins
-    for i in range(5):
-        st.markdown("<div style='height: 1px; margin-top: -50px;'></div>", unsafe_allow_html=True)
+    # REMOVE all the dynamic spacing containers and use fixed positioning
+    st.markdown("<div style='margin-top: -350px; padding-top: 0px; position: relative;'>", unsafe_allow_html=True)
     
-    # METHOD 2: Direct container with extreme negative margin
-    st.markdown("<div style='margin-top: -300px; padding-top: 0px;'>", unsafe_allow_html=True)
-    
-    # METHOD 3: Use columns to control positioning
     col1, col2, col3 = st.columns([1, 8, 1])
     with col2:
-        with _slot:
+        with chart_slot:
             render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
     
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1506,23 +1501,51 @@ if _rules:
 # =============================================================================
 css("""
 <style>
-/* AGGRESSIVE FIX: Move the entire chart area up */
+/* AGGRESSIVE FIX: Move the entire chart area up - PERMANENT POSITION */
 div[data-testid="column"]:last-child {
     position: relative !important;
 }
 
-/* Target the specific div that contains the chart */
+/* Target the specific div that contains the chart - LOCKED POSITION */
 div[data-testid="column"]:last-child > div > div > div:last-child {
     position: relative !important;
-    top: -250px !important;
-    margin-top: -250px !important;
+    top: -350px !important;
+    margin-top: -350px !important;
+    padding-top: 0px !important;
 }
 
-/* Target the chart container directly */
+/* Target the chart container directly - FIXED POSITION */
 div[data-testid="column"]:last-child .element-container {
     position: relative !important;
-    top: -250px !important;
-    margin-top: -250px !important;
+    top: -350px !important;
+    margin-top: -350px !important;
+    padding-top: 0px !important;
+}
+
+/* Specifically target the chart iframe container */
+div[data-testid="column"]:last-child .element-container iframe {
+    position: relative !important;
+    margin-top: -350px !important;
+}
+
+/* Ensure the chart slot stays in fixed position */
+div[data-testid="column"]:last-child .stEmpty {
+    position: relative !important;
+    top: -350px !important;
+    margin-top: -350px !important;
+    padding-top: 0px !important;
+}
+
+/* Remove any margins that create space */
+div[data-testid="column"]:last-child > div {
+    margin-top: -350px !important;
+    padding-top: 0px !important;
+}
+
+/* Prevent any movement when content updates */
+div[data-testid="column"]:last-child [data-testid="stVerticalBlock"] {
+    margin-top: -350px !important;
+    padding-top: 0px !important;
 }
 </style>
 """)
@@ -1530,3 +1553,4 @@ div[data-testid="column"]:last-child .element-container {
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
