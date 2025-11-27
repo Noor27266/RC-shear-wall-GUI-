@@ -1240,19 +1240,28 @@ else:
     # ---- vertical offset for DI–θ plot ----
     DI_CHART_OFFSET = 130  # px; adjusted to move plot down
 
-    with chart_slot.container():
-        st.markdown(
-    f"<div style='margin-top:{DI_CHART_OFFSET}px; margin-left:100px;'>",
-    unsafe_allow_html=True,
-)
+   with chart_slot.container():
+    st.markdown(
+        f"""
+        <div style="
+            margin-top:{DI_CHART_OFFSET}px;
+            display:flex;
+            justify-content:flex-start;   /* left alignment */
+            padding-left:40px;            /* move RIGHT */
+        ">
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    render_di_chart(
+        _curve_df,
+        theta_max=THETA_MAX,
+        di_max=1.5,
+        size=CHART_W,
+    )
 
-        render_di_chart(
-            _curve_df,
-            theta_max=THETA_MAX,
-            di_max=1.5,
-            size=CHART_W,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
@@ -1273,6 +1282,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
