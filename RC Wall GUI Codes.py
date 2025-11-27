@@ -733,7 +733,7 @@ div[data-testid="stNumberInput"] button {
 # =============================================================================
 # 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
 # =============================================================================
-left, right = st.columns([1.5, 1], gap="large")
+left, right = st.columns([1, 1], gap="large")
 
 # =============================================================================
 # 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
@@ -1307,6 +1307,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
