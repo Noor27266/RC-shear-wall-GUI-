@@ -1220,7 +1220,7 @@ else:
     )
 
     # ---- vertical offset for DI–θ plot ----
-    DI_CHART_OFFSET = 80  # px; adjusted to move plot down
+    DI_CHART_OFFSET = 100  # px; adjusted to move plot down
 
     with chart_slot.container():
         st.markdown(
@@ -1254,6 +1254,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
