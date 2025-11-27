@@ -192,13 +192,14 @@ css(
     """
 <style>
 /* Move the entire right column content up a bit */
+# BRUTE FORCE FIX - Add this right before the chart_slot section
+st.markdown("""
+<style>
 [data-testid="column"]:last-child {
-    margin-top: -100px !important;
-    padding-top: 0px !important;
+    margin-top: -200px !important;
 }
 </style>
-"""
-)
+""", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -1466,5 +1467,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
