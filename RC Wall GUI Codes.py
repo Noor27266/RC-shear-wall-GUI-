@@ -197,18 +197,6 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
-# ---- SMALL RIGHT-COLUMN SHIFT (ONLY COLUMN, NOT CHART) ----
-css(
-    """
-<style>
-[data-testid="column"]:last-child {
-    margin-top: -100px !important;
-    padding-top: 0px !important;
-}
-</style>
-"""
-)
-
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
@@ -257,7 +245,7 @@ css(
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
+      font-size:{INPUT_H}px !important;
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
@@ -326,8 +314,6 @@ css(
 )
 
 
-
- 
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -679,7 +665,6 @@ with left:
         unsafe_allow_html=True,
     )
 
-
     st.markdown(
         """
     <div style="background:transparent; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:none;">
@@ -763,7 +748,7 @@ with right:
 
         # 🔼 WRAPPER TO MOVE ONLY THIS BLOCK UP
         st.markdown(
-            "<div style='margin-top:-200px;'>",   # make more negative to move higher
+            "<div style='margin-top:-320px;'>",   # more negative = higher
             unsafe_allow_html=True,
         )
 
@@ -1258,52 +1243,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
