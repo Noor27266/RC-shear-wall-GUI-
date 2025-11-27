@@ -1087,36 +1087,31 @@ else:
         model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
     )
 
-    # Slot for chart
-    try:
-        _slot = chart_slot
-    except NameError:
-        _slot = st.empty()
-
     # =============================================================================
-    # 📈 RENDER DI–θ PLOT (this part controls the vertical position)
+    # 📈 RENDER DI–θ PLOT (controls vertical position)
     # =============================================================================
     with right:
-        # Three-column layout to center the plot
+        # center the plot within the right column
         col1_c, col2_c, col3_c = st.columns([1, 8, 1])
 
         with col2_c:
-            # Move the plot UP by adjusting this margin (more negative = higher)
+            # move the plot UP (more negative = closer to the top figure)
             st.markdown(
-                "<div style='margin-top:-750px;'>",   # <- only change: -560px → -750px
+                "<div style='margin-top:-350px;'>",
                 unsafe_allow_html=True
             )
 
-            with _slot:
-                render_di_chart(
-                    st.session_state.results_df,
-                    _curve_df,
-                    theta_max=THETA_MAX,
-                    di_max=1.5,
-                    size=CHART_W
-                )
+            # draw the chart here (no placeholder, so it will move)
+            render_di_chart(
+                st.session_state.results_df,
+                _curve_df,
+                theta_max=THETA_MAX,
+                di_max=1.5,
+                size=CHART_W
+            )
 
             st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
@@ -1136,4 +1131,5 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
