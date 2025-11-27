@@ -1022,13 +1022,15 @@ def render_di_chart(
     size: int = 460,
 ):
     import altair as alt
-    
+
     # Get the actual max theta from the data, not from THETA_MAX
     if not curve_df.empty:
         actual_theta_max = curve_df["θ"].max()
     else:
         actual_theta_max = theta_max
-    
+
+    # ⬇️ If Altair 5 is not installed and this line errors,
+    # change selection_point → selection_single (see note below)
     selection = alt.selection_point(
         name="select",
         fields=["θ", "Predicted_DI"],
@@ -1037,12 +1039,16 @@ def render_di_chart(
         empty=False,
         clear="mouseout",
     )
+
     AXIS_LABEL_FS = 14
     AXIS_TITLE_FS = 16
     TICK_SIZE = 6
     TITLE_PAD = 10
     LABEL_PAD = 6
-    base_axes_df = pd.DataFrame({"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]})
+
+    base_axes_df = pd.DataFrame(
+        {"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]}
+    )
     x_ticks = np.linspace(0.0, actual_theta_max, 5).round(2)
 
     axes_layer = (
@@ -1090,6 +1096,7 @@ def render_di_chart(
         if (curve_df is not None and not curve_df.empty)
         else pd.DataFrame({"θ": [], "Predicted_DI": []})
     )
+
     line_layer = (
         alt.Chart(curve)
         .mark_line(strokeWidth=2)
@@ -1100,7 +1107,6 @@ def render_di_chart(
     k = 3
     if not curve.empty:
         curve_points = curve.iloc[::k].copy()
-        # Add the final point (endpoint) to ensure it's always shown
         final_point = curve.iloc[[-1]].copy()
         curve_points = pd.concat([curve_points, final_point]).drop_duplicates()
     else:
@@ -1114,13 +1120,13 @@ def render_di_chart(
             y="Predicted_DI:Q",
             color=alt.condition(
                 alt.datum.θ == actual_theta_max,
-                alt.value("blue"),  # Color for the final point
-                alt.value("steelblue")  # Color for other points
+                alt.value("blue"),
+                alt.value("steelblue"),
             ),
             size=alt.condition(
                 alt.datum.θ == actual_theta_max,
-                alt.value(100),  # Larger size for the final point
-                alt.value(60)    # Normal size for other points
+                alt.value(100),
+                alt.value(60),
             ),
             tooltip=[
                 alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
@@ -1157,14 +1163,9 @@ def render_di_chart(
         .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
     )
 
-    chart_html = chart.to_html()
-    chart_html = chart_html.replace(
-        "</style>",
-        "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
-        "{ font-size: 14px !important; font-weight: bold !important; "
-        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
-    )
-    st.components.v1.html(chart_html, height=size + 100)
+    # ⬇️ THIS IS THE IMPORTANT CHANGE:
+    # use native Streamlit Altair rendering instead of st.components.v1.html
+    st.altair_chart(chart, use_container_width=False)
 
 
 def _pick_default_model():
@@ -1271,6 +1272,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
