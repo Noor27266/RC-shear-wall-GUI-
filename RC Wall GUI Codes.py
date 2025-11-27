@@ -1,25 +1,6 @@
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
-# ======== FIXED-WIDTH CANVAS WRAPPER (keeps layout from moving) ========
-st.markdown(
-    """
-    <style>
-    /* Fixed-width canvas for the entire app */
-    #fixed-layout-container {
-        width: 1600px;          /* <- choose your design width */
-        max-width: 1600px;      /* lock it, no stretching */
-        min-width: 1600px;
-        margin-left: auto;      /* center horizontally */
-        margin-right: auto;
-    }
-    </style>
-
-    <div id="fixed-layout-container">
-    """,
-    unsafe_allow_html=True,
-)
-# =======================================================================
 
 
 # =============================================================================
@@ -264,7 +245,7 @@ css(
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
+      font-size:{FS_INPUT}px !important;        /* <<< back to FS_INPUT */
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
@@ -327,17 +308,22 @@ css(
       min-height: 100vh !important;
       background: #e0e4ec !important;
   }}
-
-  /* EXTRA TOP PADDING SO FIXED LOGO DOESN'T TOUCH TITLE WHEN ZOOMED */
-  .main .block-container {{
-      padding-top: 80px !important;   /* was 40px */
-  }}
 </style>
 """
 )
 
-# NOTE: the previous CSS block that used margin-top:-150px on the last inner column
-# has been removed to keep layout stable on zoom.
+# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
+css(
+    """
+<style>
+/* parent column  →  inner columns; last inner column is the controls */
+[data-testid="column"] [data-testid="column"]:last-child {
+    margin-top: -150px !important;   /* make more negative if you want higher */
+}
+</style>
+"""
+)
+
 
 # =============================================================================
 # 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
@@ -352,7 +338,7 @@ try:
 except Exception:
     _b64 = ""
 
-LOGO_SIZE = 60
+LOGO_SIZE = 50
 LOGO_TOP = 20
 LOGO_POSITION = 10
 
@@ -389,7 +375,7 @@ st.markdown(
   }}
 
   .main .block-container {{
-    padding-top: 80px !important;
+    padding-top: 40px !important;
   }}
 </style>
 
@@ -832,8 +818,22 @@ with right:
         unsafe_allow_html=True,
     )
 
-# NOTE: the CSS block that applied transform: translate(40px,-150px)
-# to the controls has been removed so layout doesn't jump on zoom.
+css("""
+<style>
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
+*/
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    transform: translate(40px, -150px);   /* (X , Y) */
+    /* X = right/left, Y = up/down */
+}
+</style>
+""")
+
 
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
@@ -1271,7 +1271,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-# ======== CLOSE FIXED-WIDTH CANVAS WRAPPER =============================
-st.markdown("</div>", unsafe_allow_html=True)
-# =======================================================================
+
+
+
 
