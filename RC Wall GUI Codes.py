@@ -324,129 +324,7 @@ css(
 """
 )
 
-# =============================================================================
-# 🎨 STEP 3.4: ZOOM PREVENTION - FIXED LAYOUT ACROSS ALL ZOOM LEVELS
-# =============================================================================
-css(
-    """
-<style>
-/* ============================================================================= */
-/* 🔒 ZOOM PREVENTION - NOTHING MOVES OR RESIZES ON ZOOM */
-/* ============================================================================= */
 
-/* COMPLETELY DISABLE BROWSER ZOOM */
-html {
-    zoom: reset !important;
-}
-
-/* Force exact pixel sizes for everything - no scaling */
-.stApp, .block-container, [data-testid="stAppViewContainer"] {
-    zoom: 1 !important;
-    -moz-transform: scale(1) !important;
-    -moz-transform-origin: 0 0 !important;
-    -webkit-transform: scale(1) !important;  
-    -webkit-transform-origin: 0 0 !important;
-    transform: scale(1) !important;
-    transform-origin: 0 0 !important;
-}
-
-/* Lock all containers to prevent any movement */
-.block-container {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    overflow: visible !important;
-}
-
-/* Prevent any text size changes */
-.stNumberInput label,
-.stSelectbox label,
-.stNumberInput input,
-.stSelectbox select,
-.stButton button,
-.section-header,
-.form-banner,
-.stMarkdown {
-    font-size: inherit !important;
-    line-height: inherit !important;
-    -webkit-text-size-adjust: none !important;
-    text-size-adjust: none !important;
-}
-
-/* Lock all column positions */
-[data-testid="column"] {
-    position: absolute !important;
-    transform: none !important;
-    zoom: 1 !important;
-}
-
-/* Specifically lock the left and right panels */
-[data-testid="column"]:first-child {
-    left: 0 !important;
-    width: 60% !important;
-    position: absolute !important;
-}
-
-[data-testid="column"]:last-child {
-    right: 0 !important;
-    width: 40% !important;
-    position: absolute !important;
-}
-
-/* Prevent viewport scaling on mobile */
-@viewport {
-    width: device-width;
-    zoom: 1.0;
-    min-zoom: 1.0;
-    max-zoom: 1.0;
-    user-zoom: fixed;
-}
-
-@-ms-viewport {
-    width: device-width;
-    zoom: 1.0;
-}
-
-/* Disable pinch-zoom on touch devices */
-body {
-    touch-action: pan-x pan-y;
-    -ms-touch-action: pan-x pan-y;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-}
-
-/* Lock the controls in exact position */
-div[data-testid="stSelectbox"],
-div.stButton,
-div[data-testid="stDownloadButton"],
-.prediction-with-color {
-    position: absolute !important;
-    transform: none !important;
-    left: 40px !important;
-    top: -150px !important;
-}
-
-/* Lock the chart position */
-.vega-embed, .vega-embed .chart-wrapper {
-    position: absolute !important;
-    width: 400px !important;
-    height: 400px !important;
-    transform: none !important;
-}
-
-/* Completely disable any zoom behaviors */
-* {
-    max-zoom: 1 !important;
-    min-zoom: 1 !important;
-    zoom: 1 !important;
-}
-</style>
-"""
-)
 
 
 
@@ -1397,6 +1275,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
