@@ -835,7 +835,6 @@ div[data-testid="stDownloadButton"],
 """)
 
 
-
 # =============================================================================
 # ⚡ STEP 11: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
@@ -1208,20 +1207,11 @@ else:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
     # ---------- Generate curve for θ sweep ----------
-    # Check if we have results and use the last theta from results
-    if not st.session_state.results_df.empty:
-        # Use the last calculated theta value for the plot
-        last_theta = st.session_state.results_df.iloc[-1]["θ"]
-        _base_xdf = _make_input_df(
-            lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl,
-            axial, b0, db, s_db, AR, M_Vlw, last_theta
-        )
-    else:
-        # If no results yet, use current form theta
-        _base_xdf = _make_input_df(
-            lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl,
-            axial, b0, db, s_db, AR, M_Vlw, theta
-        )
+    # ALWAYS use the current theta value from the form for plotting
+    _base_xdf = _make_input_df(
+        lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl,
+        axial, b0, db, s_db, AR, M_Vlw, theta
+    )
 
     _curve_df = _sweep_curve_df(
         model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
@@ -1262,6 +1252,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
