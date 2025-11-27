@@ -168,10 +168,9 @@ section.main {
 """,
     unsafe_allow_html=True,
 )
-)
 
 # =============================================================================
-# 🎨 SUB STEP 3.1: FONT SIZE SCALING CONFIGURATION
+# SUB STEP 3.1: FONT SIZE SCALING CONFIGURATION
 # =============================================================================
 SCALE_UI = 0.36
 
@@ -189,7 +188,7 @@ FS_RECENT = s(20)
 INPUT_H = max(32, int(FS_INPUT * 2.0))
 
 # =============================================================================
-# 🎨 SUB STEP 3.2: COLOR SCHEME DEFINITION
+# SUB STEP 3.2: COLOR SCHEME DEFINITION
 # =============================================================================
 DEFAULT_LOGO_H = 45
 PRIMARY = "#8E44AD"
@@ -199,7 +198,7 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
 # =============================================================================
-# 🎨 STEP 3.3: COMPREHENSIVE CSS STYLING & THEME SETUP
+# STEP 3.3: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
 css(
     f"""
@@ -310,7 +309,7 @@ css(
       background: #e0e4ec !important;
   }}
 
-  /* SUB STEP 3.4: RESPONSIVE FIXED LAYOUT CONFIGURATION */
+  /* RESPONSIVE FIXED LAYOUT CONFIGURATION */
   html, body, #root, .stApp, section.main, .block-container {{
       zoom: 1 !important;
       transform: scale(1) !important;
@@ -1321,6 +1320,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
