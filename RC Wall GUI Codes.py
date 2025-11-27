@@ -188,18 +188,14 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
 # ---- SMALL RIGHT-COLUMN SHIFT (ONLY COLUMN, NOT CHART) ----
-css(
-    """
-<style>
-/* Move the entire right column content up a bit */
-# BRUTE FORCE FIX - Add this right before the chart_slot section
-st.markdown("""
+css("""
 <style>
 [data-testid="column"]:last-child {
     margin-top: -200px !important;
+    padding-top: 0px !important;
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -719,7 +715,7 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -0, 400
-right_offset = -20
+right_offset = -150
 CHART_W = 400
 
 with right:
@@ -1467,6 +1463,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
