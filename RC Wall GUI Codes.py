@@ -1242,7 +1242,7 @@ else:
 
     with chart_slot.container():
         st.markdown(
-    f"<div style='margin-top:{DI_CHART_OFFSET}px; margin-left:40px;'>",
+    f"<div style='margin-top:{DI_CHART_OFFSET}px; margin-left:100px;'>",
     unsafe_allow_html=True,
 )
 
@@ -1273,6 +1273,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
