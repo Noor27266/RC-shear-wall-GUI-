@@ -203,6 +203,69 @@ LEFT_BG = "#e0e4ec"
 css(
     f"""
 <style>
+  /* ZOOM PROTECTION - LOCK EVERYTHING IN PLACE */
+  html, body {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      transform-origin: 0 0 !important;
+      position: fixed !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: auto !important;
+  }}
+  
+  .stApp {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      transform-origin: 0 0 !important;
+      position: relative !important;
+  }}
+  
+  /* PREVENT TEXT RESIZING */
+  * {{
+      font-size: inherit !important;
+      line-height: inherit !important;
+  }}
+  
+  /* LOCK ALL CONTAINERS */
+  [data-testid="column"],
+  [data-testid="stHorizontalBlock"],
+  .block-container,
+  section.main {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      position: relative !important;
+  }}
+  
+  /* SPECIFIC PROTECTION FOR TEXT ELEMENTS */
+  .section-header,
+  .form-banner,
+  .stNumberInput label,
+  .stSelectbox label,
+  .stMarkdown,
+  .stButton button {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      font-size: inherit !important;
+  }}
+  
+  /* PROTECT THE CHINESE/ENGLISH HEADER AREA */
+  .page-header-outer,
+  .page-header,
+  .page-header__logo {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      position: fixed !important;
+  }}
+  
+  /* DISABLE BROWSER ZOOM */
+  @media screen and (max-width: 768px) {{
+      html, body {{
+          zoom: 1 !important;
+          transform: scale(1) !important;
+      }}
+  }}
+
   .block-container {{
       padding-top: 0.5rem !important;
       padding-bottom: 0.5rem !important;
@@ -1269,6 +1332,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
