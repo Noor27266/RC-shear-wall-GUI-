@@ -319,32 +319,32 @@ with left:
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True")
-        lw = num(rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length")
-        hw = num(rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height")
-        tw = num(rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness")
-        b0 = num(rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width")
-        db = num(rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length")
-        AR = num(r"$AR$","AR",2.0,0.01,None,"Aspect ratio")
-        M_Vlw = num(r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio")
+    st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)  # REMOVED EXTRA QUOTE
+    lw = num(rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length")
+    hw = num(rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height")
+    tw = num(rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness")
+    b0 = num(rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width")
+    db = num(rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length")
+    AR = num(r"$AR$","AR",2.0,0.01,None,"Aspect ratio")
+    M_Vlw = num(r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio")
 
-    with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
-        rt = num(r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio")
-        rsh = num(r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio")
-        rl = num(r"$\rho_l\;(\%)$","rl",0.25,0.0001,"%.6f","Vertical web ratio")
-        rbl = num(r"$\rho_{bl}\;(\%)$","rbl",0.25,0.0001,"%.6f","Vertical boundary ratio")
-        s_db = num(r"$s/d_b$","s_db",0.25,0.01,None,"Hoop spacing ratio")
-        axial = num(r"$P/(A_g f'_c)$","axial",0.10,0.001,None,"Axial Load Ratio")
-        theta = num(r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio")
+with c2:
+    st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)  # REMOVED EXTRA QUOTE
+    rt = num(r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio")
+    rsh = num(r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio")
+    rl = num(r"$\rho_l\;(\%)$","rl",0.25,0.0001,"%.6f","Vertical web ratio")
+    rbl = num(r"$\rho_{bl}\;(\%)$","rbl",0.25,0.0001,"%.6f","Vertical boundary ratio")
+    s_db = num(r"$s/d_b$","s_db",0.25,0.01,None,"Hoop spacing ratio")
+    axial = num(r"$P/(A_g f'_c)$","axial",0.10,0.001,None,"Axial Load Ratio")
+    theta = num(r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio")
 
-    with c3:
-        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
-        fc = num(rf"$f'_c{U('MPa')}$","fc",40.0,0.1,None,"Concrete strength")
-        fyt = num(rf"$f_{{yt}}{U('MPa')}$","fyt",400.0,1.0,None,"Transverse web yield strength")
-        fysh = num(rf"$f_{{ysh}}{U('MPa')}$","fysh",400.0,1.0,None,"Transverse boundary yield strength")
-        fyl = num(rf"$f_{{yl}}{U('MPa')}$","fyl",400.0,1.0,None,"Vertical web yield strength")
-        fybl = num(rf"$f_{{ybl}}{U('MPa')}$","fybl",400.0,1.0,None,"Vertical boundary yield strength")
+with c3:
+    st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)  # REMOVED EXTRA QUOTE
+    fc = num(rf"$f'_c{U('MPa')}$","fc",40.0,0.1,None,"Concrete strength")
+    fyt = num(rf"$f_{{yt}}{U('MPa')}$","fyt",400.0,1.0,None,"Transverse web yield strength")
+    fysh = num(rf"$f_{{ysh}}{U('MPa')}$","fysh",400.0,1.0,None,"Transverse boundary yield strength")
+    fyl = num(rf"$f_{{yl}}{U('MPa')}$","fyl",400.0,1.0,None,"Vertical web yield strength")
+    fybl = num(rf"$f_{{ybl}}{U('MPa')}$","fybl",400.0,1.0,None,"Vertical boundary yield strength")
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
@@ -542,3 +542,4 @@ with right:
             render_di_chart(st.session_state.results_df, _curve_df, theta_max=THETA_MAX, di_max=1.5, size=400)
     
     st.markdown("</div>", unsafe_allow_html=True)
+
