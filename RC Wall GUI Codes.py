@@ -810,8 +810,8 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # small spacer between logo and row
-    st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
+    # ↓ REMOVE EXTRA VERTICAL GAP SO PLOT + CONTROLS MOVE UP
+    st.markdown("<div style='height:0px;'></div>", unsafe_allow_html=True)
 
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
@@ -823,23 +823,17 @@ with right:
 
     # ---------------- RIGHT: Model Selection + buttons ---------
     with col_controls:
-        # move the whole controls block a bit UP
-        st.markdown(
-            "<div style='margin-top:-40px;'></div>",
-            unsafe_allow_html=True,
-        )
-
-        # bold label for Model Selection
+        # bold "Model Selection" label
         st.markdown(
             "<div style='font-weight:700; margin-bottom:4px;'>Model Selection</div>",
             unsafe_allow_html=True,
         )
 
-        # Model selection (same logic as before)
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
 
+        # label is empty because we draw our own bold label above
         model_choice_label = st.selectbox(
             "",
             display_labels,
@@ -897,6 +891,7 @@ with right:
     """,
         unsafe_allow_html=True,
     )
+
 
 
 
@@ -1323,6 +1318,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
