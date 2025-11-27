@@ -152,7 +152,7 @@ section.main > div.block-container{
     max-width:100% !important;
 }
 
-/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
+/* ❌ REMOVED SCROLLBAR FORCING CODE HERE
 html, body, #root, .stApp {
     overflow: visible !important;
     max-height: none !important;
@@ -164,6 +164,7 @@ section.main {
     max-height: none !important;
     height: auto !important;
 }
+*/
 </style>
 """,
     unsafe_allow_html=True,
@@ -1271,6 +1272,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
