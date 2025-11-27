@@ -1079,11 +1079,23 @@ else:
 
     # SIMPLE: chart directly under everything, no extra spacers
     with right:
-        col1_c, col2_c, col3_c = st.columns([1, 8, 1])
-        with col2_c:
-            with _slot:
-                render_di_chart(st.session_state.results_df, _curve_df,
-                                theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+    col1_c, col2_c, col3_c = st.columns([1, 8, 1])
+    with col2_c:
+        # pull the DI–θ plot upwards to remove the big white gap
+        st.markdown(
+            "<div style='margin-top:-260px;'>",
+            unsafe_allow_html=True
+        )
+        with _slot:
+            render_di_chart(
+                st.session_state.results_df,
+                _curve_df,
+                theta_max=THETA_MAX,
+                di_max=1.5,
+                size=CHART_W,
+            )
+        st.markdown("</div>", unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1101,3 +1113,4 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
