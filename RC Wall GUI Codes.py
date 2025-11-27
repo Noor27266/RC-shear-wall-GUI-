@@ -767,41 +767,10 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # --------- CALCULATE BUTTON (ONE CLICK, DO PREDICTION HERE) ---------
+        # --------- CALCULATE BUTTON (sets flag for STEP 11) ---------
         calc_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
-
-        if calc_clicked and (model_choice in model_registry):
-            # build input row from current UI values
-            xdf = _make_input_df(
-                lw,
-                hw,
-                tw,
-                fc,
-                fyt,
-                fysh,
-                fyl,
-                fybl,
-                rt,
-                rsh,
-                rl,
-                rbl,
-                axial,
-                b0,
-                db,
-                s_db,
-                AR,
-                M_Vlw,
-                theta,
-            )
-            try:
-                pred = predict_di(model_choice, None, xdf)
-                row = xdf.copy()
-                row["Predicted_DI"] = pred
-                st.session_state.results_df = pd.concat(
-                    [st.session_state.results_df, row], ignore_index=True
-                )
-            except Exception as e:
-                st.error(f"Prediction failed for {model_choice}: {e}")
+        if calc_clicked:
+            st.session_state.do_predict = True
 
         # --------- OTHER BUTTONS ---------
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -810,25 +779,10 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # Latest DI + CSV download  ✅ (back in STEP 9)
-        if not st.session_state.results_df.empty:
-            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-            st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
-                unsafe_allow_html=True,
-            )
+        # placeholder that STEP 11 will fill with DI + CSV
+        di_slot = st.empty()
 
-            csv = st.session_state.results_df.to_csv(index=False)
-            st.download_button(
-                "📂 Download as CSV",
-                data=csv,
-                file_name="di_predictions.csv",
-                mime="text/csv",
-                use_container_width=True,
-                key="dl_csv_main",
-            )
-
-    # styling for the blue DI label (unchanged)
+    # styling for the blue DI label
     st.markdown(
         f"""
     <style>
@@ -865,7 +819,6 @@ div[data-testid="stDownloadButton"],
 </style>
 """
 )
-
 
 
 
@@ -1178,6 +1131,43 @@ if "model_choice" not in locals():
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
+    # ---------- Prediction on submit (single DI point) ----------
+    if st.session_state.get("do_predict", False):
+        xdf = _make_input_df(
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            theta,
+        )
+
+        try:
+            pred = predict_di(model_choice, None, xdf)
+            row = xdf.copy()
+            row["Predicted_DI"] = pred
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
+        except Exception as e:
+            st.error(f"Prediction failed for {model_choice}: {e}")
+
+        # reset flag so it doesn’t keep predicting on every rerun
+        st.session_state.do_predict = False
+
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
         lw,
@@ -1221,6 +1211,27 @@ else:
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
+    # ---- draw latest DI + CSV download inside di_slot (right column) ----
+    if "di_slot" in locals():
+        with di_slot:
+            if not st.session_state.results_df.empty:
+                latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+                st.markdown(
+                    f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
+                    unsafe_allow_html=True,
+                )
+
+                csv = st.session_state.results_df.to_csv(index=False)
+                st.download_button(
+                    "📂 Download as CSV",
+                    data=csv,
+                    file_name="di_predictions.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                    key="dl_csv_main",
+                )
+
+
 
 
 
@@ -1244,6 +1255,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
