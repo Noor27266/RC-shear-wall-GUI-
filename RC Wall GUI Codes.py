@@ -338,8 +338,8 @@ try:
 except Exception:
     _b64 = ""
 
-LOGO_SIZE = 60
-LOGO_TOP = 20
+LOGO_SIZE = 70
+LOGO_TOP = 25
 LOGO_POSITION = 10
 
 st.markdown(
@@ -1271,6 +1271,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
