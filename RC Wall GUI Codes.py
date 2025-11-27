@@ -312,7 +312,17 @@ css(
 """
 )
 
-
+# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
+css(
+    """
+<style>
+/* parent column  →  inner columns; last inner column is the controls */
+[data-testid="column"] [data-testid="column"]:last-child {
+    margin-top: -150px !important;   /* make more negative if you want higher */
+}
+</style>
+"""
+)
 
 
 # =============================================================================
@@ -810,7 +820,19 @@ with right:
 
 css("""
 <style>
-
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
+*/
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    transform: translate(40px, -150px);   /* (X , Y) */
+    /* X = right/left, Y = up/down */
+}
+</style>
+""")
 
 
 # =============================================================================
@@ -1249,8 +1271,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
