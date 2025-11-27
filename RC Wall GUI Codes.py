@@ -401,7 +401,7 @@ css("""
 <style>
 /* Move the Model Selection + Buttons + DI result UP */
 div[data-testid="column"] > div:nth-child(3) {
-    margin-top: -220px !important;
+    margin-top: -450px !important;
 }
 </style>
 """)
@@ -1332,6 +1332,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
