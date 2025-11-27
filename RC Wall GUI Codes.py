@@ -829,7 +829,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translateY(-140px);   /* make more negative to move higher */
+    transform: translateY(-250px);   /* make more negative to move higher */
 }
 </style>
 """)
@@ -1259,6 +1259,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
