@@ -763,7 +763,7 @@ with right:
 
         # 🔼 WRAPPER TO MOVE ONLY THIS BLOCK UP
         st.markdown(
-            "<div style='margin-top:-80px;'>",   # make more negative to move higher
+            "<div style='margin-top:-200px;'>",   # make more negative to move higher
             unsafe_allow_html=True,
         )
 
@@ -1258,6 +1258,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
