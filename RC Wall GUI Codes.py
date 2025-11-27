@@ -44,6 +44,7 @@ try:
 except Exception:
     _k3_load_model = None
 
+
 def _load_keras_model(path):
     """Try tf.keras first, then keras (Keras 3)."""
     errs = []
@@ -59,6 +60,7 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
+
 # =============================================================================
 # 🚀 SUB STEP 1.5: SESSION STATE INITIALIZATION
 # =============================================================================
@@ -70,11 +72,21 @@ st.session_state.setdefault("results_df", pd.DataFrame())
 # =============================================================================
 
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
-def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
-def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
+
+
+def b64(path: Path) -> str:
+    return base64.b64encode(path.read_bytes()).decode("ascii")
+
+
+def dv(R, key, proposed):
+    lo, hi = R[key]
+    return float(max(lo, min(proposed, hi)))
+
 
 # ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
+
+
 def pfind(candidates):
     for c in candidates:
         p = Path(c)
@@ -108,6 +120,7 @@ def pfind(candidates):
             return Path(matches[0])
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
+
 # =============================================================================
 # 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
 # =============================================================================
@@ -115,7 +128,8 @@ def pfind(candidates):
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
 # Header / spacing
-st.markdown("""
+st.markdown(
+    """
 <style>
 html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
@@ -146,7 +160,9 @@ section.main {
     min-height: 100vh !important;
 }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # =============================================================================
 # 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
@@ -155,47 +171,37 @@ SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller).
 
 s = lambda v: int(round(v * SCALE_UI))
 
-FS_TITLE   = s(20)
+FS_TITLE = s(20)
 FS_SECTION = s(60)
-FS_LABEL   = s(50)
-FS_UNITS   = s(30)
-FS_INPUT   = s(30)
-FS_SELECT  = s(35)
-FS_BUTTON  = s(20)
-FS_BADGE   = s(30)
-FS_RECENT  = s(20)
-INPUT_H    = max(32, int(FS_INPUT * 2.0))
+FS_LABEL = s(50)
+FS_UNITS = s(30)
+FS_INPUT = s(30)
+FS_SELECT = s(35)
+FS_BUTTON = s(20)
+FS_BADGE = s(30)
+FS_RECENT = s(20)
+INPUT_H = max(32, int(FS_INPUT * 2.0))
 
 # =============================================================================
 # 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION
 # =============================================================================
 DEFAULT_LOGO_H = 45
-PRIMARY   = "#8E44AD"
+PRIMARY = "#8E44AD"
 SECONDARY = "#f9f9f9"
-INPUT_BG     = "#ffffff"
+INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
-LEFT_BG      = "#e0e4ec"
+LEFT_BG = "#e0e4ec"
 
-# Small right-column shift
-css("""
-<style>
-/* Move the entire right column content up a bit */
-[data-testid="column"]:last-child {
-    margin-top: -100px !important;
-    padding-top: 0px !important;
-}
+# NOTE: removed old "Small right-column shift" CSS that was pinning the chart.
+# The right column now uses natural layout so the DI–θ plot can sit just under
+# the controls without being stuck.
 
-/* Specifically target the chart container */
-div.element-container:has(> div[data-testid="iframe"]) {
-    margin-top: -100px !important;
-}
-</style>
-""")
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
-css(f"""
+css(
+    f"""
 <style>
   .block-container {{ padding-top: 0.5rem !important; }}
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
@@ -312,7 +318,8 @@ css(f"""
   label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
   #action-row {{ display:flex; align-items:center; gap:10px; }}
 </style>
-""")
+"""
+)
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -327,7 +334,8 @@ LOGO_SIZE = 45
 LOGO_TOP = 35
 LOGO_POSITION = 200
 
-st.markdown(f"""
+st.markdown(
+    f"""
 <style>
   .page-header-outer {{
     position: fixed !important;
@@ -368,46 +376,59 @@ st.markdown(f"""
     {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
   </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # =============================================================================
 # 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
-def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
+def record_health(name, ok, msg=""):
+    health.append((name, ok, msg, "ok" if ok else "err"))
+
+
 health = []
+
 
 class _ScalerShim:
     def __init__(self, X_scaler, Y_scaler):
         import numpy as _np
+
         self._np = _np
         self.Xs = X_scaler
         self.Ys = Y_scaler
         self.x_kind = "External joblib"
         self.y_kind = "External joblib"
-    def transform_X(self, X): return self.Xs.transform(X)
+
+    def transform_X(self, X):
+        return self.Xs.transform(X)
+
     def inverse_transform_y(self, y):
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
+
 # PS (ANN)
-ann_ps_model = None; ann_ps_proc = None
+ann_ps_model = None
+ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
     ann_ps_model = _load_keras_model(ps_model_path)
-    sx = joblib.load(pfind(["ANN_PS_Scaler_X.save","ANN_PS_Scaler_X.pkl","ANN_PS_Scaler_X.joblib"]))
-    sy = joblib.load(pfind(["ANN_PS_Scaler_y.save","ANN_PS_Scaler_y.pkl","ANN_PS_Scaler_y.joblib"]))
+    sx = joblib.load(pfind(["ANN_PS_Scaler_X.save", "ANN_PS_Scaler_X.pkl", "ANN_PS_Scaler_X.joblib"]))
+    sy = joblib.load(pfind(["ANN_PS_Scaler_y.save", "ANN_PS_Scaler_y.pkl", "ANN_PS_Scaler_y.joblib"]))
     ann_ps_proc = _ScalerShim(sx, sy)
     record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
 # MLP (ANN)
-ann_mlp_model = None; ann_mlp_proc = None
+ann_mlp_model = None
+ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
     ann_mlp_model = _load_keras_model(mlp_model_path)
-    sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save","ANN_MLP_Scaler_X.pkl","ANN_MLP_Scaler_X.joblib"]))
-    sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save","ANN_MLP_Scaler_y.pkl","ANN_MLP_Scaler_y.joblib"]))
+    sx = joblib.load(pfind(["ANN_MLP_Scaler_X.save", "ANN_MLP_Scaler_X.pkl", "ANN_MLP_Scaler_X.joblib"]))
+    sy = joblib.load(pfind(["ANN_MLP_Scaler_y.save", "ANN_MLP_Scaler_y.pkl", "ANN_MLP_Scaler_y.joblib"]))
     ann_mlp_proc = _ScalerShim(sx, sy)
     record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
 except Exception as e:
@@ -416,29 +437,41 @@ except Exception as e:
 # Random Forest
 rf_model = None
 try:
-    rf_path = pfind([
-        "random_forest_model.pkl", "random_forest_model.joblib",
-        "rf_model.pkl", "RF_model.pkl",
-        "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
-    ])
+    rf_path = pfind(
+        [
+            "random_forest_model.pkl",
+            "random_forest_model.joblib",
+            "rf_model.pkl",
+            "RF_model.pkl",
+            "Best_RF_Model.json",
+            "best_rf_model.json",
+            "RF_model.json",
+        ]
+    )
     try:
         rf_model = joblib.load(rf_path)
         record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
     except Exception as e_joblib:
         try:
             import skops.io as sio
+
             rf_model = sio.load(rf_path, trusted=True)
             record_health("Random Forest", True, f"loaded via skops from {rf_path}")
         except Exception as e_skops:
-            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})")
+            record_health(
+                "Random Forest",
+                False,
+                f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})",
+            )
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
 # XGBoost
 xgb_model = None
 try:
-    xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
-    xgb_model = xgb.XGBRegressor(); xgb_model.load_model(xgb_path)
+    xgb_path = pfind(["XGBoost_trained_model_for_DI.json", "Best_XGBoost_Model.json", "xgboost_model.json"])
+    xgb_model = xgb.XGBRegressor()
+    xgb_model.load_model(xgb_path)
     record_health("XGBoost", True, f"loaded from {xgb_path}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
@@ -446,98 +479,141 @@ except Exception as e:
 # CatBoost
 cat_model = None
 try:
-    cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
-    cat_model = catboost.CatBoostRegressor(); cat_model.load_model(cat_path)
+    cat_path = pfind(["CatBoost.cbm", "Best_CatBoost_Model.cbm", "catboost.cbm"])
+    cat_model = catboost.CatBoostRegressor()
+    cat_model.load_model(cat_path)
     record_health("CatBoost", True, f"loaded from {cat_path}")
 except Exception as e:
     record_health("CatBoost", False, f"{e}")
 
+
 # LightGBM
 def load_lightgbm_flex():
     try:
-        p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
+        p = pfind(
+            [
+                "LightGBM_model.txt",
+                "Best_LightGBM_Model.txt",
+                "LightGBM_model.bin",
+                "LightGBM_model.pkl",
+                "LightGBM_model.joblib",
+                "LightGBM_model",
+            ]
+        )
     except Exception:
         raise FileNotFoundError("No LightGBM model file found.")
-    try: return lgb.Booster(model_file=str(p)), "booster", p
+    try:
+        return lgb.Booster(model_file=str(p)), "booster", p
     except Exception:
-        try: return joblib.load(p), "sklearn", p
+        try:
+            return joblib.load(p), "sklearn", p
         except Exception as e:
             raise e
+
 
 try:
     lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
     record_health("LightGBM", True, f"loaded as {lgb_kind} from {lgb_path}")
 except Exception as e:
-    lgb_model = None; record_health("LightGBM", False, str(e))
+    lgb_model = None
+    record_health("LightGBM", False, str(e))
 
 # Registry
 model_registry = {}
 for name, ok, *_ in health:
     if not ok:
         continue
-    if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
-    elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
-    elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
-    elif name == "PS (ANN)" and ann_ps_model is not None: model_registry["PS"] = ann_ps_model
-    elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
-    elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
+    if name == "XGBoost" and xgb_model is not None:
+        model_registry["XGBoost"] = xgb_model
+    elif name == "LightGBM" and lgb_model is not None:
+        model_registry["LightGBM"] = lgb_model
+    elif name == "CatBoost" and cat_model is not None:
+        model_registry["CatBoost"] = cat_model
+    elif name == "PS (ANN)" and ann_ps_model is not None:
+        model_registry["PS"] = ann_ps_model
+    elif name == "MLP (ANN)" and ann_mlp_model is not None:
+        model_registry["MLP"] = ann_mlp_model
+    elif name == "Random Forest" and rf_model is not None:
+        model_registry["Random Forest"] = rf_model
 
 # =============================================================================
 # 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
-    "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
-    "fyt":(0.0,1187.0), "fysh":(0.0,1375.0), "fyl":(160.0,1000.0), "fybl":(0.0,900.0),
-    "rt":(0.000545,0.025139), "rsh":(0.0,0.041888), "rl":(0.0,0.029089), "rbl":(0.0,0.031438),
-    "axial":(0.0,0.86), "b0":(45.0,3045.0), "db":(0.0,500.0), "s_db":(0.0,47.65625),
-    "AR":(0.388889,5.833333), "M_Vlw":(0.388889,4.1), "theta":(0.0275,4.85),
+    "lw": (400.0, 3500.0),
+    "hw": (495.0, 5486.4),
+    "tw": (26.0, 305.0),
+    "fc": (13.38, 93.6),
+    "fyt": (0.0, 1187.0),
+    "fysh": (0.0, 1375.0),
+    "fyl": (160.0, 1000.0),
+    "fybl": (0.0, 900.0),
+    "rt": (0.000545, 0.025139),
+    "rsh": (0.0, 0.041888),
+    "rl": (0.0, 0.029089),
+    "rbl": (0.0, 0.031438),
+    "axial": (0.0, 0.86),
+    "b0": (45.0, 3045.0),
+    "db": (0.0, 500.0),
+    "s_db": (0.0, 47.65625),
+    "AR": (0.388889, 5.833333),
+    "M_Vlw": (0.388889, 4.1),
+    "theta": (0.0275, 4.85),
 }
 THETA_MAX = R["theta"][1]
 U = lambda s: rf"\;(\mathrm{{{s}}})"
 
 GEOM = [
-    (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
-    (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
-    (rf"$t_w{U('mm')}$","tw",200.0,1.0,None,"Thickness"),
-    (rf"$b_0{U('mm')}$","b0",200.0,1.0,None,"Boundary element width"),
-    (rf"$d_b{U('mm')}$","db",400.0,1.0,None,"Boundary element length"),
-    (r"$AR$","AR",2.0,0.01,None,"Aspect ratio"),
-    (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
+    (rf"$l_w{U('mm')}$", "lw", 1000.0, 1.0, None, "Length"),
+    (rf"$h_w{U('mm')}$", "hw", 495.0, 1.0, None, "Height"),
+    (rf"$t_w{U('mm')}$", "tw", 200.0, 1.0, None, "Thickness"),
+    (rf"$b_0{U('mm')}$", "b0", 200.0, 1.0, None, "Boundary element width"),
+    (rf"$d_b{U('mm')}$", "db", 400.0, 1.0, None, "Boundary element length"),
+    (r"$AR$", "AR", 2.0, 0.01, None, "Aspect ratio"),
+    (r"$M/(V_{l_w})$", "M_Vlw", 2.0, 0.01, None, "Shear span ratio"),
 ]
 
 MATS = [
-    (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
-    (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
-    (rf"$f_{{ysh}}{U('MPa')}$",   "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
-    (rf"$f_{{yl}}{U('MPa')}$","fyl",  400.0, 1.0, None, "Vertical web yield strength"),
-    (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
+    (rf"$f'_c{U('MPa')}$", "fc", 40.0, 0.1, None, "Concrete strength"),
+    (rf"$f_{{yt}}{U('MPa')}$", "fyt", 400.0, 1.0, None, "Transverse web yield strength"),
+    (rf"$f_{{ysh}}{U('MPa')}$", "fysh", 400.0, 1.0, None, "Transverse boundary yield strength"),
+    (rf"$f_{{yl}}{U('MPa')}$", "fyl", 400.0, 1.0, None, "Vertical web yield strength"),
+    (rf"$f_{{ybl}}{U('MPa')}$", "fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
 
 REINF = [
-    (r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio"),
-    (r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio"),
-    (r"$\rho_l\;(\%)$","rl",0.25,0.0001,"%.6f","Vertical web ratio"),
-    (r"$\rho_{bl}\;(\%)$","rbl",0.25,0.0001,"%.6f","Vertical boundary ratio"),
-    (r"$s/d_b$","s_db",0.25,0.01,None,"Hoop spacing ratio"),
-    (r"$P/(A_g f'_c)$","axial",0.10,0.001,None,"Axial Load Ratio"),
-    (r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio"),
+    (r"$\rho_t\;(\%)$", "rt", 0.25, 0.0001, "%.6f", "Transverse web ratio"),
+    (r"$\rho_{sh}\;(\%)$", "rsh", 0.25, 0.0001, "%.6f", "Transverse boundary ratio"),
+    (r"$\rho_l\;(\%)$", "rl", 0.25, 0.0001, "%.6f", "Vertical web ratio"),
+    (r"$\rho_{bl}\;(\%)$", "rbl", 0.25, 0.0001, "%.6f", "Vertical boundary ratio"),
+    (r"$s/d_b$", "s_db", 0.25, 0.01, None, "Hoop spacing ratio"),
+    (r"$P/(A_g f'_c)$", "axial", 0.10, 0.001, None, "Axial Load Ratio"),
+    (r"$\theta\;(\%)$", "theta", THETA_MAX, 0.0005, None, "Drift Ratio"),
 ]
+
 
 def num(label, key, default, step, fmt, help_):
     return st.number_input(
-        label, value=dv(R, key, default), step=step,
-        min_value=R[key][0], max_value=R[key][1],
-        format=fmt if fmt else None, help=help_
+        label,
+        value=dv(R, key, default),
+        step=step,
+        min_value=R[key][0],
+        max_value=R[key][1],
+        format=fmt if fmt else None,
+        help=help_,
     )
 
+
 # Hide +/- buttons
-css("""
+css(
+    """
 <style>
 div[data-testid="stNumberInput"] button {
     display: none !important;
 }
 </style>
-""")
+"""
+)
 
 # =============================================================================
 # 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
@@ -549,20 +625,26 @@ left, right = st.columns([1.5, 1], gap="large")
 # =============================================================================
 with left:
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
-    
-    st.markdown("""
+
+    st.markdown(
+        """
     <div style="background:transparent; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:none;">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
-    """, unsafe_allow_html=True)
-    
+    """,
+        unsafe_allow_html=True,
+    )
+
     st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
-    
-    st.markdown("""
+
+    st.markdown(
+        """
     <div style="margin: -80px 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
@@ -586,7 +668,7 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -0, 400
-right_offset = 0      # keep, but now 0 so it doesn't add space
+right_offset = 0  # keep, but now 0 so it doesn't add space
 CHART_W = 400
 
 with right:
@@ -600,7 +682,8 @@ with right:
         unsafe_allow_html=True,
     )
 
-    st.markdown(f""" 
+    st.markdown(
+        f""" 
     <style>
     #action-row {{ 
         display: flex !important;
@@ -846,8 +929,10 @@ with right:
         width: 100% !important;
     }}
     </style>
-    """, unsafe_allow_html=True)
-    
+    """,
+        unsafe_allow_html=True,
+    )
+
     col1_r, col2_r = st.columns([3, 1])
     with col2_r:
         available = set(model_registry.keys())
@@ -863,19 +948,29 @@ with right:
             st.rerun()
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
-        
+
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-            st.markdown(f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>", unsafe_allow_html=True)
-            
+            st.markdown(
+                f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
+                unsafe_allow_html=True,
+            )
+
             csv = st.session_state.results_df.to_csv(index=False)
-            st.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", 
-                              mime="text/csv", use_container_width=True, key="dl_csv_main")
-    
+            st.download_button(
+                "📂 Download as CSV",
+                data=csv,
+                file_name="di_predictions.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="dl_csv_main",
+            )
+
     pred_banner = st.empty()
     dl_slot = st.empty()
-    
-    st.markdown(f"""
+
+    st.markdown(
+        f"""
     <style>
     .prediction-with-color {{
         color: #2e86ab !important;
@@ -893,24 +988,64 @@ with right:
         width: 180px !important;
     }}
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
+    # small gap then chart slot – this controls spacing between buttons and DI–θ plot
+    st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
     chart_slot = st.empty()
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
 # =============================================================================
 _TRAIN_NAME_MAP = {
-    'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
-    'fyt': 'fyt', 'fysh': 'fysh', 'fyl': 'fyl', 'fybl': 'fybl',
-    'ρt': 'pt', 'ρsh': 'psh', 'ρl': 'pl', 'ρbl': 'pbl',
-    'P/(Agf′c)': 'P/(Agfc)', 'b0': 'b0', 'db': 'db', 's/db': 's/db',
-    'AR': 'AR', 'M/Vlw': 'M/Vlw', 'θ': 'θ'
+    "l_w": "lw",
+    "h_w": "hw",
+    "t_w": "tw",
+    "f′c": "fc",
+    "fyt": "fyt",
+    "fysh": "fysh",
+    "fyl": "fyl",
+    "fybl": "fybl",
+    "ρt": "pt",
+    "ρsh": "psh",
+    "ρl": "pl",
+    "ρbl": "pbl",
+    "P/(Agf′c)": "P/(Agfc)",
+    "b0": "b0",
+    "db": "db",
+    "s/db": "s/db",
+    "AR": "AR",
+    "M/Vlw": "M/Vlw",
+    "θ": "θ",
 }
-_TRAIN_COL_ORDER = ['lw','hw','tw','fc','fyt','fysh','fyl','fybl','pt','psh','pl','pbl','P/(Agfc)','b0','db','s/db','AR','M/Vlw','θ']
+_TRAIN_COL_ORDER = [
+    "lw",
+    "hw",
+    "tw",
+    "fc",
+    "fyt",
+    "fysh",
+    "fyl",
+    "fybl",
+    "pt",
+    "psh",
+    "pl",
+    "pbl",
+    "P/(Agfc)",
+    "b0",
+    "db",
+    "s/db",
+    "AR",
+    "M/Vlw",
+    "θ",
+]
+
 
 def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
+
 
 def predict_di(choice, _unused_array, input_df):
     df_trees = _df_in_train_order(input_df)
@@ -946,55 +1081,168 @@ def predict_di(choice, _unused_array, input_df):
     prediction = max(0.035, min(prediction, 1.5))
     return prediction
 
-def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
-    cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
-    x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
+
+def _make_input_df(
+    lw,
+    hw,
+    tw,
+    fc,
+    fyt,
+    fysh,
+    fyl,
+    fybl,
+    rt,
+    rsh,
+    rl,
+    rbl,
+    axial,
+    b0,
+    db,
+    s_db,
+    AR,
+    M_Vlw,
+    theta_val,
+):
+    cols = [
+        "l_w",
+        "h_w",
+        "t_w",
+        "f′c",
+        "fyt",
+        "fysh",
+        "fyl",
+        "fybl",
+        "ρt",
+        "ρsh",
+        "ρl",
+        "ρbl",
+        "P/(Agf′c)",
+        "b0",
+        "db",
+        "s/db",
+        "AR",
+        "M/Vlw",
+        "θ",
+    ]
+    x = np.array(
+        [
+            [
+                lw,
+                hw,
+                tw,
+                fc,
+                fyt,
+                fysh,
+                fyl,
+                fybl,
+                rt,
+                rsh,
+                rl,
+                rbl,
+                axial,
+                b0,
+                db,
+                s_db,
+                AR,
+                M_Vlw,
+                theta_val,
+            ]
+        ],
+        dtype=np.float32,
+    )
     return pd.DataFrame(x, columns=cols)
+
 
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
-        return pd.DataFrame(columns=["θ","Predicted_DI"])
+        return pd.DataFrame(columns=["θ", "Predicted_DI"])
     thetas = np.round(np.arange(0.0, theta_max + 1e-9, step), 2)
     rows = []
     for th in thetas:
         df = base_df.copy()
-        df.loc[:, 'θ'] = float(th)
+        df.loc[:, "θ"] = float(th)
         di = predict_di(model_choice, None, df)
         di = max(0.035, min(di, 1.5))
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
     return pd.DataFrame(rows)
 
-def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
-                    theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
+
+def render_di_chart(
+    results_df: pd.DataFrame,
+    curve_df: pd.DataFrame,
+    theta_max: float = THETA_MAX,
+    di_max: float = 1.5,
+    size: int = 460,
+):
     import altair as alt
-    selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'],
-                                    nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
+
+    selection = alt.selection_point(
+        name="select",
+        fields=["θ", "Predicted_DI"],
+        nearest=True,
+        on="mouseover",
+        empty=False,
+        clear="mouseout",
+    )
+    AXIS_LABEL_FS = 14
+    AXIS_TITLE_FS = 16
+    TICK_SIZE = 6
+    TITLE_PAD = 10
+    LABEL_PAD = 6
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
     axes_layer = (
-        alt.Chart(base_axes_df).mark_line(opacity=0).encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                    scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
-                    axis=alt.Axis(values=list(x_ticks), labelFontSize=AXIS_LABEL_FS,
-                                  titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD,
-                                  tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                    scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
-                    axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5],
-                                  labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD,
-                                  tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
-        ).properties(width=size, height=size)
+        alt.Chart(base_axes_df)
+        .mark_line(opacity=0)
+        .encode(
+            x=alt.X(
+                "θ:Q",
+                title="Drift Ratio (θ)",
+                scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
+                axis=alt.Axis(
+                    values=list(x_ticks),
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                    labelPadding=LABEL_PAD,
+                    titlePadding=TITLE_PAD,
+                    tickSize=TICK_SIZE,
+                    labelLimit=1000,
+                    labelFlush=True,
+                    labelFlushOffset=0,
+                ),
+            ),
+            y=alt.Y(
+                "Predicted_DI:Q",
+                title="Damage Index (DI)",
+                scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+                axis=alt.Axis(
+                    values=[0.0, 0.2, 0.5, 1.0, 1.5],
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                    labelPadding=LABEL_PAD,
+                    titlePadding=TITLE_PAD,
+                    tickSize=TICK_SIZE,
+                    labelLimit=1000,
+                    labelFlush=True,
+                    labelFlushOffset=0,
+                ),
+            ),
+        )
+        .properties(width=size, height=size)
     )
 
-    curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(
-        x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
+    curve = (
+        curve_df
+        if (curve_df is not None and not curve_df.empty)
+        else pd.DataFrame({"θ": [], "Predicted_DI": []})
+    )
+    line_layer = (
+        alt.Chart(curve)
+        .mark_line(strokeWidth=2)
+        .encode(x="θ:Q", y="Predicted_DI:Q")
+        .properties(width=size, height=size)
+    )
 
     k = 3
     if not curve.empty:
@@ -1002,34 +1250,53 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
     else:
         curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
-    points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
-        x="θ:Q", y="Predicted_DI:Q",
-        tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
-                 alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
-    ).add_params(selection)
+    points_layer = (
+        alt.Chart(curve_points)
+        .mark_circle(size=60, opacity=0.7)
+        .encode(
+            x="θ:Q",
+            y="Predicted_DI:Q",
+            tooltip=[
+                alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
+                alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
+            ],
+        )
+        .add_params(selection)
+    )
 
-    rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(
-        x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
+    rules_layer = (
+        alt.Chart(curve)
+        .mark_rule(color="red", strokeWidth=2)
+        .encode(x="θ:Q", y="Predicted_DI:Q")
+        .transform_filter(selection)
+    )
 
-    text_layer = alt.Chart(curve).mark_text(
-        align='left', dx=8, dy=-8,
-        fontSize=14, fontWeight='bold', color='red'
-    ).encode(
-        x="θ:Q", y="Predicted_DI:Q",
-        text=alt.Text("Predicted_DI:Q", format=".4f")
-    ).transform_filter(selection)
+    text_layer = (
+        alt.Chart(curve)
+        .mark_text(align="left", dx=8, dy=-8, fontSize=14, fontWeight="bold", color="red")
+        .encode(
+            x="θ:Q",
+            y="Predicted_DI:Q",
+            text=alt.Text("Predicted_DI:Q", format=".4f"),
+        )
+        .transform_filter(selection)
+    )
 
-    chart = (alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
-             .configure_view(strokeWidth=0)
-             .configure_axis(domain=True, ticks=True)
-             .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
+    chart = (
+        alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
+        .configure_view(strokeWidth=0)
+        .configure_axis(domain=True, ticks=True)
+        .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
+    )
     chart_html = chart.to_html()
     chart_html = chart_html.replace(
-        '</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * '
-        '{ font-size: 14px !important; font-weight: bold !important; '
-        'background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
+        "</style>",
+        "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
+        "{ font-size: 14px !important; font-weight: bold !important; "
+        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
+    )
     st.components.v1.html(chart_html, height=size + 100)
+
 
 # =============================================================================
 # ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
@@ -1038,16 +1305,17 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
 
+
 def _pick_default_model():
     for m in _order:
         if m in model_registry:
             return m
     return None
 
+
 # determine model choice
-if 'model_choice' not in locals():
-    _label = (st.session_state.get("model_select_compact")
-              or st.session_state.get("model_select"))
+if "model_choice" not in locals():
+    _label = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
     if _label is not None:
         model_choice = _label_to_key.get(_label, _label)
     else:
@@ -1059,66 +1327,84 @@ if (model_choice is None) or (model_choice not in model_registry):
 
 else:
     # ------------------ Prediction on submit ------------------
-    if 'submit' in locals() and submit:
+    if "submit" in locals() and submit:
         xdf = _make_input_df(
-            lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-            rt, rsh, rl, rbl, axial, b0, db, s_db,
-            AR, M_Vlw, theta
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            theta,
         )
 
         try:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy()
             row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat(
-                [st.session_state.results_df, row], ignore_index=True
-            )
+            st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
     # ------------------ Generate curve for θ sweep ------------------
     _base_xdf = _make_input_df(
-        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-        rt, rsh, rl, rbl, axial, b0, db, s_db,
-        AR, M_Vlw, theta
+        lw,
+        hw,
+        tw,
+        fc,
+        fyt,
+        fysh,
+        fyl,
+        fybl,
+        rt,
+        rsh,
+        rl,
+        rbl,
+        axial,
+        b0,
+        db,
+        s_db,
+        AR,
+        M_Vlw,
+        theta,
     )
 
-    _curve_df = _sweep_curve_df(
-        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
-    )
+    _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
 
-    # =============================================================================
-    # 📈 RENDER DI–θ PLOT (controls vertical position)
-    # =============================================================================
-    with right:
-        # center the plot within the right column
-        col1_c, col2_c, col3_c = st.columns([1, 8, 1])
+    # Slot for chart
+    try:
+        _slot = chart_slot
+    except NameError:
+        _slot = st.empty()
 
-        with col2_c:
-            # move the plot UP (more negative = closer to the top figure)
-            st.markdown(
-                "<div style='margin-top:-350px;'>",
-                unsafe_allow_html=True
-            )
-
-            # draw the chart here (no placeholder, so it will move)
-            render_di_chart(
-                st.session_state.results_df,
-                _curve_df,
-                theta_max=THETA_MAX,
-                di_max=1.5,
-                size=CHART_W
-            )
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-
-
+    # ---- SIMPLE, NON-DUPLICATED RENDER OF DI–θ PLOT ----
+    # This is the only place where the chart is drawn now.
+    with _slot:
+        render_di_chart(
+            st.session_state.results_df,
+            _curve_df,
+            theta_max=THETA_MAX,
+            di_max=1.5,
+            size=CHART_W,
+        )
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
-st.markdown("""
+st.markdown(
+    """
 <style>
 .form-banner{
   background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
@@ -1130,6 +1416,6 @@ st.markdown("""
   transform: translateY(0) !important;
 }
 </style>
-""", unsafe_allow_html=True)
-
-
+""",
+    unsafe_allow_html=True,
+)
