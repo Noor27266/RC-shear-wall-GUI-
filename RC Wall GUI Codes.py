@@ -168,6 +168,7 @@ section.main {
 """,
     unsafe_allow_html=True,
 )
+)
 
 # =============================================================================
 # 🎨 SUB STEP 3.1: FONT SIZE SCALING CONFIGURATION
@@ -245,7 +246,7 @@ css(
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;        /* <<< back to FS_INPUT */
+      font-size:{FS_INPUT}px !important;
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
@@ -308,22 +309,71 @@ css(
       min-height: 100vh !important;
       background: #e0e4ec !important;
   }}
+
+  /* SUB STEP 3.4: RESPONSIVE FIXED LAYOUT CONFIGURATION */
+  html, body, #root, .stApp, section.main, .block-container {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      transform-origin: 0 0 !important;
+  }}
+
+  .stNumberInput, .stSelectbox, .stButton, .stMarkdown {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
+
+  .stNumberInput label,
+  .stSelectbox label,
+  .stNumberInput input,
+  .stSelectbox select,
+  .stButton button,
+  .section-header,
+  .form-banner,
+  .prediction-with-color {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      font-size: inherit !important;
+  }}
+
+  .page-header__logo,
+  img[alt="Logo"] {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+      position: fixed !important;
+  }}
+
+  .vega-embed, .vega-embed .chart-wrapper {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
+
+  [data-testid="column"],
+  [data-testid="stHorizontalBlock"] {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
+
+  @media screen and (max-width: 768px) {{
+      html, body {{
+          zoom: 1 !important;
+          transform: scale(1) !important;
+      }}
+  }}
+
+  * {{
+      box-sizing: border-box !important;
+  }}
+
+  div[data-testid="stSelectbox"],
+  div.stButton,
+  div[data-testid="stDownloadButton"],
+  .prediction-with-color {{
+      zoom: 1 !important;
+      transform: scale(1) !important;
+  }}
 </style>
 """
 )
-
-# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
-css(
-    """
-<style>
-/* parent column  →  inner columns; last inner column is the controls */
-[data-testid="column"] [data-testid="column"]:last-child {
-    margin-top: -150px !important;   /* make more negative if you want higher */
-}
-</style>
-"""
-)
-
 
 # =============================================================================
 # 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
@@ -1271,6 +1321,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
