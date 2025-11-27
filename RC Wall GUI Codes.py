@@ -769,9 +769,6 @@ with right:
 
         # Buttons
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-        if submit:
-            # flag for STEP 11
-            st.session_state.do_predict = True
 
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
@@ -779,8 +776,23 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # 🔹 PLACEHOLDER for DI label + CSV (STEP 11 will fill this)
-        di_slot = st.empty()
+        # Latest DI + CSV download
+        if not st.session_state.results_df.empty:
+            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+            st.markdown(
+                f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
+                unsafe_allow_html=True,
+            )
+
+            csv = st.session_state.results_df.to_csv(index=False)
+            st.download_button(
+                "📂 Download as CSV",
+                data=csv,
+                file_name="di_predictions.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="dl_csv_main",
+            )
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -805,26 +817,21 @@ with right:
     """,
         unsafe_allow_html=True,
     )
-
 css("""
 <style>
-/* Move model select + buttons + CSV up/right */
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
+*/
 div[data-testid="stSelectbox"],
 div.stButton,
-div[data-testid="stDownloadButton"] {
-    transform: translate(40px, -230px);
-}
-
-/* ⚠️ Do NOT move the DI label, keep it just under Clear All */
+div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: none;
+    transform: translate(40px, -230px);   /* (X , Y) */
+    /* X = right/left, Y = up/down */
 }
 </style>
 """)
-
-
-
-
 
 
 
@@ -1157,7 +1164,7 @@ if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
     # ---------- Prediction on submit (single DI point) ----------
-    if st.session_state.get("do_predict", False):
+    if "submit" in locals() and submit:
         xdf = _make_input_df(
             lw,
             hw,
@@ -1190,9 +1197,6 @@ else:
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-        # reset flag so we don't re-run prediction on every rerun
-        st.session_state.do_predict = False
-
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
         lw,
@@ -1221,7 +1225,7 @@ else:
     )
 
     # ---- vertical offset for DI–θ plot (only place to adjust) ----
-    DI_CHART_OFFSET = -100  # px; more negative = move chart up, less negative = down
+    DI_CHART_OFFSET = -340  # px; more negative = move chart up, less negative = down
 
     with chart_slot.container():
         st.markdown(
@@ -1235,32 +1239,6 @@ else:
             size=CHART_W,
         )
         st.markdown("</div>", unsafe_allow_html=True)
-
-    # 🔹 NOW draw latest DI + CSV into the placeholder from STEP 9
-    if "di_slot" in locals():
-        with di_slot:
-            if not st.session_state.results_df.empty:
-                latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-                st.markdown(
-                    f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
-                    unsafe_allow_html=True,
-                )
-
-                csv = st.session_state.results_df.to_csv(index=False)
-                st.download_button(
-                    "📂 Download as CSV",
-                    data=csv,
-                    file_name="di_predictions.csv",
-                    mime="text/csv",
-                    use_container_width=True,
-                    key="dl_csv_main",
-                )
-
-
-
-
-
-
 
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
@@ -1281,28 +1259,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
