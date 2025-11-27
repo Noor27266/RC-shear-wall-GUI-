@@ -1119,13 +1119,13 @@ div[data-testid="column"]:last-child {
 }
 div[data-testid="column"]:last-child > div > div > div:last-child {
     position: relative !important;
-    top: -250px !important;
-    margin-top: -250px !important;
+    top: -300px !important;
+    margin-top: -300px !important;
 }
 div[data-testid="column"]:last-child .element-container {
     position: relative !important;
-    top: -250px !important;
-    margin-top: -250px !important;
+    top: -300px !important;
+    margin-top: -300px !important;
 }
 </style>
 """)
