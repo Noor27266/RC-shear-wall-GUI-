@@ -188,14 +188,17 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
 # ---- SMALL RIGHT-COLUMN SHIFT (ONLY COLUMN, NOT CHART) ----
-css("""
+css(
+    """
 <style>
+/* Move the entire right column content up a bit */
 [data-testid="column"]:last-child {
-    margin-top: -200px !important;
+    margin-top: -100px !important;
     padding-top: 0px !important;
 }
 </style>
-""")
+"""
+)
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -715,7 +718,7 @@ with left:
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -0, 400
-right_offset = -150
+right_offset = 0
 CHART_W = 400
 
 with right:
@@ -1043,8 +1046,9 @@ with right:
     chart_slot = st.empty()
 
 # =============================================================================
-# 🔮 STEP 10: DI–θ PREDICTION & PLOT (ALL CODE HERE)
+# ⚡ STEP 11: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
+
 _TRAIN_NAME_MAP = {
     "l_w": "lw",
     "h_w": "hw",
@@ -1066,6 +1070,7 @@ _TRAIN_NAME_MAP = {
     "M/Vlw": "M/Vlw",
     "θ": "θ",
 }
+
 _TRAIN_COL_ORDER = [
     "lw",
     "hw",
@@ -1340,8 +1345,8 @@ def render_di_chart(
     chart_html = chart_html.replace(
         "</style>",
         "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
-        "{{ font-size: 14px !important; font-weight: bold !important; "
-        "background: #000 !important; color: #fff !important; padding: 12px !important; }}</style>",
+        "{ font-size: 14px !important; font-weight: bold !important; "
+        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
     )
     st.components.v1.html(chart_html, height=size + 100)
 
@@ -1353,7 +1358,7 @@ def _pick_default_model():
     return None
 
 
-# determine model choice (if not set by UI yet)
+# ---- determine model choice (if not set by UI yet) ----
 if "model_choice" not in locals():
     _label = st.session_state.get("model_select_compact") or st.session_state.get(
         "model_select"
@@ -1363,7 +1368,7 @@ if "model_choice" not in locals():
     else:
         model_choice = _pick_default_model()
 
-# ---- DI–θ EXECUTION ----
+# ---- main DI–θ execution ----
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
@@ -1429,7 +1434,7 @@ else:
     )
 
     # ---- vertical offset for DI–θ plot (only place to adjust) ----
-    DI_CHART_OFFSET = -200  # px; more negative = move chart up, less negative = down
+    DI_CHART_OFFSET = -140  # px; more negative = move chart up, less negative = down
 
     with chart_slot.container():
         st.markdown(
@@ -1463,7 +1468,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
