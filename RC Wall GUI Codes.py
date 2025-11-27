@@ -212,23 +212,39 @@ css(
       max-height: none !important;
       overflow: visible !important;
   }}
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
+
+  h1 {{
+      font-size:{FS_TITLE}px !important;
+      margin:0 rem 0 !important;
+  }}
 
   .section-header {{
-    font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
+      font-size:{FS_SECTION}px !important;
+      font-weight:700;
+      margin:.35rem 0;
   }}
 
-  .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
+  .stNumberInput label,
+  .stSelectbox label {{
+      font-size:{FS_LABEL}px !important;
+      font-weight:700;
   }}
+
   .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
+  .stSelectbox label .katex {{
+      font-size:{FS_LABEL}px !important;
+      line-height:1.2 !important;
+  }}
+
   .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
+  .stSelectbox label .katex .fontsize-ensurer {{
+      font-size:1em !important;
+  }}
 
   .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
+  .stSelectbox label .katex .mathrm {{
+      font-size:{FS_UNITS}px !important;
+  }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
@@ -246,7 +262,11 @@ css(
       box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
       transition:border-color .15s ease, box-shadow .15s ease !important;
   }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
+
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{
+      border-color:#d6dced !important;
+  }}
+
   div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
       border-color:{PRIMARY} !important;
       box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
@@ -258,7 +278,10 @@ css(
       border-radius:10px !important;
       box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
   }}
-  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
+
+  div[data-testid="stNumberInput"] button:hover {{
+      border-color:#cbd3e5 !important;
+  }}
 
   .stSelectbox [role="combobox"],
   div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
@@ -267,33 +290,81 @@ css(
       font-size:{FS_SELECT}px !important;
   }}
 
+  /* Buttons (Calculate / Reset / Clear All) */
   div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-    white-space:nowrap !important;
-    color:#fff !important;
-    font-weight:700; border:none !important; border-radius:8px !important;
-    background:#4CAF50 !important;
+      font-size:{FS_BUTTON}px !important;
+      height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
+      line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
+      white-space:nowrap !important;
+      color:#fff !important;
+      font-weight:700;
+      border:none !important;
+      border-radius:8px !important;
+      background:#4CAF50 !important;
   }}
-  div.stButton > button:hover {{ filter: brightness(0.95); }}
 
-  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-  button[key="reset_btn"] {{ background:#2196F3 !important; }}
-  button[key="clear_btn"] {{ background:#f44336 !important; }}
+  div.stButton > button:hover {{
+      filter: brightness(0.95);
+  }}
+
+  button[key="calc_btn"] {{
+      background:#4CAF50 !important;
+  }}
+  button[key="reset_btn"] {{
+      background:#2196F3 !important;
+  }}
+  button[key="clear_btn"] {{
+      background:#f44336 !important;
+  }}
 
   .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
+      font-size:{FS_RECENT}px !important;
+      background:#f8f9fa;
+      padding:.5rem;
+      margin:.25rem 0;
+      border-radius:5px;
+      border-left:4px solid #4CAF50;
+      font-weight:600;
+      display:inline-block;
   }}
 
-  #compact-form{{ max-width:900px; margin:0 auto; }}
-  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
+  #compact-form {{
+      max-width:900px;
+      margin:0 auto;
+  }}
+
+  #compact-form [data-testid="stHorizontalBlock"] {{
+      gap:.5rem;
+      flex-wrap:nowrap;
+  }}
+
+  #compact-form [data-testid="column"] {{
+      width:200px;
+      max-width:200px;
+      flex:0 0 200px;
+      padding:0;
+  }}
+
   #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
-  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+  #compact-form [data-testid="stNumberInput"] * {{
+      max-width:none;
+      box-sizing:border-box;
+  }}
+
+  #compact-form [data-testid="stNumberInput"] {{
+      display:inline-flex;
+      width:auto;
+      min-width:0;
+      flex:0 0 auto;
+      margin-bottom:.35rem;
+  }}
+
+  #button-row {{
+      display:flex;
+      gap:30px;
+      margin:10px 0 6px 0;
+      align-items:center;
+  }}
 
   /* Full page left side gray background - covers entire left side and bottom */
   html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {{
@@ -311,6 +382,21 @@ css(
       min-height: 100vh !important;
       background: #e0e4ec !important;
   }}
+
+  label[for="model_select_compact"] {{
+      font-size:{FS_LABEL}px !important;
+      font-weight:bold !important;
+  }}
+
+  #action-row {{
+      display:flex;
+      align-items:center;
+      gap:10px;
+  }}
+</style>
+"""
+)
+
 
  
 
@@ -706,11 +792,18 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, -0, 400
+HERO_X, HERO_Y, HERO_W = 100, 0, 400   # logo position
+right_offset = 0
 CHART_W = 400
 
 with right:
-    # logo at the top
+    # small vertical spacer above logo (if needed)
+    st.markdown(
+        f"<div style='height:{int(right_offset)}px'></div>",
+        unsafe_allow_html=True,
+    )
+
+    # logo image (same as before)
     st.markdown(
         f"""
         <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
@@ -720,56 +813,35 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # keep your selectbox/button CSS exactly as before
-    st.markdown(
-        f""" 
-    <style>
-    #action-row {{ 
-        display: flex !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: 0px !important;
-    }}
-    /* -------------- all your existing CSS here -------------- */
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {{
-        border: none !important;
-        box-shadow: none !important; 
-        background: #D3D3D3 !important;
-        height: 40px !important;
-        width: 180px !important;
-        border-radius: 8px !important;
-        padding: 0px 12px !important;
-        outline: none !important;
-    }}
-    /* ... keep EVERYTHING from your previous block ... */
-    div[data-testid="column"]:last-child {{
-        width: 100% !important;
-    }}
-    </style>
-    """,
-        unsafe_allow_html=True,
-    )
+    # small spacer between logo and Model Selection / buttons
+    st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True)
 
-    # NEW: split right panel into [plot | controls] on the same row
-    col_plot, col_controls = st.columns([3, 1])
+    # two columns: (left for future use / empty, right for controls)
+    col1_r, col2_r = st.columns([3, 1])
 
-    # ---- controls (right narrow column: model, buttons, DI text, download) ----
-    with col_controls:
+    with col2_r:
+        # ---------------- Model selection ----------------
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+
         model_choice_label = st.selectbox(
-            "Model Selection", display_labels, key="model_select_compact"
+            "Model Selection",
+            display_labels,
+            key="model_select_compact",
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
+        # ---------------- Buttons ----------------
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
+
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
+        # ---------------- Latest DI + CSV download ----------------
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
             st.markdown(
@@ -787,32 +859,32 @@ with right:
                 key="dl_csv_main",
             )
 
-        st.markdown(
-            f"""
-        <style>
-        .prediction-with-color {{
-            color: #2e86ab !important;
-            font-weight: 700 !important;
-            font-size: {FS_BADGE}px !important;
-            background: #f1f3f4 !important;
-            padding: 10px 12px !important;
-            border-radius: 6px !important;
-            text-align: center !important;
-            margin: 0 !important;
-            height: 45px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 180px !important;
-        }}
-        </style>
-        """,
-            unsafe_allow_html=True,
-        )
+    # styling for the blue DI label (same as before)
+    st.markdown(
+        f"""
+    <style>
+    .prediction-with-color {{
+        color: #2e86ab !important;
+        font-weight: 700 !important;
+        font-size: {FS_BADGE}px !important;
+        background: #f1f3f4 !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        margin: 0 !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 180px !important;
+    }}
+    </style>
+    """,
+        unsafe_allow_html=True,
+    )
 
-    # ---- plot placeholder (left wide column) ----
-    with col_plot:
-        chart_slot = st.empty()
+    # reserved slot for DI–θ chart (used later in STEP 11)
+    chart_slot = st.empty()
 
 
 # =============================================================================
@@ -1238,6 +1310,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
