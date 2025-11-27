@@ -1,4 +1,4 @@
- DOC_NOTES = """
+DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
 
@@ -1260,6 +1260,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
