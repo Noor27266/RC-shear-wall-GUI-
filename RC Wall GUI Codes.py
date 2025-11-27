@@ -827,7 +827,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(-230px, -140px);   /* (X , Y) */
+    transform: translate(-400px, -230px);   /* (X , Y) */
     /* X = right/left, Y = up/down */
 }
 </style>
@@ -1259,6 +1259,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
