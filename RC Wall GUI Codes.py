@@ -1100,6 +1100,9 @@ def render_di_chart(
     k = 3
     if not curve.empty:
         curve_points = curve.iloc[::k].copy()
+        # Add the final point (endpoint) to ensure it's always shown
+        final_point = curve.iloc[[-1]].copy()
+        curve_points = pd.concat([curve_points, final_point]).drop_duplicates()
     else:
         curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
@@ -1109,6 +1112,16 @@ def render_di_chart(
         .encode(
             x="θ:Q",
             y="Predicted_DI:Q",
+            color=alt.condition(
+                alt.datum.θ == actual_theta_max,
+                alt.value("blue"),  # Color for the final point
+                alt.value("steelblue")  # Color for other points
+            ),
+            size=alt.condition(
+                alt.datum.θ == actual_theta_max,
+                alt.value(100),  # Larger size for the final point
+                alt.value(60)    # Normal size for other points
+            ),
             tooltip=[
                 alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                 alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
@@ -1258,4 +1271,5 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
