@@ -767,20 +767,20 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # --------- CALCULATE BUTTON (used in STEP 11) ---------
+        # --------- CALCULATE BUTTON (one-click trigger) ---------
         calc_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
 
-        # --------- OTHER BUTTONS (unchanged) ---------
+        # --------- OTHER BUTTONS ---------
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
 
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # Placeholder where STEP 11 will draw the latest DI + CSV button
+        # Placeholder where STEP 11 will draw latest DI + CSV
         di_slot = st.empty()
 
-    # styling for the blue DI label (unchanged)
+    # styling for the blue DI label
     st.markdown(
         f"""
     <style>
@@ -1130,7 +1130,7 @@ if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
     # ---------- Prediction on submit (single DI point) ----------
-    if st.session_state.get("do_predict", False):
+    if "calc_clicked" in locals() and calc_clicked:
         xdf = _make_input_df(
             lw,
             hw,
@@ -1162,9 +1162,6 @@ else:
             )
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
-
-        # reset flag so it doesn’t run again on next rerun
-        st.session_state.do_predict = False
 
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
@@ -1233,6 +1230,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1252,6 +1250,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
