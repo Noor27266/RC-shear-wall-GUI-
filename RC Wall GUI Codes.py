@@ -767,34 +767,13 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # Buttons
-        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-            # Buttons
-    submit = st.button("Calculate", key="calc_btn", use_container_width=True)
-    
-    # === ADD THIS RIGHT AFTER THE BUTTON DEFINITION ===
-    if submit and model_choice in model_registry:
-        xdf = _make_input_df(
-            lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, 
-            axial, b0, db, s_db, AR, M_Vlw, theta
-        )
-        
-        try:
-            pred = predict_di(model_choice, None, xdf)
-            row = xdf.copy()
-            row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat(
-                [st.session_state.results_df, row], ignore_index=True
-            )
-            st.rerun()  # Force refresh to show updated results
-        except Exception as e:
-            st.error(f"Prediction failed for {model_choice}: {e}")
-    # === END OF ADDED CODE ===
+        # Buttons - USE UNIQUE KEYS
+        submit = st.button("Calculate", key="calc_btn_main", use_container_width=True)
 
-        if st.button("Reset", key="reset_btn", use_container_width=True):
+        if st.button("Reset", key="reset_btn_main", use_container_width=True):
             st.rerun()
 
-        if st.button("Clear All", key="clear_btn", use_container_width=True):
+        if st.button("Clear All", key="clear_btn_main", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
         # Latest DI + CSV download
@@ -838,6 +817,7 @@ with right:
     """,
         unsafe_allow_html=True,
     )
+
 css("""
 <style>
 /* Move the whole controls stack:
@@ -853,7 +833,6 @@ div[data-testid="stDownloadButton"],
 }
 </style>
 """)
-
 
 
 
@@ -1184,7 +1163,41 @@ if "model_choice" not in locals():
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
-   
+    # ---------- Handle Calculate button click ----------
+    if st.session_state.get("calc_btn_main", False):
+        xdf = _make_input_df(
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            theta,
+        )
+
+        try:
+            pred = predict_di(model_choice, None, xdf)
+            row = xdf.copy()
+            row["Predicted_DI"] = pred
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
+            # Clear the button state to prevent duplicate execution
+            st.session_state.calc_btn_main = False
+        except Exception as e:
+            st.error(f"Prediction failed for {model_choice}: {e}")
 
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
@@ -1213,8 +1226,8 @@ else:
         model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
     )
 
-    # ---- vertical offset for DI–θ plot (only place to adjust) ----
-    DI_CHART_OFFSET = -200  # px; more negative = move chart up, less negative = down
+    # ---- vertical offset for DI–θ plot ----
+    DI_CHART_OFFSET = -250  # px; adjusted to move plot down
 
     with chart_slot.container():
         st.markdown(
@@ -1248,6 +1261,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
