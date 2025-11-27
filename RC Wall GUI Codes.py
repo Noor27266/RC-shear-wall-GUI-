@@ -134,7 +134,11 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-html, body{ margin:0 !important; padding:0 !important; }
+html, body{
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;        /* <- added to hide page scrollbars */
+}
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
 
@@ -152,19 +156,7 @@ section.main > div.block-container{
     max-width:100% !important;
 }
 
-/* ❌ REMOVED SCROLLBAR FORCING CODE HERE
-html, body, #root, .stApp {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-
-section.main {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-*/
+/* (old scrollbar-forcing code removed) */
 </style>
 """,
     unsafe_allow_html=True,
@@ -246,7 +238,7 @@ css(
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;        /* <<< back to FS_INPUT */
+      font-size:{FS_INPUT}px !important;
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
@@ -303,6 +295,7 @@ css(
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
       min-height: 100vh !important;
       height: auto !important;
+      overflow:hidden !important;      /* <- added so inner container cannot scroll */
   }}
 
   [data-testid="column"]:first-child {{
@@ -313,17 +306,6 @@ css(
 """
 )
 
-# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
-css(
-    """
-<style>
-/* parent column  →  inner columns; last inner column is the controls */
-[data-testid="column"] [data-testid="column"]:last-child {
-    margin-top: -150px !important;   /* make more negative if you want higher */
-}
-</style>
-"""
-)
 
 
 # =============================================================================
@@ -1272,6 +1254,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
