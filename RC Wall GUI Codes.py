@@ -193,7 +193,7 @@ css(
 <style>
 /* Move the entire right column content up a bit */
 [data-testid="column"]:last-child {
-    margin-top: -100px !important;
+    margin-top: -80px !important;
     padding-top: 0px !important;
 }
 </style>
@@ -1334,6 +1334,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
