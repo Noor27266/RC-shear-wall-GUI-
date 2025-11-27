@@ -811,7 +811,7 @@ with right:
     )
 
     # ↓ REMOVE EXTRA VERTICAL GAP SO PLOT + CONTROLS MOVE UP
-    st.markdown("<div style='height:0px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:-40px;'></div>", unsafe_allow_html=True)
 
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
@@ -1318,6 +1318,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
