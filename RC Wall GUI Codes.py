@@ -767,45 +767,10 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # --------- CALCULATE BUTTON (single-click prediction) ---------
+        # --------- CALCULATE BUTTON (only sets flag; STEP 11 does prediction) ---------
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
 
-        # Do prediction immediately when Calculate is clicked
-        if submit and (model_choice in model_registry):
-            xdf = _make_input_df(
-                lw,
-                hw,
-                tw,
-                fc,
-                fyt,
-                fysh,
-                fyl,
-                fybl,
-                rt,
-                rsh,
-                rl,
-                rbl,
-                axial,
-                b0,
-                db,
-                s_db,
-                AR,
-                M_Vlw,
-                theta,
-            )
-
-            try:
-                pred = predict_di(model_choice, None, xdf)
-                row = xdf.copy()
-                row["Predicted_DI"] = pred
-                st.session_state.results_df = pd.concat(
-                    [st.session_state.results_df, row],
-                    ignore_index=True,
-                )
-            except Exception as e:
-                st.error(f"Prediction failed for {model_choice}: {e}")
-
-        # --------- OTHER BUTTONS (same as before) ---------
+        # --------- OTHER BUTTONS (unchanged) ---------
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
 
@@ -1295,6 +1260,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
