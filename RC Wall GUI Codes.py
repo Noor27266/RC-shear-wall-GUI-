@@ -822,7 +822,7 @@ css("""
 <style>
 /* Move the whole controls stack (right column) up */
 div[data-testid="stSelectbox"] {
-    margin-top: -160px !important;   /* make more negative = move higher */
+    margin-top: -200px !important;   /* make more negative = move higher */
 }
 </style>
 """)
@@ -1251,4 +1251,5 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
