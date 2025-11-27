@@ -810,7 +810,7 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # small spacer between logo and row (you can reduce this if you want it even higher)
+    # small spacer between logo and row
     st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
@@ -823,13 +823,25 @@ with right:
 
     # ---------------- RIGHT: Model Selection + buttons ---------
     with col_controls:
-        # Model selection (kept exactly like your working version)
+        # move the whole controls block a bit UP
+        st.markdown(
+            "<div style='margin-top:-40px;'></div>",
+            unsafe_allow_html=True,
+        )
+
+        # bold label for Model Selection
+        st.markdown(
+            "<div style='font-weight:700; margin-bottom:4px;'>Model Selection</div>",
+            unsafe_allow_html=True,
+        )
+
+        # Model selection (same logic as before)
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
 
         model_choice_label = st.selectbox(
-            "Model Selection",
+            "",
             display_labels,
             key="model_select_compact",
         )
@@ -1311,6 +1323,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
