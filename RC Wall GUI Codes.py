@@ -129,18 +129,27 @@ st.set_page_config(
     page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱"
 )
 
-# Header / spacing
+# Header / spacing  ★★★ FIXED VERSION ★★★
 st.markdown(
     """
 <style>
 html, body{ margin:0 !important; padding:0 !important; }
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+
+/* Pull EVERYTHING up (controls, selectbox, buttons…) */
+div.stApp{ margin-top:-4.0rem !important; }
+
+/* Remove extra white space at top */
+section.main > div.block-container{
+    padding-top:0 !important;
+    margin-top:-2.0rem !important;
+}
 
 /* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+.vega-embed, .vega-embed .chart-wrapper{
+    max-width:100% !important;
+}
 
 /* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
 html, body, #root, .stApp {
@@ -162,7 +171,7 @@ section.main {
 # =============================================================================
 # 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
 # =============================================================================
-SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller).
+SCALE_UI = 0.36
 
 s = lambda v: int(round(v * SCALE_UI))
 
@@ -191,15 +200,13 @@ LEFT_BG = "#e0e4ec"
 css(
     """
 <style>
-/* Move the column that contains the Model Selection controls up */
-[data-testid="column"]:has(label[for="model_select_compact"]) {
-    margin-top: -220px !important;  /* make more negative to move further up */
-    padding-top: 0 !important;
+[data-testid="column"]:last-child {
+    margin-top: -100px !important;
+    padding-top: 0px !important;
 }
 </style>
 """
 )
-
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -264,24 +271,11 @@ css(
       transition:border-color .15s ease, box-shadow .15s ease !important;
   }}
 
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{
-      border-color:#d6dced !important;
-  }}
-
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-      border-color:{PRIMARY} !important;
-      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
-  }}
-
   div[data-testid="stNumberInput"] button {{
       background:#ffffff !important;
       border:1px solid {INPUT_BORDER} !important;
       border-radius:10px !important;
       box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
-  }}
-
-  div[data-testid="stNumberInput"] button:hover {{
-      border-color:#cbd3e5 !important;
   }}
 
   .stSelectbox [role="combobox"],
@@ -291,12 +285,10 @@ css(
       font-size:{FS_SELECT}px !important;
   }}
 
-  /* Buttons (Calculate / Reset / Clear All) */
   div.stButton > button {{
       font-size:{FS_BUTTON}px !important;
       height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
       line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-      white-space:nowrap !important;
       color:#fff !important;
       font-weight:700;
       border:none !important;
@@ -304,29 +296,12 @@ css(
       background:#4CAF50 !important;
   }}
 
-  div.stButton > button:hover {{
-      filter: brightness(0.95);
-  }}
-
-  button[key="calc_btn"] {{
-      background:#4CAF50 !important;
-  }}
   button[key="reset_btn"] {{
       background:#2196F3 !important;
   }}
+
   button[key="clear_btn"] {{
       background:#f44336 !important;
-  }}
-
-  .recent-box {{
-      font-size:{FS_RECENT}px !important;
-      background:#f8f9fa;
-      padding:.5rem;
-      margin:.25rem 0;
-      border-radius:5px;
-      border-left:4px solid #4CAF50;
-      font-weight:600;
-      display:inline-block;
   }}
 
   #compact-form {{
@@ -334,49 +309,10 @@ css(
       margin:0 auto;
   }}
 
-  #compact-form [data-testid="stHorizontalBlock"] {{
-      gap:.5rem;
-      flex-wrap:nowrap;
-  }}
-
-  #compact-form [data-testid="column"] {{
-      width:200px;
-      max-width:200px;
-      flex:0 0 200px;
-      padding:0;
-  }}
-
-  #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] * {{
-      max-width:none;
-      box-sizing:border-box;
-  }}
-
-  #compact-form [data-testid="stNumberInput"] {{
-      display:inline-flex;
-      width:auto;
-      min-width:0;
-      flex:0 0 auto;
-      margin-bottom:.35rem;
-  }}
-
-  #button-row {{
-      display:flex;
-      gap:30px;
-      margin:10px 0 6px 0;
-      align-items:center;
-  }}
-
-  /* Full page left side gray background - covers entire left side and bottom */
   html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {{
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
       min-height: 100vh !important;
       height: auto !important;
-  }}
-
-  .stApp, .main, .block-container, [data-testid="stHorizontalBlock"] {{
-      margin-bottom: 0 !important;
-      padding-bottom: 0 !important;
   }}
 
   [data-testid="column"]:first-child {{
@@ -384,19 +320,10 @@ css(
       background: #e0e4ec !important;
   }}
 
-  label[for="model_select_compact"] {{
-      font-size:{FS_LABEL}px !important;
-      font-weight:bold !important;
-  }}
-
-  #action-row {{
-      display:flex;
-      align-items:center;
-      gap:10px;
-  }}
 </style>
 """
 )
+
 
 
  
@@ -1335,6 +1262,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
