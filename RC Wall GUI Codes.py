@@ -5,17 +5,26 @@ RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 # =============================================================================
 # 🚀 STEP 1: CORE IMPORTS & TENSORFLOW BACKEND SETUP
 # =============================================================================
-import os
 
+# =============================================================================
+# 🚀 SUB STEP 1.1: ENVIRONMENT CONFIGURATION
+# =============================================================================
+import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
 
+# =============================================================================
+# 🚀 SUB STEP 1.2: CORE LIBRARY IMPORTS
+# =============================================================================
 import streamlit as st
 import pandas as pd
 import numpy as np
-import base64, json
+import base64
 from pathlib import Path
 from glob import glob
 
+# =============================================================================
+# 🚀 SUB STEP 1.3: MACHINE LEARNING LIBRARY IMPORTS
+# =============================================================================
 # ML libs
 import xgboost as xgb
 import joblib
@@ -23,14 +32,15 @@ import catboost
 import lightgbm as lgb
 
 # =============================================================================
-# 🚀 STEP 2: KERAS COMPATIBILITY LOADER
+# 🚀 SUB STEP 1.4: KERAS COMPATIBILITY LOADER SETUP
 # =============================================================================
+# --- Keras compatibility loader (PS/MLP only) ---
 try:
     from tensorflow.keras.models import load_model as _tf_load_model
 except Exception:
     _tf_load_model = None
 try:
-    from keras.models import load_model as _k3_load_model  # keras==3
+    from keras.models import load_model as _k3_load_model   # works when keras==3 is present
 except Exception:
     _k3_load_model = None
 
@@ -52,9 +62,14 @@ def _load_keras_model(path):
 
 
 # =============================================================================
-# 🚀 STEP 3: SESSION STATE & SMALL HELPERS
+# 🚀 SUB STEP 1.5: SESSION STATE INITIALIZATION
 # =============================================================================
+# --- session defaults (prevents AttributeError on first run) ---
 st.session_state.setdefault("results_df", pd.DataFrame())
+
+# =============================================================================
+# 🔧 STEP 2: UTILITY FUNCTIONS & HELPER TOOLS
+# =============================================================================
 
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
 
@@ -68,16 +83,15 @@ def dv(R, key, proposed):
     return float(max(lo, min(proposed, hi)))
 
 
+# ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
 
 
 def pfind(candidates):
-    """Flexible file finder (current dir, BASE_DIR, /mnt/data, subfolders)."""
     for c in candidates:
         p = Path(c)
         if p.exists():
             return p
-
     roots = [BASE_DIR, Path.cwd(), Path("/mnt/data")]
     for root in roots:
         if not root.exists():
@@ -86,7 +100,6 @@ def pfind(candidates):
             p = root / c
             if p.exists():
                 return p
-
     for root in [BASE_DIR, Path("/mnt/data")]:
         if not root.exists():
             continue
@@ -96,7 +109,6 @@ def pfind(candidates):
                     p = sub / c
                     if p.exists():
                         return p
-
     pats = []
     for c in candidates:
         for root in [BASE_DIR, Path.cwd(), Path("/mnt/data")]:
@@ -106,17 +118,18 @@ def pfind(candidates):
         matches = glob(pat, recursive=True)
         if matches:
             return Path(matches[0])
-
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
 
 # =============================================================================
-# 🎨 STEP 4: PAGE CONFIG & GLOBAL CSS
+# 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
 # =============================================================================
+
 st.set_page_config(
     page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱"
 )
 
+# Header / spacing
 st.markdown(
     """
 <style>
@@ -126,7 +139,10 @@ header[data-testid="stHeader"] *{ display:none !important; }
 div.stApp{ margin-top:-2rem !important; }
 section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
 
-/* Remove height restrictions */
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
+
+/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
 html, body, #root, .stApp {
     overflow: visible !important;
     max-height: none !important;
@@ -143,8 +159,11 @@ section.main {
     unsafe_allow_html=True,
 )
 
-# ---- font scaling ----
-SCALE_UI = 0.36
+# =============================================================================
+# 🎨 SUB STEP 3.2: FONT SIZE SCALING CONFIGURATION
+# =============================================================================
+SCALE_UI = 0.36  # global shrink (pure scaling; lower => smaller).
+
 s = lambda v: int(round(v * SCALE_UI))
 
 FS_TITLE = s(20)
@@ -158,7 +177,9 @@ FS_BADGE = s(30)
 FS_RECENT = s(20)
 INPUT_H = max(32, int(FS_INPUT * 2.0))
 
-# colors
+# =============================================================================
+# 🎨 SUB STEP 3.3: COLOR SCHEME DEFINITION
+# =============================================================================
 DEFAULT_LOGO_H = 45
 PRIMARY = "#8E44AD"
 SECONDARY = "#f9f9f9"
@@ -166,24 +187,22 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
-# right column offset + chart iframe offset
+# ---- SMALL RIGHT-COLUMN SHIFT (ONLY COLUMN, NOT CHART) ----
 css(
     """
 <style>
+/* Move the entire right column content up a bit */
 [data-testid="column"]:last-child {
     margin-top: -100px !important;
     padding-top: 0px !important;
-}
-
-/* DI–θ Altair iframe vertical position */
-div[data-testid="stIFrame"] {
-    margin-top: -1000px !important;
 }
 </style>
 """
 )
 
-# big CSS block
+# =============================================================================
+# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
+# =============================================================================
 css(
     f"""
 <style>
@@ -276,7 +295,7 @@ css(
   #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
   #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
 
-  /* Left gray background */
+  /* Full page left side gray background - covers entire left side and bottom */
   html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {{
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
       min-height: 100vh !important;
@@ -306,19 +325,8 @@ css(
 """
 )
 
-# hide +/- buttons on number inputs
-css(
-    """
-<style>
-div[data-testid="stNumberInput"] button {
-    display: none !important;
-}
-</style>
-"""
-)
-
 # =============================================================================
-# 🏷️ STEP 5: HEADER LOGO
+# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -381,24 +389,24 @@ st.markdown(
 )
 
 # =============================================================================
-# 🤖 STEP 6: MODEL LOADING
+# 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
-health = []
-
 
 def record_health(name, ok, msg=""):
+    """Keep a log of which models loaded successfully."""
     health.append((name, ok, msg, "ok" if ok else "err"))
 
+health = []
 
 class _ScalerShim:
     """Wrapper to keep X / y scalers together for ANN models."""
-
     def __init__(self, X_scaler, Y_scaler):
         import numpy as _np
-
         self._np = _np
         self.Xs = X_scaler
         self.Ys = Y_scaler
+        self.x_kind = "External joblib"
+        self.y_kind = "External joblib"
 
     def transform_X(self, X):
         return self.Xs.transform(X)
@@ -407,86 +415,76 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
-
-# PS (ANN)
+# ---------------------------- PS (ANN) ---------------------------------------
 ann_ps_model = None
-ann_ps_proc = None
+ann_ps_proc  = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
-    ann_ps_model = _load_keras_model(ps_model_path)
+    ann_ps_model  = _load_keras_model(ps_model_path)
+
     sx = joblib.load(
-        pfind(
-            [
-                "ANN_PS_Scaler_X.save",
-                "ANN_PS_Scaler_X.pkl",
-                "ANN_PS_Scaler_X.joblib",
-            ]
-        )
+        pfind([
+            "ANN_PS_Scaler_X.save",
+            "ANN_PS_Scaler_X.pkl",
+            "ANN_PS_Scaler_X.joblib",
+        ])
     )
     sy = joblib.load(
-        pfind(
-            [
-                "ANN_PS_Scaler_y.save",
-                "ANN_PS_Scaler_y.pkl",
-                "ANN_PS_Scaler_y.joblib",
-            ]
-        )
+        pfind([
+            "ANN_PS_Scaler_y.save",
+            "ANN_PS_Scaler_y.pkl",
+            "ANN_PS_Scaler_y.joblib",
+        ])
     )
     ann_ps_proc = _ScalerShim(sx, sy)
     record_health("PS (ANN)", True, f"loaded from {ps_model_path}")
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
-# MLP (ANN)
+# ---------------------------- MLP (ANN) --------------------------------------
 ann_mlp_model = None
-ann_mlp_proc = None
+ann_mlp_proc  = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
-    ann_mlp_model = _load_keras_model(mlp_model_path)
+    ann_mlp_model  = _load_keras_model(mlp_model_path)
+
     sx = joblib.load(
-        pfind(
-            [
-                "ANN_MLP_Scaler_X.save",
-                "ANN_MLP_Scaler_X.pkl",
-                "ANN_MLP_Scaler_X.joblib",
-            ]
-        )
+        pfind([
+            "ANN_MLP_Scaler_X.save",
+            "ANN_MLP_Scaler_X.pkl",
+            "ANN_MLP_Scaler_X.joblib",
+        ])
     )
     sy = joblib.load(
-        pfind(
-            [
-                "ANN_MLP_Scaler_y.save",
-                "ANN_MLP_Scaler_y.pkl",
-                "ANN_MLP_Scaler_y.joblib",
-            ]
-        )
+        pfind([
+            "ANN_MLP_Scaler_y.save",
+            "ANN_MLP_Scaler_y.pkl",
+            "ANN_MLP_Scaler_y.joblib",
+        ])
     )
     ann_mlp_proc = _ScalerShim(sx, sy)
     record_health("MLP (ANN)", True, f"loaded from {mlp_model_path}")
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# Random Forest
+# ---------------------------- Random Forest ----------------------------------
 rf_model = None
 try:
-    rf_path = pfind(
-        [
-            "random_forest_model.pkl",
-            "random_forest_model.joblib",
-            "rf_model.pkl",
-            "RF_model.pkl",
-            "Best_RF_Model.json",
-            "best_rf_model.json",
-            "RF_model.json",
-        ]
-    )
+    rf_path = pfind([
+        "random_forest_model.pkl",
+        "random_forest_model.joblib",
+        "rf_model.pkl",
+        "RF_model.pkl",
+        "Best_RF_Model.json",
+        "best_rf_model.json",
+        "RF_model.json",
+    ])
     try:
         rf_model = joblib.load(rf_path)
         record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
     except Exception as e_joblib:
         try:
             import skops.io as sio
-
             rf_model = sio.load(rf_path, trusted=True)
             record_health("Random Forest", True, f"loaded via skops from {rf_path}")
         except Exception as e_skops:
@@ -498,52 +496,45 @@ try:
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
-# XGBoost
+# ---------------------------- XGBoost ----------------------------------------
 xgb_model = None
 try:
-    xgb_path = pfind(
-        [
-            "XGBoost_trained_model_for_DI.json",
-            "Best_XGBoost_Model.json",
-            "xgboost_model.json",
-        ]
-    )
+    xgb_path = pfind([
+        "XGBoost_trained_model_for_DI.json",
+        "Best_XGBoost_Model.json",
+        "xgboost_model.json",
+    ])
     xgb_model = xgb.XGBRegressor()
     xgb_model.load_model(xgb_path)
     record_health("XGBoost", True, f"loaded from {xgb_path}")
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
-# CatBoost
+# ---------------------------- CatBoost ---------------------------------------
 cat_model = None
 try:
-    cat_path = pfind(
-        [
-            "CatBoost.cbm",
-            "Best_CatBoost_Model.cbm",
-            "catboost.cbm",
-        ]
-    )
+    cat_path = pfind([
+        "CatBoost.cbm",
+        "Best_CatBoost_Model.cbm",
+        "catboost.cbm",
+    ])
     cat_model = catboost.CatBoostRegressor()
     cat_model.load_model(cat_path)
     record_health("CatBoost", True, f"loaded from {cat_path}")
 except Exception as e:
     record_health("CatBoost", False, f"{e}")
 
-
-# LightGBM
+# ---------------------------- LightGBM ---------------------------------------
 def load_lightgbm_flex():
     try:
-        p = pfind(
-            [
-                "LightGBM_model.txt",
-                "Best_LightGBM_Model.txt",
-                "LightGBM_model.bin",
-                "LightGBM_model.pkl",
-                "LightGBM_model.joblib",
-                "LightGBM_model",
-            ]
-        )
+        p = pfind([
+            "LightGBM_model.txt",
+            "Best_LightGBM_Model.txt",
+            "LightGBM_model.bin",
+            "LightGBM_model.pkl",
+            "LightGBM_model.joblib",
+            "LightGBM_model",
+        ])
     except Exception:
         raise FileNotFoundError("No LightGBM model file found.")
 
@@ -555,7 +546,6 @@ def load_lightgbm_flex():
         except Exception as e:
             raise e
 
-
 try:
     lgb_model, lgb_kind, lgb_path = load_lightgbm_flex()
     record_health("LightGBM", True, f"loaded as {lgb_kind} from {lgb_path}")
@@ -563,8 +553,9 @@ except Exception as e:
     lgb_model = None
     record_health("LightGBM", False, str(e))
 
-# registry
+# ---------------------------- Registry ---------------------------------------
 model_registry = {}
+
 for name, ok, *_ in health:
     if not ok:
         continue
@@ -581,11 +572,12 @@ for name, ok, *_ in health:
     elif name == "Random Forest" and rf_model is not None:
         model_registry["Random Forest"] = rf_model
 
+# global model ordering + label mapping (used in UI + prediction)
 MODEL_ORDER = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 LABEL_TO_KEY = {"RF": "Random Forest"}
 
 # =============================================================================
-# 📊 STEP 7: INPUT RANGES & FORM SETUP
+# 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
     "lw": (400.0, 3500.0),
@@ -652,13 +644,30 @@ def num(label, key, default, step, fmt, help_):
     )
 
 
+# Hide +/- buttons
+css(
+    """
+<style>
+div[data-testid="stNumberInput"] button {
+    display: none !important;
+}
+</style>
+"""
+)
+
 # =============================================================================
-# 📊 STEP 8: LAYOUT (LEFT INPUTS, RIGHT CONTROLS)
+# 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
 # =============================================================================
 left, right = st.columns([1.5, 1], gap="large")
 
+# =============================================================================
+# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# =============================================================================
 with left:
-    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    st.markdown(
+        "<div style='height: 0px; margin: 0; padding: 0;'>",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
@@ -683,11 +692,15 @@ with left:
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
-        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='section-header'>Geometry </div>", unsafe_allow_html=True
+        )
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
     with c2:
-        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True
+        )
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
     with c3:
@@ -701,7 +714,9 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ----- right side -----
+# =============================================================================
+# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, -0, 400
 right_offset = 0
 CHART_W = 400
@@ -720,7 +735,6 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # Model select + buttons CSS (unchanged visual)
     st.markdown(
         f""" 
     <style>
@@ -851,6 +865,14 @@ with right:
         background-color: #D3D3D3 !important;
         padding: 12px 16px !important;
         border: none !important;
+        border-bottom: none !important;
+    }}
+    
+    div[role="option"]:last-child {{
+        border-bottom: none !important;
+    }}
+    
+    div[role="option"]:not(:last-child) {{
         border-bottom: none !important;
     }}
     
@@ -1020,10 +1042,11 @@ with right:
         unsafe_allow_html=True,
     )
 
-    chart_slot = st.empty()  # where DI–θ chart appears
+    # reserved slot for DI–θ chart (stays in this column)
+    chart_slot = st.empty()
 
 # =============================================================================
-# 🔮 STEP 9: PREDICTION ENGINE (COMMON)
+# 🔮 STEP 10: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
 _TRAIN_NAME_MAP = {
     "l_w": "lw",
@@ -1081,13 +1104,13 @@ def predict_di(choice, _unused_array, input_df):
     if choice == "LightGBM":
         mdl = model_registry["LightGBM"]
         prediction = float(mdl.predict(X)[0])
-    elif choice == "XGBoost":
+    if choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
-    elif choice == "CatBoost":
+    if choice == "CatBoost":
         prediction = float(model_registry["CatBoost"].predict(X)[0])
-    elif choice == "Random Forest":
+    if choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
-    elif choice == "PS":
+    if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
         try:
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
@@ -1095,7 +1118,7 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["PS"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-    elif choice == "MLP":
+    if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
         try:
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
@@ -1103,10 +1126,9 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["MLP"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
-    else:
-        prediction = 0.035
 
-    return max(0.035, min(prediction, 1.5))
+    prediction = max(0.035, min(prediction, 1.5))
+    return prediction
 
 
 def _make_input_df(
@@ -1180,13 +1202,9 @@ def _make_input_df(
     return pd.DataFrame(x, columns=cols)
 
 
-# =============================================================================
-# 📈 STEP 10: DI–θ CURVE GENERATION & PLOTTING (ONE PLACE)
-# =============================================================================
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
         return pd.DataFrame(columns=["θ", "Predicted_DI"])
-
     thetas = np.round(np.arange(0.0, theta_max + 1e-9, step), 2)
     rows = []
     for th in thetas:
@@ -1199,7 +1217,6 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
 
 
 def render_di_chart(
-    results_df: pd.DataFrame,
     curve_df: pd.DataFrame,
     theta_max: float = THETA_MAX,
     di_max: float = 1.5,
@@ -1215,13 +1232,11 @@ def render_di_chart(
         empty=False,
         clear="mouseout",
     )
-
     AXIS_LABEL_FS = 14
     AXIS_TITLE_FS = 16
     TICK_SIZE = 6
     TITLE_PAD = 10
     LABEL_PAD = 6
-
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
     x_ticks = np.linspace(0.0, theta_max, 5).round(2)
 
@@ -1270,7 +1285,6 @@ def render_di_chart(
         if (curve_df is not None and not curve_df.empty)
         else pd.DataFrame({"θ": [], "Predicted_DI": []})
     )
-
     line_layer = (
         alt.Chart(curve)
         .mark_line(strokeWidth=2)
@@ -1279,9 +1293,10 @@ def render_di_chart(
     )
 
     k = 3
-    curve_points = curve.iloc[::k].copy() if not curve.empty else pd.DataFrame(
-        {"θ": [], "Predicted_DI": []}
-    )
+    if not curve.empty:
+        curve_points = curve.iloc[::k].copy()
+    else:
+        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
 
     points_layer = (
         alt.Chart(curve_points)
@@ -1328,15 +1343,12 @@ def render_di_chart(
     chart_html = chart_html.replace(
         "</style>",
         "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
-        "{ font-size: 14px !important; font-weight: bold !important; "
-        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
+        "{{ font-size: 14px !important; font-weight: bold !important; "
+        "background: #000 !important; color: #fff !important; padding: 12px !important; }}</style>",
     )
     st.components.v1.html(chart_html, height=size + 100)
 
 
-# =============================================================================
-# ⚡ STEP 11: RUN PREDICTION + DRAW DI–θ
-# =============================================================================
 def _pick_default_model():
     for m in MODEL_ORDER:
         if m in model_registry:
@@ -1344,6 +1356,7 @@ def _pick_default_model():
     return None
 
 
+# determine model choice (if not set by UI yet)
 if "model_choice" not in locals():
     _label = st.session_state.get("model_select_compact") or st.session_state.get(
         "model_select"
@@ -1353,10 +1366,11 @@ if "model_choice" not in locals():
     else:
         model_choice = _pick_default_model()
 
+# ---- DI–θ EXECUTION ----
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
-    # on calculate
+    # ---------- Prediction on submit (single DI point) ----------
     if "submit" in locals() and submit:
         xdf = _make_input_df(
             lw,
@@ -1390,7 +1404,7 @@ else:
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-    # base df for θ sweep
+    # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
         lw,
         hw,
@@ -1413,19 +1427,28 @@ else:
         theta,
     )
 
-    _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
+    _curve_df = _sweep_curve_df(
+        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
+    )
+
+    # ---- vertical offset for DI–θ plot (only place to adjust) ----
+    DI_CHART_OFFSET = -140  # px; more negative = move chart up, less negative = down
 
     with chart_slot.container():
+        st.markdown(
+            f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
+            unsafe_allow_html=True,
+        )
         render_di_chart(
-            st.session_state.results_df,
             _curve_df,
             theta_max=THETA_MAX,
             di_max=1.5,
             size=CHART_W,
         )
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# 🎨 STEP 12: FINAL BANNER (unchanged)
+# 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
 st.markdown(
     """
@@ -1443,6 +1466,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
