@@ -2,9 +2,19 @@ DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
 
+# =============================================================================
+# 🚀 STEP 1: CORE IMPORTS & TENSORFLOW BACKEND SETUP
+# =============================================================================
+
+# =============================================================================
+# 🚀 SUB STEP 1.1: ENVIRONMENT CONFIGURATION
+# =============================================================================
 import os
 os.environ.setdefault("KERAS_BACKEND", "tensorflow")
 
+# =============================================================================
+# 🚀 SUB STEP 1.2: CORE LIBRARY IMPORTS
+# =============================================================================
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,11 +22,18 @@ import base64, json
 from pathlib import Path
 from glob import glob
 
+# =============================================================================
+# 🚀 SUB STEP 1.3: MACHINE LEARNING LIBRARY IMPORTS
+# =============================================================================
+# ML libs
 import xgboost as xgb
 import joblib
 import catboost
 import lightgbm as lgb
 
+# =============================================================================
+# 🚀 SUB STEP 1.4: KERAS COMPATIBILITY LOADER SETUP
+# =============================================================================
 # --- Keras compatibility loader (PS/MLP only) ---
 try:
     from tensorflow.keras.models import load_model as _tf_load_model
@@ -42,13 +59,26 @@ def _load_keras_model(path):
             errs.append(f"keras: {e}")
     raise RuntimeError(" / ".join(errs) if errs else "No Keras loader available")
 
-# --- session defaults ---
+# =============================================================================
+# 🚀 SUB STEP 1.5: SESSION STATE INITIALIZATION
+# =============================================================================
+# --- session defaults (prevents AttributeError on first run) ---
 st.session_state.setdefault("results_df", pd.DataFrame())
 
+# =============================================================================
+# 🔧 STEP 2: UTILITY FUNCTIONS & HELPER TOOLS
+# =============================================================================
+
+# =============================================================================
+# 🔧 SUB STEP 2.1: BASIC UTILITY FUNCTIONS
+# =============================================================================
 css = lambda s: st.markdown(s, unsafe_allow_html=True)
 def b64(path: Path) -> str: return base64.b64encode(path.read_bytes()).decode("ascii")
 def dv(R, key, proposed): lo, hi = R[key]; return float(max(lo, min(proposed, hi)))
 
+# =============================================================================
+# 🔧 SUB STEP 2.2: PATH FINDING HELPER FUNCTION
+# =============================================================================
 # ---------- path helper ----------
 BASE_DIR = Path(__file__).resolve().parent
 def pfind(candidates):
@@ -84,260 +114,150 @@ def pfind(candidates):
             return Path(matches[0])
     raise FileNotFoundError(f"None of these files were found: {candidates}")
 
-# ---------------- PAGE CONFIG & GLOBAL CSS ----------------
+# =============================================================================
+# 🎨 STEP 3: STREAMLIT PAGE CONFIGURATION & UI STYLING
+# =============================================================================
+
+# =============================================================================
+# 🎨 SUB STEP 3.1: PAGE CONFIGURATION SETUP
+# =============================================================================
 st.set_page_config(page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱")
 
-# Header / spacing
-st.markdown("""
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-div.stApp{ margin-top:-2rem !important; }
-section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{ max-width:100% !important; }
-
-/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
-html, body, #root, .stApp {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-
-section.main {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-
-.block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    max-height: none !important;
-    overflow: visible !important;
-    min-height: 100vh !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# -------- FONT SCALE --------
-SCALE_UI = 0.36
-s = lambda v: int(round(v * SCALE_UI))
-
-FS_TITLE   = s(20)
-FS_SECTION = s(60)
-FS_LABEL   = s(50)
-FS_UNITS   = s(30)
-FS_INPUT   = s(30)
-FS_SELECT  = s(35)
-FS_BUTTON  = s(20)
-FS_BADGE   = s(30)
-FS_RECENT  = s(20)
-INPUT_H    = max(32, int(FS_INPUT * 2.0))
-
-# Colors
-DEFAULT_LOGO_H = 45
-PRIMARY   = "#8E44AD"
-SECONDARY = "#f9f9f9"
-INPUT_BG     = "#ffffff"
-INPUT_BORDER = "#e6e9f2"
-LEFT_BG      = "#e0e4ec"
-
-# Small chart-up tweak
+# =============================================================================
+# 🎨 SUB STEP 3.2: COMPREHENSIVE CSS STYLING DEFINITION
+# =============================================================================
 css("""
 <style>
-/* Move the entire right column content up (mild) */
-[data-testid="column"]:last-child {
-    margin-top: -100px !important;
-    padding-top: 0px !important;
-}
+  html, body{ margin:0 !important; padding:0 !important; }
+  header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+  header[data-testid="stHeader"] *{ display:none !important; }
+  div.stApp{ margin-top:-2rem !important; }
+  section.main > div.block-container{ padding-top:0.5rem !important; margin-top:0 !important; }
+  
+  .block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+  h1 { font-size:20px !important; margin:0 rem 0 !important; }
 
-/* Specifically target the chart container */
-div.element-container:has(> div[data-testid="iframe"]) {
-    margin-top: -100px !important;
-}
-</style>
-""")
+  .section-header { font-size:60px !important; font-weight:700; margin:.35rem 0; }
+  .stNumberInput label, .stSelectbox label { font-size:50px !important; font-weight:700; }
+  .stNumberInput label .katex, .stSelectbox label .katex { font-size:50px !important; line-height:1.2 !important; }
+  .stNumberInput label .katex .mathrm, .stSelectbox label .katex .mathrm { font-size:30px !important; }
 
-# Main theme CSS
-css(f"""
-<style>
-  .block-container {{ padding-top: 0.5rem !important; }}
-  h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
-
-  .section-header {{
-    font-size:{FS_SECTION}px !important;
-    font-weight:700; margin:.35rem 0;
-  }}
-
-  .stNumberInput label, .stSelectbox label {{
-    font-size:{FS_LABEL}px !important; font-weight:700;
-  }}
-  .stNumberInput label .katex,
-  .stSelectbox label .katex {{ font-size:{FS_LABEL}px !important; line-height:1.2 !important; }}
-  .stNumberInput label .katex .fontsize-ensurer,
-  .stSelectbox label .katex .fontsize-ensurer {{ font-size:1em !important; }}
-
-  .stNumberInput label .katex .mathrm,
-  .stSelectbox  label .katex .mathrm {{ font-size:{FS_UNITS}px !important; }}
-
-  div[data-testid="stNumberInput"] input[type="number"],
-  div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
-      height:{INPUT_H}px !important;
-      line-height:{INPUT_H - 8}px !important;
-      font-weight:600 !important;
+  div[data-testid="stNumberInput"] input[type="number"], div[data-testid="stNumberInput"] input[type="text"] {
+      font-size:30px !important; height:60px !important; line-height:52px !important; font-weight:600 !important;
       padding:10px 12px !important;
-  }}
+  }
 
-  div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
-      background:{INPUT_BG} !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-      transition:border-color .15s ease, box-shadow .15s ease !important;
-  }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover {{ border-color:#d6dced !important; }}
-  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {{
-      border-color:{PRIMARY} !important;
-      box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
-  }}
+  div[data-testid="stNumberInput"] [data-baseweb*="input"] {
+      background:#ffffff !important; border:1px solid #e6e9f2 !important; border-radius:12px !important;
+      box-shadow:0 1px 2px rgba(16,24,40,.06) !important; transition:border-color .15s ease, box-shadow .15s ease !important;
+  }
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:hover { border-color:#d6dced !important; }
+  div[data-testid="stNumberInput"] [data-baseweb*="input"]:focus-within {
+      border-color:#8E44AD !important; box-shadow:0 0 0 3px rgba(106,17,203,.15) !important;
+  }
 
-  div[data-testid="stNumberInput"] button {{
-      background:#ffffff !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:10px !important;
-      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
-  }}
-  div[data-testid="stNumberInput"] button:hover {{ border-color:#cbd3e5 !important; }}
+  div[data-testid="stNumberInput"] button { display: none !important; }
 
-  .stSelectbox [role="combobox"],
-  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
-  div[data-testid="stSelectbox"] div[role="listbox"],
-  div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}px !important;
-  }}
+  .stSelectbox [role="combobox"], div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
+  div[data-testid="stSelectbox"] div[role="listbox"], div[data-testid="stSelectbox"] div[role="option"] {
+      font-size:35px !important;
+  }
 
-  div.stButton > button {{
-    font-size:{FS_BUTTON}px !important;
-    height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-    line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-    white-space:nowrap !important;
-    color:#fff !important;
-    font-weight:700; border:none !important; border-radius:8px !important;
-    background:#4CAF50 !important;
-  }}
-  div.stButton > button:hover {{ filter: brightness(0.95); }}
+  div.stButton > button {
+    font-size:20px !important; height:42px !important; line-height:36px !important; white-space:nowrap !important;
+    color:#fff !important; font-weight:700; border:none !important; border-radius:8px !important;
+  }
+  button[key="calc_btn"] { background:#4CAF50 !important; }
+  button[key="reset_btn"] { background:#2196F3 !important; }
+  button[key="clear_btn"] { background:#f44336 !important; }
 
-  button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-  button[key="reset_btn"] {{ background:#2196F3 !important; }}
-  button[key="clear_btn"] {{ background:#f44336 !important; }}
+  .form-banner {
+    text-align:center; background: linear-gradient(90deg, #0E9F6E, #84CC16); color: #fff;
+    padding:.45rem .75rem; border-radius:10px; font-weight:800; font-size:64px; margin:.1rem 0 !important;
+  }
 
-  .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-  }}
-  .recent-box {{
-    font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
-    border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
-  }}
-
-  #compact-form{{ max-width:900px; margin:0 auto; }}
-  #compact-form [data-testid="stHorizontalBlock"]{{ gap:.5rem; flex-wrap:nowrap; }}
-  #compact-form [data-testid="column"]{{ width:200px; max-width:200px; flex:0 0 200px; padding:0; }}
-  #compact-form [data-testid="stNumberInput"],
-  #compact-form [data-testid="stNumberInput"] *{{ max-width:none; box-sizing:border-box; }}
-  #compact-form [data-testid="stNumberInput"]{{ display:inline-flex; width:auto; min-width:0; flex:0 0 auto; margin-bottom:.35rem; }}
-  #button-row {{ display:flex; gap:30px; margin:10px 0 6px 0; align-items:center; }}
+  .prediction-with-color {
+    color: #2e86ab !important; font-weight: 700 !important; font-size: 30px !important;
+    background: #f1f3f4 !important; padding: 10px 12px !important; border-radius: 6px !important;
+    text-align: center !important; margin: 0 !important; height: 45px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    width: 180px !important;
+  }
 
   /* Full page left side gray background */
-  html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {{
+  html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {
       background: linear-gradient(90deg, #e0e4ec 60%, transparent 60%) !important;
-      min-height: 100vh !important;
-      height: auto !important;
-  }}
+      min-height: 100vh !important; height: auto !important;
+  }
 
-  .stApp, .main, .block-container, [data-testid="stHorizontalBlock"] {{
-      margin-bottom: 0 !important;
-      padding-bottom: 0 !important;
-  }}
+  /* Selectbox styling - grey theme */
+  div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    border: none !important; box-shadow: none !important; background: #D3D3D3 !important;
+    height: 40px !important; width: 180px !important; border-radius: 8px !important;
+    padding: 0px 12px !important; outline: none !important;
+  }
+  div[data-testid="stSelectbox"] > div { border: none !important; box-shadow: none !important; outline: none !important; }
+  div[data-testid="stSelectbox"] > div > div { height: 40px !important; display: flex !important; align-items: center !important; }
+  div[data-testid="stSelectbox"] label p { font-size: 50px !important; color: black !important; font-weight: bold !important; }
+  
+  [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] *,
+  [data-baseweb="select"] [role="listbox"], [data-baseweb="select"] [role="combobox"] { 
+    color: black !important; background-color: #D3D3D3 !important; font-size: 35px !important; 
+    border: none !important; outline: none !important; box-shadow: none !important;
+  }
+  
+  div[role="option"] { color: black !important; font-size: 35px !important; background-color: #D3D3D3 !important; }
+  div[role="option"]:hover { background-color: #B8B8B8 !important; color:black !important; }
 
-  [data-testid="column"]:first-child {{
-      min-height: 100vh !important;
-      background: #e0e4ec !important;
-  }}
+  /* Logo positioning */
+  .page-header-outer { position: fixed !important; top: 0 !important; right: 0 !important; width: 100% !important; height: 0 !important; z-index: 9999 !important; }
+  .page-header { display: flex !important; justify-content: flex-end !important; align-items: flex-start !important; width: 100% !important; height: 0 !important; }
+  .page-header__logo { height: 45px !important; width: auto !important; position: fixed !important; top: 35px !important; right: 200px !important; z-index: 9999 !important; }
+  .main .block-container { padding-top: 100px !important; }
 
-  [data-baseweb="popover"], [data-baseweb="tooltip"],
-  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background:#000 !important; color:#fff !important; border-radius:8px !important;
-      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
-  }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
-
-  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
-  #action-row {{ display:flex; align-items:center; gap:10px; }}
+  /* Chart positioning */
+  div[data-testid="column"]:last-child .element-container { position: relative !important; top: -250px !important; margin-top: -250px !important; }
 </style>
 """)
 
-# ---------------- LOGO ----------------
+# =============================================================================
+# 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
+# =============================================================================
+
+# =============================================================================
+# 🏷️ SUB STEP 4.1: LOGO IMAGE LOADING
+# =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
-    _b64_logo = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
+    _b64 = base64.b64encode(_logo_path.read_bytes()).decode("ascii") if _logo_path.exists() else ""
 except Exception:
-    _b64_logo = ""
+    _b64 = ""
 
-LOGO_SIZE = 45
-LOGO_TOP = 35
-LOGO_POSITION = 200
+# =============================================================================
+# 🏷️ SUB STEP 4.2: HEADER AND LOGO STYLING IMPLEMENTATION
+# =============================================================================
+if _b64:
+    css(f"""
+    <div class="page-header-outer">
+      <div class="page-header">
+        <img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />
+      </div>
+    </div>
+    """)
 
-st.markdown(f"""
-<style>
-  .page-header-outer {{
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 0 !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-  }}
+# =============================================================================
+# 🤖 STEP 5: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
+# =============================================================================
 
-  .page-header {{
-    display: flex !important;
-    justify-content: flex-end !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    height: 0 !important;
-    position: relative !important;
-  }}
-
-  .page-header__logo {{
-    height: {int(LOGO_SIZE)}px !important;
-    width: auto !important;
-    position: fixed !important;
-    top: {int(LOGO_TOP)}px !important;
-    right: {int(LOGO_POSITION)}px !important;
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-  }}
-
-  .main .block-container {{
-    padding-top: {int(LOGO_TOP + LOGO_SIZE + 20)}px !important;
-  }}
-</style>
-
-<div class="page-header-outer">
-  <div class="page-header">
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64_logo}" />' if _b64_logo else ''}
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ---------------- MODEL LOADING ----------------
+# =============================================================================
+# 🤖 SUB STEP 5.1: MODEL HEALTH TRACKING SETUP
+# =============================================================================
 def record_health(name, ok, msg=""): health.append((name, ok, msg, "ok" if ok else "err"))
 health = []
 
+# =============================================================================
+# 🤖 SUB STEP 5.2: SCALER SHIM CLASS DEFINITION
+# =============================================================================
 class _ScalerShim:
     def __init__(self, X_scaler, y_scaler):
         import numpy as _np
@@ -351,7 +271,9 @@ class _ScalerShim:
         y = self._np.array(y).reshape(-1, 1)
         return self.Ys.inverse_transform(y)
 
-# PS (ANN)
+# =============================================================================
+# 🤖 SUB STEP 5.3: PS (ANN) MODEL LOADING
+# =============================================================================
 ann_ps_model = None; ann_ps_proc = None
 try:
     ps_model_path = pfind(["ANN_PS_Model.keras", "ANN_PS_Model.h5"])
@@ -363,7 +285,9 @@ try:
 except Exception as e:
     record_health("PS (ANN)", False, f"{e}")
 
-# MLP (ANN)
+# =============================================================================
+# 🤖 SUB STEP 5.4: MLP (ANN) MODEL LOADING
+# =============================================================================
 ann_mlp_model = None; ann_mlp_proc = None
 try:
     mlp_model_path = pfind(["ANN_MLP_Model.keras", "ANN_MLP_Model.h5"])
@@ -375,28 +299,20 @@ try:
 except Exception as e:
     record_health("MLP (ANN)", False, f"{e}")
 
-# Random Forest
+# =============================================================================
+# 🤖 SUB STEP 5.5: RANDOM FOREST MODEL LOADING
+# =============================================================================
 rf_model = None
 try:
-    rf_path = pfind([
-        "random_forest_model.pkl", "random_forest_model.joblib",
-        "rf_model.pkl", "RF_model.pkl",
-        "Best_RF_Model.json", "best_rf_model.json", "RF_model.json"
-    ])
-    try:
-        rf_model = joblib.load(rf_path)
-        record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
-    except Exception as e_joblib:
-        try:
-            import skops.io as sio
-            rf_model = sio.load(rf_path, trusted=True)
-            record_health("Random Forest", True, f"loaded via skops from {rf_path}")
-        except Exception as e_skops:
-            record_health("Random Forest", False, f"RF load failed for {rf_path} (joblib: {e_joblib}) (skops: {e_skops})")
+    rf_path = pfind(["random_forest_model.pkl", "random_forest_model.joblib", "rf_model.pkl", "RF_model.pkl"])
+    rf_model = joblib.load(rf_path)
+    record_health("Random Forest", True, f"loaded with joblib from {rf_path}")
 except Exception as e:
     record_health("Random Forest", False, str(e))
 
-# XGBoost
+# =============================================================================
+# 🤖 SUB STEP 5.6: XGBOOST MODEL LOADING
+# =============================================================================
 xgb_model = None
 try:
     xgb_path = pfind(["XGBoost_trained_model_for_DI.json","Best_XGBoost_Model.json","xgboost_model.json"])
@@ -405,7 +321,9 @@ try:
 except Exception as e:
     record_health("XGBoost", False, str(e))
 
-# CatBoost
+# =============================================================================
+# 🤖 SUB STEP 5.7: CATBOOST MODEL LOADING
+# =============================================================================
 cat_model = None
 try:
     cat_path = pfind(["CatBoost.cbm","Best_CatBoost_Model.cbm","catboost.cbm"])
@@ -414,10 +332,12 @@ try:
 except Exception as e:
     record_health("CatBoost", False, f"{e}")
 
-# LightGBM
+# =============================================================================
+# 🤖 SUB STEP 5.8: LIGHTGBM MODEL LOADING
+# =============================================================================
 def load_lightgbm_flex():
     try:
-        p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin","LightGBM_model.pkl","LightGBM_model.joblib","LightGBM_model"])
+        p = pfind(["LightGBM_model.txt","Best_LightGBM_Model.txt","LightGBM_model.bin"])
     except Exception:
         raise FileNotFoundError("No LightGBM model file found.")
     try: return lgb.Booster(model_file=str(p)), "booster", p
@@ -432,11 +352,12 @@ try:
 except Exception as e:
     lgb_model = None; record_health("LightGBM", False, str(e))
 
-# Registry
+# =============================================================================
+# 🤖 SUB STEP 5.9: MODEL REGISTRY POPULATION
+# =============================================================================
 model_registry = {}
 for name, ok, *_ in health:
-    if not ok:
-        continue
+    if not ok: continue
     if name == "XGBoost" and xgb_model is not None: model_registry["XGBoost"] = xgb_model
     elif name == "LightGBM" and lgb_model is not None: model_registry["LightGBM"] = lgb_model
     elif name == "CatBoost" and cat_model is not None: model_registry["CatBoost"] = cat_model
@@ -444,7 +365,13 @@ for name, ok, *_ in health:
     elif name == "MLP (ANN)" and ann_mlp_model is not None: model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None: model_registry["Random Forest"] = rf_model
 
-# ---------------- INPUT RANGES & HELPERS ----------------
+# =============================================================================
+# 📊 STEP 6: INPUT PARAMETERS & DATA RANGES DEFINITION
+# =============================================================================
+
+# =============================================================================
+# 📊 SUB STEP 6.1: PARAMETER RANGES DEFINITION
+# =============================================================================
 R = {
     "lw":(400.0,3500.0), "hw":(495.0,5486.4), "tw":(26.0,305.0), "fc":(13.38,93.6),
     "fyt":(0.0,1187.0), "fysh":(0.0,1375.0), "fyl":(160.0,1000.0), "fybl":(0.0,900.0),
@@ -455,6 +382,9 @@ R = {
 THETA_MAX = R["theta"][1]
 U = lambda s: rf"\;(\mathrm{{{s}}})"
 
+# =============================================================================
+# 📊 SUB STEP 6.2: GEOMETRY PARAMETERS DEFINITION
+# =============================================================================
 GEOM = [
     (rf"$l_w{U('mm')}$","lw",1000.0,1.0,None,"Length"),
     (rf"$h_w{U('mm')}$","hw",495.0,1.0,None,"Height"),
@@ -465,6 +395,9 @@ GEOM = [
     (r"$M/(V_{l_w})$","M_Vlw",2.0,0.01,None,"Shear span ratio"),
 ]
 
+# =============================================================================
+# 📊 SUB STEP 6.3: MATERIAL PARAMETERS DEFINITION
+# =============================================================================
 MATS = [
     (rf"$f'_c{U('MPa')}$",        "fc",   40.0, 0.1, None, "Concrete strength"),
     (rf"$f_{{yt}}{U('MPa')}$",    "fyt",  400.0, 1.0, None, "Transverse web yield strength"),
@@ -473,6 +406,9 @@ MATS = [
     (rf"$f_{{ybl}}{U('MPa')}$","fybl", 400.0, 1.0, None, "Vertical boundary yield strength"),
 ]
 
+# =============================================================================
+# 📊 SUB STEP 6.4: REINFORCEMENT PARAMETERS DEFINITION
+# =============================================================================
 REINF = [
     (r"$\rho_t\;(\%)$","rt",0.25,0.0001,"%.6f","Transverse web ratio"),
     (r"$\rho_{sh}\;(\%)$","rsh",0.25,0.0001,"%.6f","Transverse boundary ratio"),
@@ -483,6 +419,9 @@ REINF = [
     (r"$\theta\;(\%)$","theta",THETA_MAX,0.0005,None,"Drift Ratio"),
 ]
 
+# =============================================================================
+# 📊 SUB STEP 6.5: NUMBER INPUT HELPER FUNCTION
+# =============================================================================
 def num(label, key, default, step, fmt, help_):
     return st.number_input(
         label, value=dv(R, key, default), step=step,
@@ -490,32 +429,40 @@ def num(label, key, default, step, fmt, help_):
         format=fmt if fmt else None, help=help_
     )
 
-# Hide +/- buttons
-css("""
-<style>
-div[data-testid="stNumberInput"] button {
-    display: none !important;
-}
-</style>
-""")
+# =============================================================================
+# 🎮 STEP 7: MAIN INTERFACE LAYOUT
+# =============================================================================
 
-# ---------------- MAIN LAYOUT ----------------
+# =============================================================================
+# 🎮 SUB STEP 7.1: LAYOUT COLUMNS SETUP
+# =============================================================================
 left, right = st.columns([1.5, 1], gap="large")
 
+# =============================================================================
+# 🎮 SUB STEP 7.2: LEFT PANEL CONTENT IMPLEMENTATION
+# =============================================================================
 with left:
+    # METHOD 1: Remove all empty space first
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
+    
+    # MOVE THE TITLE INSIDE THE GREY AREA - MOVED UP MORE
     st.markdown("""
     <div style="background:transparent; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:none;">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
             Predict Damage index (DI) for RC Shear Walls
         </div>
     """, unsafe_allow_html=True)
+    
+    # METHOD 2: Use multiple empty spaces to push content up
     st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
+    
+    # METHOD 3: Combine title and inputs in one container
     st.markdown("""
     <div style="margin: -80px 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
     """, unsafe_allow_html=True)
 
+    # ⬇️ Three columns: Geometry | Reinf. Ratios | Material Strengths
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
@@ -531,280 +478,24 @@ with left:
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the combined container
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the grey area div
 
-# ---------------- RIGHT PANEL ----------------
-HERO_X, HERO_Y, HERO_W = 100, -0, 400
-CHART_W = 400
-right_offset = 50
-
+# =============================================================================
+# 🎮 SUB STEP 7.3: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# =============================================================================
 with right:
-    st.markdown(f"<div style='height:{int(right_offset)}px'></div>", unsafe_allow_html=True)
-    st.markdown(
-        f"""
-        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
-            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # Hero image
+    st.markdown(f"<div style='height:50px'></div>", unsafe_allow_html=True)
+    try:
+        hero_b64 = b64(BASE_DIR / "logo2-01.png")
+        st.markdown(f'<div style="position:relative; left:100px; top:-0px; text-align:left;"><img src="data:image/png;base64,{hero_b64}" width="400"/></div>', unsafe_allow_html=True)
+    except: pass
 
-    # Selectbox & buttons styling
-    st.markdown(f""" 
-    <style>
-    #action-row {{ 
-        display: flex !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: 0px !important;
-    }}
+    # Model selection and buttons
+    col1, col2 = st.columns([3, 1])
     
-    div[data-testid="stSelectbox"] [data-baseweb="select"] {{
-        border: none !important;
-        box-shadow: none !important; 
-        background: #D3D3D3 !important;
-        height: 40px !important;
-        width: 180px !important;
-        border-radius: 8px !important;
-        padding: 0px 12px !important;
-        outline: none !important;
-    }}
-    
-    div[data-testid="stSelectbox"] > div {{
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }}
-
-    div[data-testid="stSelectbox"] > div > div {{ 
-        height: 40px !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        outline: none !important;
-        color: #888888 !important;
-    }}
-    
-    div[data-testid="stSelectbox"] input {{
-        border: none !important;
-        outline: none !important;
-        background: transparent !important;
-        color: #888888 !important;
-    }}
-    
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:active {{
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }}
-    
-    div[data-testid="stSelectbox"] svg {{
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }}
-    
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:hover svg,
-    div[data-testid="stSelectbox"] [data-baseweb="select"]:focus svg {{
-        fill: #888888 !important;
-        color: #888888 !important;
-        stroke: #888888 !important;
-    }}
-    
-    div[data-testid="stSelectbox"] > div:first-child {{
-        margin-top: 0px !important;
-    }}
-    
-    div[data-testid="stSelectbox"] label p {{ 
-        font-size: {FS_LABEL}px !important; 
-        color: black !important;
-        font-weight: bold !important; 
-        margin-bottom: 5px !important;
-        position: relative !important;
-        top: 0px !important;
-        left: 0 !important;
-        white-space: nowrap !important;
-        line-height: 1 !important;
-    }}
-    
-    [data-baseweb="select"] *, 
-    [data-baseweb="popover"] *, 
-    [data-baseweb="menu"] *,
-    [data-baseweb="select"] [role="listbox"],
-    [data-baseweb="select"] [role="combobox"] {{ 
-        color: black !important;
-        background-color: #D3D3D3 !important;
-        font-size: {FS_SELECT}px !important; 
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }}
-    
-    [data-baseweb="popover"],
-    [data-baseweb="popover"] > div {{
-        border-radius: 8px !important;
-        overflow: hidden !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: #D3D3D3 !important;
-    }}
-    
-    [data-baseweb="menu"],
-    [data-baseweb="menu"] ul,
-    [data-baseweb="menu"] li,
-    [data-baseweb="menu"] > div {{
-        border: none !important;
-        border-radius: 8px !important;
-        background-color: #D3D3D3 !important;
-        box-shadow: none !important;
-    }}
-    
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="select"] > div > div {{
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }}
-    
-    div[role="option"] {{ 
-        color: black !important;
-        font-size: {FS_SELECT}px !important; 
-        background-color: #D3D3D3 !important;
-        padding: 12px 16px !important;
-        border: none !important;
-        border-bottom: none !important;
-    }}
-    
-    div[role="option"]:last-child {{
-        border-bottom: none !important;
-    }}
-    
-    div[role="option"]:not(:last-child) {{
-        border-bottom: none !important;
-    }}
-    
-    div[role="option"]:hover {{
-        background-color: #B8B8B8 !important;
-        color:black !important;
-        border: none !important;
-    }}
-    
-    div.stButton > button {{ 
-        height: 40px !important; 
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
-        display:flex !important; 
-        align-items:center !important; 
-        justify-content:center !important;
-        font-size: {FS_BUTTON}px !important;
-        margin: 0 auto !important;
-        white-space: nowrap !important;
-        margin-top: 0px !important;
-        border-radius: 8px !important;
-        border: none !important;
-        font-weight: 700 !important;
-        outline: none !important;
-    }}
-    
-    button[key="calc_btn"] {{ background:#4CAF50 !important; }}
-    button[key="reset_btn"] {{ background:#2196F3 !important; }}
-    button[key="clear_btn"] {{ background:#f44336 !important; }}
-    
-    div.stButton > button:focus {{
-        outline: none !important;
-        box-shadow: none !important;
-    }}
-    
-    #three-btns {{
-        margin-top: 0 !important;
-        display: flex !important;
-        gap: 8px !important;
-        width: 100% !important;
-    }}
-    
-    div[data-testid="stSelectbox"] {{
-        position: relative !important;
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-    }}
-    
-    div[data-testid="stSelectbox"] label {{
-        margin-bottom: 5px !important;
-        white-space: nowrap !important;
-        display: block !important;
-    }}
-    
-    div[data-testid="stSelectbox"] > div {{
-        margin-top: 0px !important;
-    }}
-    
-    .model-selection-container {{
-        margin-top: -450px !important;
-        padding-top: 0px !important;
-    }}
-    
-    [data-testid="column"] {{
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-    }}
-    
-    div[data-testid="column"]:first-child {{
-        margin-top: -45px !important;
-        padding-top: 0px !important;
-    }}
-    
-    div[data-baseweb="select"] div[style*="border"] {{
-        border: none !important;
-    }}
-    
-    [style*="border"] {{
-        border: none !important;
-    }}
-
-    div[data-baseweb="popover"] {{
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-    }}
-
-    div[data-baseweb="menu"] {{
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
-    }}
-
-    div[role="listbox"] {{
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
-    }}
-
-    div[data-testid="stSelectbox"] [data-baseweb="popover"] {{
-        width: 180px !important;
-        min-width: 180px !important;
-        max-width: 180px !important;
-    }}
-
-    div[data-testid="column"]:last-child {{
-        width: 100% !important;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
-    
-    col1_r, col2_r = st.columns([3, 1])
-    with col2_r:
+    with col2:
         available = set(model_registry.keys())
         order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
         ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
@@ -819,45 +510,26 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
         
+        # Prediction display
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
             st.markdown(f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>", unsafe_allow_html=True)
             
+            # Download button
             csv = st.session_state.results_df.to_csv(index=False)
             st.download_button("📂 Download as CSV", data=csv, file_name="di_predictions.csv", 
                               mime="text/csv", use_container_width=True, key="dl_csv_main")
-    
-    pred_banner = st.empty()
-    dl_slot = st.empty()
-    
-    st.markdown(f"""
-    <style>
-    .prediction-with-color {{
-        color: #2e86ab !important;
-        font-weight: 700 !important;
-        font-size: {FS_BADGE}px !important;
-        background: #f1f3f4 !important;
-        padding: 10px 12px !important;
-        border-radius: 6px !important;
-        text-align: center !important;
-        margin: 0 !important;
-        height: 45px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 180px !important;
-    }}
-    
-    div.element-container:has(> iframe) {{
-        position: relative !important;
-        top: -150px !important;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
 
+    # Chart slot
     chart_slot = st.empty()
 
-# ---------------- PREDICTION ENGINE ----------------
+# =============================================================================
+# 🔮 STEP 8: PREDICTION ENGINE & CURVE GENERATION UTILITIES
+# =============================================================================
+
+# =============================================================================
+# 🔮 SUB STEP 8.1: COLUMN MAPPING DEFINITION
+# =============================================================================
 _TRAIN_NAME_MAP = {
     'l_w': 'lw', 'h_w': 'hw', 't_w': 'tw', 'f′c': 'fc',
     'fyt': 'fyt', 'fysh': 'fysh', 'fyl': 'fyl', 'fybl': 'fybl',
@@ -867,9 +539,15 @@ _TRAIN_NAME_MAP = {
 }
 _TRAIN_COL_ORDER = ['lw','hw','tw','fc','fyt','fysh','fyl','fybl','pt','psh','pl','pbl','P/(Agfc)','b0','db','s/db','AR','M/Vlw','θ']
 
+# =============================================================================
+# 🔮 SUB STEP 8.2: DATA FRAME PREPROCESSING FUNCTION
+# =============================================================================
 def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
+# =============================================================================
+# 🔮 SUB STEP 8.3: PREDICTION ENGINE FUNCTION
+# =============================================================================
 def predict_di(choice, _unused_array, input_df):
     df_trees = _df_in_train_order(input_df)
     df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
@@ -878,13 +556,13 @@ def predict_di(choice, _unused_array, input_df):
     if choice == "LightGBM":
         mdl = model_registry["LightGBM"]
         prediction = float(mdl.predict(X)[0])
-    if choice == "XGBoost":
+    elif choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
-    if choice == "CatBoost":
+    elif choice == "CatBoost":
         prediction = float(model_registry["CatBoost"].predict(X)[0])
-    if choice == "Random Forest":
+    elif choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
-    if choice == "PS":
+    elif choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
         try:
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
@@ -892,7 +570,7 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["PS"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-    if choice == "MLP":
+    elif choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
         try:
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
@@ -904,11 +582,17 @@ def predict_di(choice, _unused_array, input_df):
     prediction = max(0.035, min(prediction, 1.5))
     return prediction
 
+# =============================================================================
+# 🔮 SUB STEP 8.4: INPUT DATA FRAME CREATION FUNCTION
+# =============================================================================
 def _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val):
     cols = ['l_w','h_w','t_w','f′c','fyt','fysh','fyl','fybl','ρt','ρsh','ρl','ρbl','P/(Agf′c)','b0','db','s/db','AR','M/Vlw','θ']
     x = np.array([[lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta_val]], dtype=np.float32)
     return pd.DataFrame(x, columns=cols)
 
+# =============================================================================
+# 🔮 SUB STEP 8.5: CURVE SWEEP GENERATION FUNCTION
+# =============================================================================
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
         return pd.DataFrame(columns=["θ","Predicted_DI"])
@@ -922,154 +606,9 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
     return pd.DataFrame(rows)
 
+# =============================================================================
+# 🔮 SUB STEP 8.6: CHART RENDERING FUNCTION
+# =============================================================================
 def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
                     theta_max: float = THETA_MAX, di_max: float = 1.5, size: int = 460):
     import altair as alt
-    selection = alt.selection_point(name='select', fields=['θ', 'Predicted_DI'],
-                                    nearest=True, on='mouseover', empty=False, clear='mouseout')
-    AXIS_LABEL_FS = 14; AXIS_TITLE_FS = 16; TICK_SIZE = 6; TITLE_PAD = 10; LABEL_PAD = 6
-    base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
-    x_ticks = np.linspace(0.0, theta_max, 5).round(2)
-
-    axes_layer = (
-        alt.Chart(base_axes_df).mark_line(opacity=0).encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                    scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
-                    axis=alt.Axis(values=list(x_ticks), labelFontSize=AXIS_LABEL_FS,
-                                  titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD,
-                                  tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                    scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
-                    axis=alt.Axis(values=[0.0, 0.2, 0.5, 1.0, 1.5],
-                                  labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS,
-                                  labelPadding=LABEL_PAD, titlePadding=TITLE_PAD,
-                                  tickSize=TICK_SIZE, labelLimit=1000,
-                                  labelFlush=True, labelFlushOffset=0)),
-        ).properties(width=size, height=size)
-    )
-
-    curve = curve_df if (curve_df is not None and not curve_df.empty) else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    line_layer = alt.Chart(curve).mark_line(strokeWidth=2).encode(
-        x="θ:Q", y="Predicted_DI:Q").properties(width=size, height=size)
-
-    k = 3
-    if not curve.empty:
-        curve_points = curve.iloc[::k].copy()
-    else:
-        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
-
-    points_layer = alt.Chart(curve_points).mark_circle(size=60, opacity=0.7).encode(
-        x="θ:Q", y="Predicted_DI:Q",
-        tooltip=[alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
-                 alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f")]
-    ).add_params(selection)
-
-    rules_layer = alt.Chart(curve).mark_rule(color='red', strokeWidth=2).encode(
-        x="θ:Q", y="Predicted_DI:Q").transform_filter(selection)
-
-    text_layer = alt.Chart(curve).mark_text(
-        align='left', dx=8, dy=-8,
-        fontSize=14, fontWeight='bold', color='red'
-    ).encode(
-        x="θ:Q", y="Predicted_DI:Q",
-        text=alt.Text("Predicted_DI:Q", format=".4f")
-    ).transform_filter(selection)
-
-    chart = (alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
-             .configure_view(strokeWidth=0)
-             .configure_axis(domain=True, ticks=True)
-             .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6}))
-    chart_html = chart.to_html()
-    chart_html = chart_html.replace(
-        '</style>',
-        '</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * '
-        '{ font-size: 14px !important; font-weight: bold !important; '
-        'background: #000 !important; color: #fff !important; padding: 12px !important; }</style>')
-    st.components.v1.html(chart_html, height=size + 100)
-
-# ---------------- RUN PREDICTION + PLOT ----------------
-_order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
-_label_to_key = {"RF": "Random Forest"}
-
-def _pick_default_model():
-    for m in _order:
-        if m in model_registry:
-            return m
-    return None
-
-if 'model_choice' not in locals():
-    _label = (st.session_state.get("model_select_compact")
-              or st.session_state.get("model_select"))
-    if _label is not None:
-        model_choice = _label_to_key.get(_label, _label)
-    else:
-        model_choice = _pick_default_model()
-
-if (model_choice is None) or (model_choice not in model_registry):
-    st.error("No trained model is available. Please check the Model Selection on the right.")
-else:
-    if 'submit' in locals() and submit:
-        xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-                             rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
-        try:
-            pred = predict_di(model_choice, None, xdf)
-            row = xdf.copy(); row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
-        except Exception as e:
-            st.error(f"Prediction failed for {model_choice}: {e}")
-
-    _base_xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-                               rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
-    _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
-
-    try:
-        _slot = chart_slot
-    except NameError:
-        _slot = st.empty()
-
-    with right:
-        for _ in range(5):
-            st.markdown("<div style='height: 1px; margin-top: -50px;'></div>", unsafe_allow_html=True)
-        st.markdown("<div style='margin-top: -300px; padding-top: 0px;'>", unsafe_allow_html=True)
-        col1_c, col2_c, col3_c = st.columns([1, 8, 1])
-        with col2_c:
-            with _slot:
-                render_di_chart(st.session_state.results_df, _curve_df,
-                                theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------------- FINAL BANNER STYLE ----------------
-st.markdown("""
-<style>
-.form-banner{
-  background: linear-gradient(90deg, #0E9F6E, #84CC16) !important;
-  color: #fff !important;
-  text-align: center !important;
-  border-radius: 10px !important;
-  padding: .45rem .75rem !important;
-  margin-top: 65px !important;
-  transform: translateY(0) !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# Extra aggressive chart-up CSS (kept to preserve final position)
-css("""
-<style>
-div[data-testid="column"]:last-child {
-    position: relative !important;
-}
-div[data-testid="column"]:last-child > div > div > div:last-child {
-    position: relative !important;
-    top: -250px !important;
-    margin-top: -250px !important;
-}
-div[data-testid="column"]:last-child .element-container {
-    position: relative !important;
-    top: -250px !important;
-    margin-top: -250px !important;
-}
-</style>
-""")
