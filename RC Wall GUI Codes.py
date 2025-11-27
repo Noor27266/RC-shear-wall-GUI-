@@ -1434,7 +1434,7 @@ else:
     )
 
     # ---- vertical offset for DI–θ plot (only place to adjust) ----
-    DI_CHART_OFFSET = -140  # px; more negative = move chart up, less negative = down
+    DI_CHART_OFFSET = -340  # px; more negative = move chart up, less negative = down
 
     with chart_slot.container():
         st.markdown(
@@ -1468,3 +1468,4 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
