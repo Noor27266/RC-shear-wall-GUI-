@@ -191,14 +191,15 @@ LEFT_BG = "#e0e4ec"
 css(
     """
 <style>
-/* Move the entire right column content up a bit */
-[data-testid="column"]:last-child {
-    margin-top: -80px !important;
-    padding-top: 0px !important;
+/* Move the column that contains the Model Selection controls up */
+[data-testid="column"]:has(label[for="model_select_compact"]) {
+    margin-top: -220px !important;  /* make more negative to move further up */
+    padding-top: 0 !important;
 }
 </style>
 """
 )
+
 
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
@@ -1334,6 +1335,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
