@@ -767,22 +767,37 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # --------- CALCULATE BUTTON (sets flag for STEP 11) ---------
-        calc_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
-        if calc_clicked:
+        # Buttons
+        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+        if submit:
+            # <-- NEW: event flag so STEP 11 knows to run prediction once
             st.session_state.do_predict = True
 
-        # --------- OTHER BUTTONS ---------
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
 
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
-        # placeholder that STEP 11 will fill with DI + CSV
-        di_slot = st.empty()
+        # Latest DI + CSV download
+        if not st.session_state.results_df.empty:
+            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+            st.markdown(
+                f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
+                unsafe_allow_html=True,
+            )
 
-    # styling for the blue DI label
+            csv = st.session_state.results_df.to_csv(index=False)
+            st.download_button(
+                "📂 Download as CSV",
+                data=csv,
+                file_name="di_predictions.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="dl_csv_main",
+            )
+
+    # styling for the blue DI label (unchanged)
     st.markdown(
         f"""
     <style>
@@ -806,24 +821,21 @@ with right:
         unsafe_allow_html=True,
     )
 
-# === keep the translate() CSS to move controls right & up ===
-css(
-    """
+css("""
 <style>
-/* move only the selectbox + buttons up/right */
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
+*/
 div[data-testid="stSelectbox"],
-div.stButton {
-    transform: translate(40px, -230px);
-}
-
-/* leave DI label & CSV in normal flow so they stay visible */
+div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: none;
+    transform: translate(40px, -230px);   /* (X , Y) */
+    /* X = right/left, Y = up/down */
 }
 </style>
-"""
-)
+""")
 
 
 
@@ -992,251 +1004,6 @@ def _make_input_df(
 
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
-        return pd.DataFrame(columns=["θ", "Predicted_DI"])
-    thetas = np.round(np.arange(0.0, theta_max + 1e-9, step), 2)
-    rows = []
-    for th in thetas:
-        df = base_df.copy()
-        df.loc[:, "θ"] = float(th)
-        di = predict_di(model_choice, None, df)
-        di = max(0.035, min(di, 1.5))
-        rows.append({"θ": float(th), "Predicted_DI": float(di)})
-    return pd.DataFrame(rows)
-
-
-def render_di_chart(
-    curve_df: pd.DataFrame,
-    theta_max: float = THETA_MAX,
-    di_max: float = 1.5,
-    size: int = 460,
-):
-    import altair as alt
-
-    selection = alt.selection_point(
-        name="select",
-        fields=["θ", "Predicted_DI"],
-        nearest=True,
-        on="mouseover",
-        empty=False,
-        clear="mouseout",
-    )
-    AXIS_LABEL_FS = 14
-    AXIS_TITLE_FS = 16
-    TICK_SIZE = 6
-    TITLE_PAD = 10
-    LABEL_PAD = 6
-    base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
-    x_ticks = np.linspace(0.0, theta_max, 5).round(2)
-
-    axes_layer = (
-        alt.Chart(base_axes_df)
-        .mark_line(opacity=0)
-        .encode(
-            x=alt.X(
-                "θ:Q",
-                title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
-                axis=alt.Axis(
-                    values=list(x_ticks),
-                    labelFontSize=AXIS_LABEL_FS,
-                    titleFontSize=AXIS_TITLE_FS,
-                    labelPadding=LABEL_PAD,
-                    titlePadding=TITLE_PAD,
-                    tickSize=TICK_SIZE,
-                    labelLimit=1000,
-                    labelFlush=True,
-                    labelFlushOffset=0,
-                ),
-            ),
-            y=alt.Y(
-                "Predicted_DI:Q",
-                title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
-                axis=alt.Axis(
-                    values=[0.0, 0.2, 0.5, 1.0, 1.5],
-                    labelFontSize=AXIS_LABEL_FS,
-                    titleFontSize=AXIS_TITLE_FS,
-                    labelPadding=LABEL_PAD,
-                    titlePadding=TITLE_PAD,
-                    tickSize=TICK_SIZE,
-                    labelLimit=1000,
-                    labelFlush=True,
-                    labelFlushOffset=0,
-                ),
-            ),
-        )
-        .properties(width=size, height=size)
-    )
-
-    curve = (
-        curve_df
-        if (curve_df is not None and not curve_df.empty)
-        else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    )
-    line_layer = (
-        alt.Chart(curve)
-        .mark_line(strokeWidth=2)
-        .encode(x="θ:Q", y="Predicted_DI:Q")
-        .properties(width=size, height=size)
-    )
-
-    k = 3
-    if not curve.empty:
-        curve_points = curve.iloc[::k].copy()
-    else:
-        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
-
-    points_layer = (
-        alt.Chart(curve_points)
-        .mark_circle(size=60, opacity=0.7)
-        .encode(
-            x="θ:Q",
-            y="Predicted_DI:Q",
-            tooltip=[
-                alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
-                alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
-            ],
-        )
-    )
-
-    chart = (
-        alt.layer(axes_layer, line_layer, points_layer)
-        .configure_view(strokeWidth=0)
-        .configure_axis(domain=True, ticks=True)
-        .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
-    )
-
-    chart_html = chart.to_html()
-    chart_html = chart_html.replace(
-        "</style>",
-        "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
-        "{ font-size: 14px !important; font-weight: bold !important; "
-        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
-    )
-    st.components.v1.html(chart_html, height=size + 100)
-
-
-def _pick_default_model():
-    for m in MODEL_ORDER:
-        if m in model_registry:
-            return m
-    return None
-
-
-# ---- determine model choice (if not set by UI yet) ----
-if "model_choice" not in locals():
-    _label = st.session_state.get("model_select_compact") or st.session_state.get(
-        "model_select"
-    )
-    if _label is not None:
-        model_choice = LABEL_TO_KEY.get(_label, _label)
-    else:
-        model_choice = _pick_default_model()
-
-# ---- main DI–θ execution ----
-if (model_choice is None) or (model_choice not in model_registry):
-    st.error("No trained model is available. Please check the Model Selection on the right.")
-else:
-    # ---------- Prediction on submit (single DI point) ----------
-    if st.session_state.get("do_predict", False):
-        xdf = _make_input_df(
-            lw,
-            hw,
-            tw,
-            fc,
-            fyt,
-            fysh,
-            fyl,
-            fybl,
-            rt,
-            rsh,
-            rl,
-            rbl,
-            axial,
-            b0,
-            db,
-            s_db,
-            AR,
-            M_Vlw,
-            theta,
-        )
-
-        try:
-            pred = predict_di(model_choice, None, xdf)
-            row = xdf.copy()
-            row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat(
-                [st.session_state.results_df, row], ignore_index=True
-            )
-        except Exception as e:
-            st.error(f"Prediction failed for {model_choice}: {e}")
-
-        # reset flag so it doesn’t keep predicting on every rerun
-        st.session_state.do_predict = False
-
-    # ---------- Generate curve for θ sweep ----------
-    _base_xdf = _make_input_df(
-        lw,
-        hw,
-        tw,
-        fc,
-        fyt,
-        fysh,
-        fyl,
-        fybl,
-        rt,
-        rsh,
-        rl,
-        rbl,
-        axial,
-        b0,
-        db,
-        s_db,
-        AR,
-        M_Vlw,
-        theta,
-    )
-
-    _curve_df = _sweep_curve_df(
-        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
-    )
-
-    # ---- vertical offset for DI–θ plot (only place to adjust) ----
-    DI_CHART_OFFSET = -340  # px; more negative = move chart up, less negative = down
-
-    with chart_slot.container():
-        st.markdown(
-            f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
-            unsafe_allow_html=True,
-        )
-        render_di_chart(
-            _curve_df,
-            theta_max=THETA_MAX,
-            di_max=1.5,
-            size=CHART_W,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # ---- draw latest DI + CSV download inside di_slot (right column) ----
-    if "di_slot" in locals():
-        with di_slot:
-            if not st.session_state.results_df.empty:
-                latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-                st.markdown(
-                    f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
-                    unsafe_allow_html=True,
-                )
-
-                csv = st.session_state.results_df.to_csv(index=False)
-                st.download_button(
-                    "📂 Download as CSV",
-                    data=csv,
-                    file_name="di_predictions.csv",
-                    mime="text/csv",
-                    use_container_width=True,
-                    key="dl_csv_main",
-                )
-
 
 
 
@@ -1262,6 +1029,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
