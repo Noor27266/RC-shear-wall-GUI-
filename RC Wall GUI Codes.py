@@ -823,10 +823,13 @@ with right:
 
     # ---------------- RIGHT: Model Selection + buttons ---------
     with col_controls:
-        # 🔼 move the whole controls block up (adjust -40 to -60 / -80 if needed)
-        st.markdown("<div style='margin-top:-40px;'></div>", unsafe_allow_html=True)
+        # 🔼 move the entire controls block up (change -60 to -40 / -80 if you want)
+        st.markdown(
+            "<div style='position:relative; top:-60px;'>",
+            unsafe_allow_html=True,
+        )
 
-        # Model selection (kept exactly like your working version)
+        # Model selection (same as your working version)
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
@@ -864,6 +867,9 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
+
+        # close the wrapper div
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -1315,6 +1321,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
