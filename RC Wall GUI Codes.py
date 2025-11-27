@@ -1050,21 +1050,27 @@ else:
     PADDING_LEFT = 40       # move chart RIGHT →
 
     with chart_slot.container():
-        st.markdown(
-            f"""
-            <div style="
-                margin-top:{DI_CHART_OFFSET}px;
-                display:flex;
-                justify-content:flex-start;
-                padding-left:{PADDING_LEFT}px;
-            ">
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        f"""
+        <div style="
+            margin-top:{DI_CHART_OFFSET}px;
+            width:{CHART_W}px;
+            margin-left:auto;     /* <<< move RIGHT */
+            margin-right:0;       /* <<< lock to right */
+        ">
+        """,
+        unsafe_allow_html=True,
+    )
 
-        render_di_chart(_curve_df, theta_max=THETA_MAX, di_max=1.5, size=CHART_W)
+    render_di_chart(
+        _curve_df,
+        theta_max=THETA_MAX,
+        di_max=1.5,
+        size=CHART_W,
+    )
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
@@ -1087,6 +1093,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
