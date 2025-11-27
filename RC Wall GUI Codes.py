@@ -998,7 +998,13 @@ def _make_input_df(
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
         return pd.DataFrame(columns=["θ", "Predicted_DI"])
-    thetas = np.round(np.arange(0.0, theta_max + 1e-9, step), 2)
+    
+    # Get the actual theta value from your input form
+    actual_theta = base_df.iloc[0]["θ"]  # This gets the theta you entered
+    
+    # Only generate curve up to the actual theta value you entered
+    thetas = np.round(np.arange(0.0, actual_theta + 1e-9, step), 2)
+    
     rows = []
     for th in thetas:
         df = base_df.copy()
@@ -1006,6 +1012,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
         di = predict_di(model_choice, None, df)
         di = max(0.035, min(di, 1.5))
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
+    
     return pd.DataFrame(rows)
 
 
@@ -1262,6 +1269,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
