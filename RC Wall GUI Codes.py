@@ -747,8 +747,14 @@ with right:
     # ⭐ SUB-STEP 7.1 — DI–θ PLOT (LEFT SIDE)
     # =============================================================================
     with col_plot:
-        # slot where STEP 11 will render the DI–θ plot
-        chart_slot = st.empty()
+        # vertical spacer to move plot down a bit
+        st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True)
+
+        # inner columns to move chart slightly to the RIGHT
+        spacer_left, chart_col, spacer_right = st.columns([2, 4, 1])
+
+        with chart_col:
+            chart_slot = st.empty()   # will be filled in STEP 8
 
     # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
@@ -794,9 +800,9 @@ with right:
                 key="dl_csv_main",
             )
 
-    # styling for the blue DI label (unchanged)
-    st.markdown(
-        f"""
+# styling for the blue DI label (unchanged)
+st.markdown(
+    f"""
     <style>
     .prediction-with-color {{
         color: #2e86ab !important;
@@ -815,8 +821,9 @@ with right:
     }}
     </style>
     """,
-        unsafe_allow_html=True,
-    )
+    unsafe_allow_html=True,
+)
+
 
 css("""
 <style>
@@ -1093,6 +1100,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
