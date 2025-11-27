@@ -1149,29 +1149,23 @@ def _pick_default_model():
     return None
 
 
-# ---- Initialize session state for button tracking ----
-if "calculate_clicked" not in st.session_state:
-    st.session_state.calculate_clicked = False
-
-# ---- determine model choice ----
+# ---- determine model choice (if not set by UI yet) ----
 if "model_choice" not in locals():
-    _label = st.session_state.get("model_select_compact")
+    _label = st.session_state.get("model_select_compact") or st.session_state.get(
+        "model_select"
+    )
     if _label is not None:
         model_choice = LABEL_TO_KEY.get(_label, _label)
     else:
         model_choice = _pick_default_model()
 
-# ---- Handle Calculate button click ----
-# Check if the button was clicked in this run
-if st.session_state.get("calc_btn_main", False):
-    st.session_state.calculate_clicked = True
-
 # ---- main DI–θ execution ----
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
-    # ---------- Handle Calculate button execution ----------
-    if st.session_state.calculate_clicked:
+    # ---------- Prediction on submit (single DI point) ----------
+    # FIX: Check the button state directly without session state modification
+    if st.session_state.get("calc_btn_main", False):
         xdf = _make_input_df(
             lw,
             hw,
@@ -1201,13 +1195,10 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            # Success message
-            st.success(f"Prediction completed! DI: {pred:.4f}")
+            # Force immediate refresh to show results
+            st.rerun()
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
-        
-        # Reset the flag
-        st.session_state.calculate_clicked = False
 
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
@@ -1271,6 +1262,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
