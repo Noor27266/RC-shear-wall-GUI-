@@ -761,8 +761,11 @@ with right:
     # =============================================================================
     with col_controls:
 
-        # wrapper div that we move with CSS (#control-wrapper)
-        st.markdown("<div id='control-wrapper'>", unsafe_allow_html=True)
+        # 🔼 wrapper to move ONLY these controls up
+        st.markdown(
+            "<div style='margin-top:-140px'>",
+            unsafe_allow_html=True,
+        )
 
         # Model selection
         available = set(model_registry.keys())
@@ -803,33 +806,32 @@ with right:
                 key="dl_csv_main",
             )
 
-        # close wrapper
+        # close wrapper div
         st.markdown("</div>", unsafe_allow_html=True)
 
     # styling for the blue DI label (unchanged)
     st.markdown(
         f"""
-        <style>
-        .prediction-with-color {{
-            color: #2e86ab !important;
-            font-weight: 700 !important;
-            font-size: {FS_BADGE}px !important;
-            background: #f1f3f4 !important;
-            padding: 10px 12px !important;
-            border-radius: 6px !important;
-            text-align: center !important;
-            margin: 0 !important;
-            height: 45px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 180px !important;
-        }}
-        </style>
-        """,
+    <style>
+    .prediction-with-color {{
+        color: #2e86ab !important;
+        font-weight: 700 !important;
+        font-size: {FS_BADGE}px !important;
+        background: #f1f3f4 !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        margin: 0 !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 180px !important;
+    }}
+    </style>
+    """,
         unsafe_allow_html=True,
     )
-
 
 
 
@@ -1259,6 +1261,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
