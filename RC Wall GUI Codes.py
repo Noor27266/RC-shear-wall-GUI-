@@ -728,7 +728,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 35, 400
+HERO_X, HERO_Y, HERO_W = 100, 35, 400   # logo position
 CHART_W = 400
 
 with right:
@@ -743,23 +743,31 @@ with right:
         unsafe_allow_html=True,
     )
 
+    # small spacer between logo and row
     st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
+    # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
 
-    # ---------------- LEFT: DI–θ PLOT ----------------
+    # =============================================================================
+    # ⭐ SUB-STEP 9.2 — DI–θ PLOT (LEFT SIDE)
+    # =============================================================================
     with col_plot:
+        # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
-    # ---------------- RIGHT: MODEL + BUTTONS ----------
+    # =============================================================================
+    # ⭐ SUB-STEP 9.1 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+    # =============================================================================
     with col_controls:
 
-        # ⭐ MOVE ONLY THIS BLOCK UP
+        # 🔼 WRAPPER TO MOVE ONLY THIS BLOCK UP
         st.markdown(
-            "<div style='margin-top:-140px'>", 
-            unsafe_allow_html=True
+            "<div style='margin-top:-80px;'>",   # make more negative to move higher
+            unsafe_allow_html=True,
         )
 
+        # Model selection
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
@@ -771,6 +779,7 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
+        # Buttons
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
 
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -779,6 +788,7 @@ with right:
         if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
 
+        # Latest DI + CSV download
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
             st.markdown(
@@ -796,7 +806,32 @@ with right:
                 key="dl_csv_main",
             )
 
+        # close wrapper div
         st.markdown("</div>", unsafe_allow_html=True)
+
+    # styling for the blue DI label (unchanged)
+    st.markdown(
+        f"""
+    <style>
+    .prediction-with-color {{
+        color: #2e86ab !important;
+        font-weight: 700 !important;
+        font-size: {FS_BADGE}px !important;
+        background: #f1f3f4 !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        margin: 0 !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 180px !important;
+    }}
+    </style>
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 
@@ -1223,6 +1258,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
