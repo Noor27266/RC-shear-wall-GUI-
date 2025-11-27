@@ -1183,11 +1183,55 @@ def _pick_default_model():
     return None
 
 
+# ---- determine model choice (if not set by UI yet) ----
+if "model_choice" not in locals():
+    _label = st.session_state.get("model_select_compact") or st.session_state.get(
+        "model_select"
+    )
+    if _label is not None:
+        model_choice = LABEL_TO_KEY.get(_label, _label)
+    else:
+        model_choice = _pick_default_model()
+
 # ---- main DI–θ execution ----
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
-    # ---------- Generate curve for θ sweep (plot only) ----------
+    # ---------- Prediction on submit (single DI point) ----------
+    if "submit" in locals() and submit:
+        xdf = _make_input_df(
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            theta,
+        )
+
+        try:
+            pred = predict_di(model_choice, None, xdf)
+            row = xdf.copy()
+            row["Predicted_DI"] = pred
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
+        except Exception as e:
+            st.error(f"Prediction failed for {model_choice}: {e}")
+
+    # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
         lw,
         hw,
@@ -1231,6 +1275,7 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
+
 # =============================================================================
 # 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1250,6 +1295,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
