@@ -192,11 +192,6 @@ INPUT_BG = "#ffffff"
 INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
-# NOTE: removed old "Small right-column shift" CSS that was pinning the chart.
-# The right column now uses natural layout so the DI–θ plot can sit just under
-# the controls without being stuck.
-
-
 # =============================================================================
 # 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
@@ -992,9 +987,15 @@ with right:
         unsafe_allow_html=True,
     )
 
-    # small gap then chart slot – this controls spacing between buttons and DI–θ plot
-    st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
+    # ---- WRAP THE CHART AND PULL IT UP ----
+    # This wrapper moves the DI–θ plot up so it sits near the image/buttons.
+    # Increase/decrease -360px if you want it a bit lower or higher.
+    st.markdown(
+        "<div id='di_theta_chart_wrapper' style='margin-top:-360px;'>",
+        unsafe_allow_html=True,
+    )
     chart_slot = st.empty()
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🔮 STEP 10: PREDICTION ENGINE & CURVE GENERATION UTILITIES
@@ -1389,8 +1390,6 @@ else:
     except NameError:
         _slot = st.empty()
 
-    # ---- SIMPLE, NON-DUPLICATED RENDER OF DI–θ PLOT ----
-    # This is the only place where the chart is drawn now.
     with _slot:
         render_di_chart(
             st.session_state.results_df,
