@@ -1,6 +1,25 @@
 DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
+# ======== FIXED-WIDTH CANVAS WRAPPER (keeps layout from moving) ========
+st.markdown(
+    """
+    <style>
+    /* Fixed-width canvas for the entire app */
+    #fixed-layout-container {
+        width: 1600px;          /* <- choose your design width */
+        max-width: 1600px;      /* lock it, no stretching */
+        min-width: 1600px;
+        margin-left: auto;      /* center horizontally */
+        margin-right: auto;
+    }
+    </style>
+
+    <div id="fixed-layout-container">
+    """,
+    unsafe_allow_html=True,
+)
+# =======================================================================
 
 
 # =============================================================================
@@ -1252,3 +1271,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+# ======== CLOSE FIXED-WIDTH CANVAS WRAPPER =============================
+st.markdown("</div>", unsafe_allow_html=True)
+# =======================================================================
+
