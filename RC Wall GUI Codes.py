@@ -1,4 +1,4 @@
-DOC_NOTES = """
+ DOC_NOTES = """
 RC Shear Wall Damage Index (DI) Estimator — compact, same logic/UI
 """
 
@@ -747,7 +747,6 @@ with right:
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
 
-
     # =============================================================================
     # ⭐ SUB-STEP 9.2 — DI–θ PLOT (LEFT SIDE)
     # =============================================================================
@@ -755,15 +754,16 @@ with right:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
-
     # =============================================================================
     # ⭐ SUB-STEP 9.1 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
 
-        # 🔼 WRAPPER TO MOVE ALL CONTROLS UP
+        # 🔼 ONLY THIS SPACER MOVES THE CONTROL STACK UP
+        #    make the margin-top more negative to move higher,
+        #    less negative (or 0) to move lower.
         st.markdown(
-            "<div style='margin-top:-180px;'>",  # make more negative for higher
+            "<div style='height:0; margin-top:-120px;'></div>",
             unsafe_allow_html=True,
         )
 
@@ -806,10 +806,6 @@ with right:
                 key="dl_csv_main",
             )
 
-        # close the wrapper div
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
     # styling for the blue DI label (unchanged)
     st.markdown(
         f"""
@@ -833,6 +829,7 @@ with right:
     """,
         unsafe_allow_html=True,
     )
+
 
 
 
@@ -1262,6 +1259,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
