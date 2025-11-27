@@ -1103,7 +1103,7 @@ else:
         with col2_c:
             # Move the plot UP by adjusting this margin (more negative = higher)
             st.markdown(
-                "<div style='margin-top:-560px;'>",
+                "<div style='margin-top:-750px;'>",   # <- only change: -560px → -750px
                 unsafe_allow_html=True
             )
 
@@ -1136,3 +1136,4 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
