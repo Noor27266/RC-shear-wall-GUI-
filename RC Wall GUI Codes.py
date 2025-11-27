@@ -449,12 +449,17 @@ st.markdown(
     pointer-events: auto !important;
   }}
 
-  /* 🔽 THIS LINE ONLY — reduce top padding so controls move up */
+  /* only this line changed: fixed smaller padding so content moves up */
   .main .block-container {{
-    padding-top: 40px !important;   /* try 30–50 until you like it */
+    padding-top: 40px !important;
   }}
 </style>
-...
+
+<div class="page-header-outer">
+  <div class="page-header">
+    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
+  </div>
+</div>
 """,
     unsafe_allow_html=True,
 )
@@ -1319,6 +1324,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
