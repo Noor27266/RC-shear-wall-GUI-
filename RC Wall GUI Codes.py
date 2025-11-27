@@ -1038,6 +1038,7 @@ def render_di_chart(results_df: pd.DataFrame, curve_df: pd.DataFrame,
 # =============================================================================
 # ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
+
 _order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 _label_to_key = {"RF": "Random Forest"}
 
@@ -1047,6 +1048,7 @@ def _pick_default_model():
             return m
     return None
 
+# determine model choice
 if 'model_choice' not in locals():
     _label = (st.session_state.get("model_select_compact")
               or st.session_state.get("model_select"))
@@ -1055,46 +1057,71 @@ if 'model_choice' not in locals():
     else:
         model_choice = _pick_default_model()
 
+# check model availability
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
+
 else:
+    # ------------------ Prediction on submit ------------------
     if 'submit' in locals() and submit:
-        xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-                             rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
+        xdf = _make_input_df(
+            lw, hw, tw, fc, fyt, fysh, fyl, fybl,
+            rt, rsh, rl, rbl, axial, b0, db, s_db,
+            AR, M_Vlw, theta
+        )
+
         try:
             pred = predict_di(model_choice, None, xdf)
-            row = xdf.copy(); row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
+            row = xdf.copy()
+            row["Predicted_DI"] = pred
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-    _base_xdf = _make_input_df(lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-                               rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta)
-    _curve_df = _sweep_curve_df(model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1)
+    # ------------------ Generate curve for θ sweep ------------------
+    _base_xdf = _make_input_df(
+        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
+        rt, rsh, rl, rbl, axial, b0, db, s_db,
+        AR, M_Vlw, theta
+    )
 
+    _curve_df = _sweep_curve_df(
+        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
+    )
+
+    # Slot for chart
     try:
         _slot = chart_slot
     except NameError:
         _slot = st.empty()
 
-    # SIMPLE: chart directly under everything, no extra spacers
+    # =============================================================================
+    # 📈 RENDER DI–θ PLOT (this part controls the vertical position)
+    # =============================================================================
     with right:
-    col1_c, col2_c, col3_c = st.columns([1, 8, 1])
-    with col2_c:
-        # pull the DI–θ plot upwards to remove the big white gap
-        st.markdown(
-            "<div style='margin-top:-260px;'>",
-            unsafe_allow_html=True
-        )
-        with _slot:
-            render_di_chart(
-                st.session_state.results_df,
-                _curve_df,
-                theta_max=THETA_MAX,
-                di_max=1.5,
-                size=CHART_W,
+        # Three-column layout to center the plot
+        col1_c, col2_c, col3_c = st.columns([1, 8, 1])
+
+        with col2_c:
+            # Move the plot UP by adjusting this margin (more negative = higher)
+            st.markdown(
+                "<div style='margin-top:-260px;'>",
+                unsafe_allow_html=True
             )
-        st.markdown("</div>", unsafe_allow_html=True)
+
+            with _slot:
+                render_di_chart(
+                    st.session_state.results_df,
+                    _curve_df,
+                    theta_max=THETA_MAX,
+                    di_max=1.5,
+                    size=CHART_W
+                )
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 # =============================================================================
@@ -1113,4 +1140,5 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 
