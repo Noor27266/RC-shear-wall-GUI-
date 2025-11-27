@@ -323,7 +323,148 @@ css(
 </style>
 """
 )
+# =============================================================================
+# 🎨 STEP 3.4: RESPONSIVE DESIGN - FIXED LAYOUT ACROSS ALL SCREENS
+# =============================================================================
+css(
+    """
+<style>
+/* ============================================================================= */
+/* 🖥️ RESPONSIVE DESIGN - FIXED POSITIONS & SIZES ACROSS ALL SCREENS */
+/* ============================================================================= */
 
+/* Prevent any zoom or scaling from affecting layout */
+html, body, #root, .stApp {
+    zoom: 1 !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+}
+
+/* Lock all container sizes and positions */
+.block-container {
+    position: relative !important;
+    transform: none !important;
+    zoom: 1 !important;
+}
+
+/* Fix all columns to prevent shifting */
+[data-testid="column"] {
+    position: relative !important;
+    transform: none !important;
+}
+
+/* Prevent any responsive scaling on inputs and controls */
+.stNumberInput, .stSelectbox, .stButton {
+    transform: none !important;
+    zoom: 1 !important;
+}
+
+/* Ensure the plot container maintains fixed size */
+.vega-embed, .vega-embed .chart-wrapper {
+    width: 400px !important;
+    height: 400px !important;
+    transform: none !important;
+}
+
+/* Fix the controls position regardless of screen size */
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    position: relative !important;
+    transform: translate(40px, -150px) !important;
+}
+
+/* Ensure the chart slot maintains fixed positioning */
+[data-testid="element-container"] {
+    position: relative !important;
+    transform: none !important;
+}
+
+/* Fix the logo positions */
+.page-header-outer,
+.page-header__logo {
+    position: fixed !important;
+    transform: none !important;
+}
+
+/* Prevent any viewport scaling */
+@media screen and (max-width: 1200px) {
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    /* Stack columns on very small screens but maintain relative positions */
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+/* Disable user zoom on mobile devices */
+@viewport {
+    zoom: 1.0;
+    max-zoom: 1.0;
+    min-zoom: 1.0;
+    user-zoom: fixed;
+}
+
+/* Prevent text size adjustment on iOS */
+body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Lock all font sizes */
+.stNumberInput label,
+.stSelectbox label,
+.stNumberInput input,
+.stSelectbox select,
+.stButton button,
+.section-header,
+.form-banner {
+    font-size: inherit !important;
+    transform: none !important;
+}
+
+/* Ensure the main layout columns maintain their ratios */
+section[data-testid="stAppViewContainer"] {
+    min-height: 100vh !important;
+}
+
+[data-testid="stHorizontalBlock"] {
+    gap: 2rem !important;
+}
+
+/* parent column  →  inner columns; last inner column is the controls */
+[data-testid="column"] [data-testid="column"]:last-child {
+    margin-top: -150px !important;   /* make more negative if you want higher */
+}
+
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
+*/
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    transform: translate(40px, -150px) !important;   /* (X , Y) */
+    /* X = right/left, Y = up/down */
+}
+</style>
+"""
+)
 
 # =============================================================================
 # 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
@@ -1271,6 +1412,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
