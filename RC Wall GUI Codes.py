@@ -759,11 +759,9 @@ with right:
     # =============================================================================
     with col_controls:
 
-        # 🔼 ONLY THIS SPACER MOVES THE CONTROL STACK UP
-        #    make the margin-top more negative to move higher,
-        #    less negative (or 0) to move lower.
+        # 🔼 WRAPPER TO MOVE ONLY THIS BLOCK UP
         st.markdown(
-            "<div style='height:0; margin-top:-120px;'></div>",
+            "<div style='margin-top:-80px;'>",   # make more negative to move higher
             unsafe_allow_html=True,
         )
 
@@ -806,6 +804,9 @@ with right:
                 key="dl_csv_main",
             )
 
+        # close wrapper div
+        st.markdown("</div>", unsafe_allow_html=True)
+
     # styling for the blue DI label (unchanged)
     st.markdown(
         f"""
@@ -829,7 +830,6 @@ with right:
     """,
         unsafe_allow_html=True,
     )
-
 
 
 
@@ -1259,6 +1259,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
