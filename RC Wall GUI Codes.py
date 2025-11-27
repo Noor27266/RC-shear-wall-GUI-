@@ -1509,42 +1509,42 @@ div[data-testid="column"]:last-child {
 /* Target the specific div that contains the chart - LOCKED POSITION */
 div[data-testid="column"]:last-child > div > div > div:last-child {
     position: relative !important;
-    top: -350px !important;
-    margin-top: -350px !important;
+    top: -550px !important;
+    margin-top: -550px !important;
     padding-top: 0px !important;
 }
 
 /* Target the chart container directly - FIXED POSITION */
 div[data-testid="column"]:last-child .element-container {
     position: relative !important;
-    top: -350px !important;
-    margin-top: -350px !important;
+    top: -550px !important;
+    margin-top: -550px !important;
     padding-top: 0px !important;
 }
 
 /* Specifically target the chart iframe container */
 div[data-testid="column"]:last-child .element-container iframe {
     position: relative !important;
-    margin-top: -350px !important;
+    margin-top: -550px !important;
 }
 
 /* Ensure the chart slot stays in fixed position */
 div[data-testid="column"]:last-child .stEmpty {
     position: relative !important;
-    top: -350px !important;
-    margin-top: -350px !important;
+    top: -550px !important;
+    margin-top: -550px !important;
     padding-top: 0px !important;
 }
 
 /* Remove any margins that create space */
 div[data-testid="column"]:last-child > div {
-    margin-top: -350px !important;
+    margin-top: -550px !important;
     padding-top: 0px !important;
 }
 
 /* Prevent any movement when content updates */
 div[data-testid="column"]:last-child [data-testid="stVerticalBlock"] {
-    margin-top: -350px !important;
+    margin-top: -550px !important;
     padding-top: 0px !important;
 }
 </style>
@@ -1553,4 +1553,5 @@ div[data-testid="column"]:last-child [data-testid="stVerticalBlock"] {
 # =============================================================================
 # ✅ COMPLETED: RC SHEAR WALL DI ESTIMATOR APPLICATION
 # =============================================================================
+
 
