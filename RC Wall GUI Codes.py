@@ -130,43 +130,14 @@ st.set_page_config(
     page_title="RC Shear Wall DI Estimator", layout="wide", page_icon="🧱"
 )
 
-# Header / spacing
+# =============================================================================
+# 🎨 SUB STEP 3.1: RESPONSIVE META TAG
+# =============================================================================
 st.markdown(
     """
-<style>
-html, body{ margin:0 !important; padding:0 !important; }
-header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
-header[data-testid="stHeader"] *{ display:none !important; }
-
-/* Pull EVERYTHING up (controls, selectbox, buttons…) */
-div.stApp{ margin-top:-4.0rem !important; }
-
-/* Remove extra white space at top */
-section.main > div.block-container{
-    padding-top:0 !important;
-    margin-top:-2.0rem !important;
-}
-
-/* Keep Altair responsive */
-.vega-embed, .vega-embed .chart-wrapper{
-    max-width:100% !important;
-}
-
-/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
-html, body, #root, .stApp {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-
-section.main {
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-}
-</style>
-""",
-    unsafe_allow_html=True,
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    """,
+    unsafe_allow_html=True
 )
 
 # =============================================================================
@@ -198,7 +169,7 @@ INPUT_BORDER = "#e6e9f2"
 LEFT_BG = "#e0e4ec"
 
 # =============================================================================
-# 🎨 STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
+# 🎨 SUB STEP 3.1: COMPREHENSIVE CSS STYLING & THEME SETUP
 # =============================================================================
 css(
     f"""
@@ -312,13 +283,187 @@ css(
 """
 )
 
-# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
+# =============================================================================
+# 🎨 SUB STEP 3.4: RESPONSIVE DESIGN - FIXED LAYOUT ACROSS ALL SCREENS
+# =============================================================================
 css(
     """
 <style>
+/* ============================================================================= */
+/* 🖥️ RESPONSIVE DESIGN - FIXED POSITIONS & SIZES ACROSS ALL SCREENS */
+/* ============================================================================= */
+
+/* Header / spacing */
+html, body{ margin:0 !important; padding:0 !important; }
+header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
+header[data-testid="stHeader"] *{ display:none !important; }
+
+/* Pull EVERYTHING up (controls, selectbox, buttons…) */
+div.stApp{ margin-top:-4.0rem !important; }
+
+/* Remove extra white space at top */
+section.main > div.block-container{
+    padding-top:0 !important;
+    margin-top:-2.0rem !important;
+}
+
+/* Keep Altair responsive */
+.vega-embed, .vega-embed .chart-wrapper{
+    max-width:100% !important;
+}
+
+/* REMOVE HEIGHT RESTRICTIONS TO ELIMINATE WHITE SPACE */
+html, body, #root, .stApp {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+section.main {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Prevent any zoom or scaling from affecting layout */
+html, body, #root, .stApp {
+    zoom: 1 !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+}
+
+/* Lock all container sizes and positions */
+.block-container {
+    position: relative !important;
+    transform: none !important;
+    zoom: 1 !important;
+}
+
+/* Fix all columns to prevent shifting */
+[data-testid="column"] {
+    position: relative !important;
+    transform: none !important;
+}
+
+/* Prevent any responsive scaling on inputs and controls */
+.stNumberInput, .stSelectbox, .stButton {
+    transform: none !important;
+    zoom: 1 !important;
+}
+
+/* Ensure the plot container maintains fixed size */
+.vega-embed, .vega-embed .chart-wrapper {
+    width: 400px !important;
+    height: 400px !important;
+    transform: none !important;
+}
+
+/* Fix the controls position regardless of screen size */
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    position: relative !important;
+    transform: translate(40px, -150px) !important;
+}
+
+/* Ensure the chart slot maintains fixed positioning */
+[data-testid="element-container"] {
+    position: relative !important;
+    transform: none !important;
+}
+
+/* Fix the logo positions */
+.page-header-outer,
+.page-header__logo {
+    position: fixed !important;
+    transform: none !important;
+}
+
+/* Prevent any viewport scaling */
+@media screen and (max-width: 1200px) {
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    /* Stack columns on very small screens but maintain relative positions */
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+/* Disable user zoom on mobile devices */
+@viewport {
+    zoom: 1.0;
+    max-zoom: 1.0;
+    min-zoom: 1.0;
+    user-zoom: fixed;
+}
+
+/* Prevent text size adjustment on iOS */
+body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Lock all font sizes */
+.stNumberInput label,
+.stSelectbox label,
+.stNumberInput input,
+.stSelectbox select,
+.stButton button,
+.section-header,
+.form-banner {
+    font-size: inherit !important;
+    transform: none !important;
+}
+
+/* Ensure the main layout columns maintain their ratios */
+section[data-testid="stAppViewContainer"] {
+    min-height: 100vh !important;
+}
+
+[data-testid="stHorizontalBlock"] {
+    gap: 2rem !important;
+}
+
 /* parent column  →  inner columns; last inner column is the controls */
 [data-testid="column"] [data-testid="column"]:last-child {
     margin-top: -150px !important;   /* make more negative if you want higher */
+}
+
+/* Move the whole controls stack:
+   - Up (translateY)
+   - Right (translateX)
+*/
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    transform: translate(40px, -150px) !important;   /* (X , Y) */
+    /* X = right/left, Y = up/down */
+}
+</style>
+"""
+)
+
+# Hide +/- buttons
+css(
+    """
+<style>
+div[data-testid="stNumberInput"] button {
+    display: none !important;
 }
 </style>
 """
@@ -326,7 +471,7 @@ css(
 
 
 # =============================================================================
-# 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
+# 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -390,7 +535,7 @@ st.markdown(
 
 
 # =============================================================================
-# 🤖 STEP 7: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
+# 🤖 STEP 5: MACHINE LEARNING MODEL LOADING & HEALTH CHECKING
 # =============================================================================
 
 def record_health(name, ok, msg=""):
@@ -578,7 +723,7 @@ MODEL_ORDER = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
 LABEL_TO_KEY = {"RF": "Random Forest"}
 
 # =============================================================================
-# 📊 STEP 8: INPUT PARAMETERS & DATA RANGES DEFINITION
+# 📊 STEP 6: INPUT PARAMETERS & DATA RANGES DEFINITION
 # =============================================================================
 R = {
     "lw": (400.0, 3500.0),
@@ -657,12 +802,12 @@ div[data-testid="stNumberInput"] button {
 )
 
 # =============================================================================
-# 📊 SUB STEP 8.7: LAYOUT COLUMNS SETUP
+# 📊 SUB STEP 6.1: LAYOUT COLUMNS SETUP
 # =============================================================================
 left, right = st.columns([1.5, 1], gap="large")
 
 # =============================================================================
-# 📊 SUB STEP 8.8: LEFT PANEL CONTENT IMPLEMENTATION
+# 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
 
@@ -720,7 +865,7 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# 🎮 STEP 9: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
+# 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 HERO_X, HERO_Y, HERO_W = 100, 35, 400   # logo position
 CHART_W = 400
@@ -744,14 +889,14 @@ with right:
     col_plot, col_controls = st.columns([3, 1])
 
     # =============================================================================
-    # ⭐ SUB-STEP 9.2 — DI–θ PLOT (LEFT SIDE)
+    # ⭐ SUB-STEP 7.1 — DI–θ PLOT (LEFT SIDE)
     # =============================================================================
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
     # =============================================================================
-    # ⭐ SUB-STEP 9.1 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
 
@@ -836,7 +981,7 @@ div[data-testid="stDownloadButton"],
 
 
 # =============================================================================
-# ⚡ STEP 11: DI–θ PREDICTION & PLOT (ALL CODE HERE)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -1253,7 +1398,7 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# 🎨 STEP 12: FINAL UI POLISH & BANNER STYLING
+# 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
 st.markdown(
     """
@@ -1271,6 +1416,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
