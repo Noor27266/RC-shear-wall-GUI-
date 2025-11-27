@@ -203,6 +203,11 @@ LEFT_BG = "#e0e4ec"
 css(
     f"""
 <style>
+  /* Use relative units (rem/em) instead of fixed pixels for zoom stability */
+  html {{
+      font-size: 16px; /* Base size - everything scales from this */
+  }}
+
   .block-container {{
       padding-top: 0.5rem !important;
       padding-bottom: 0.5rem !important;
@@ -211,91 +216,91 @@ css(
   }}
 
   h1 {{
-      font-size:{FS_TITLE}px !important;
-      margin:0 rem 0 !important;
+      font-size: {FS_TITLE/16}rem !important;
+      margin: 0 !important;
   }}
 
   .section-header {{
-      font-size:{FS_SECTION}px !important;
-      font-weight:700;
-      margin:.35rem 0;
+      font-size: {FS_SECTION/16}rem !important;
+      font-weight: 700;
+      margin: 0.35rem 0;
   }}
 
   .stNumberInput label,
   .stSelectbox label {{
-      font-size:{FS_LABEL}px !important;
-      font-weight:700;
+      font-size: {FS_LABEL/16}rem !important;
+      font-weight: 700;
   }}
 
   .stNumberInput label .katex,
   .stSelectbox label .katex {{
-      font-size:{FS_LABEL}px !important;
-      line-height:1.2 !important;
+      font-size: {FS_LABEL/16}rem !important;
+      line-height: 1.2 !important;
   }}
 
   .stNumberInput label .katex .fontsize-ensurer,
   .stSelectbox label .katex .fontsize-ensurer {{
-      font-size:1em !important;
+      font-size: 1em !important;
   }}
 
   .stNumberInput label .katex .mathrm,
   .stSelectbox label .katex .mathrm {{
-      font-size:{FS_UNITS}px !important;
+      font-size: {FS_UNITS/16}rem !important;
   }}
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;        /* <<< back to FS_INPUT */
-      height:{INPUT_H}px !important;
-      line-height:{INPUT_H - 8}px !important;
-      font-weight:600 !important;
-      padding:10px 12px !important;
+      font-size: {FS_INPUT/16}rem !important;
+      height: {INPUT_H/16}rem !important;
+      line-height: {(INPUT_H - 8)/16}rem !important;
+      font-weight: 600 !important;
+      padding: 0.625rem 0.75rem !important;
   }}
 
   div[data-testid="stNumberInput"] [data-baseweb*="input"] {{
-      background:{INPUT_BG} !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:12px !important;
-      box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
-      transition:border-color .15s ease, box-shadow .15s ease !important;
+      background: {INPUT_BG} !important;
+      border: 1px solid {INPUT_BORDER} !important;
+      border-radius: 0.75rem !important;
+      box-shadow: 0 0.0625rem 0.125rem rgba(16,24,40,.06) !important;
+      transition: border-color .15s ease, box-shadow .15s ease !important;
   }}
 
   div[data-testid="stNumberInput"] button {{
-      background:#ffffff !important;
-      border:1px solid {INPUT_BORDER} !important;
-      border-radius:10px !important;
-      box-shadow:0 1px 1px rgba(16,24,40,.05) !important;
+      background: #ffffff !important;
+      border: 1px solid {INPUT_BORDER} !important;
+      border-radius: 0.625rem !important;
+      box-shadow: 0 0.0625rem 0.0625rem rgba(16,24,40,.05) !important;
   }}
 
   .stSelectbox [role="combobox"],
   div[data-testid="stSelectbox"] div[data-baseweb="select"] > div > div:first-child,
   div[data-testid="stSelectbox"] div[role="listbox"],
   div[data-testid="stSelectbox"] div[role="option"] {{
-      font-size:{FS_SELECT}px !important;
+      font-size: {FS_SELECT/16}rem !important;
   }}
 
   div.stButton > button {{
-      font-size:{FS_BUTTON}px !important;
-      height:{max(42, int(round(FS_BUTTON*1.45)))}px !important;
-      line-height:{max(36, int(round(FS_BUTTON*1.15)))}px !important;
-      color:#fff !important;
-      font-weight:700;
-      border:none !important;
-      border-radius:8px !important;
-      background:#4CAF50 !important;
+      font-size: {FS_BUTTON/16}rem !important;
+      height: {max(42, int(round(FS_BUTTON*1.45)))/16}rem !important;
+      line-height: {max(36, int(round(FS_BUTTON*1.15)))/16}rem !important;
+      color: #fff !important;
+      font-weight: 700;
+      border: none !important;
+      border-radius: 0.5rem !important;
+      background: #4CAF50 !important;
   }}
 
   button[key="reset_btn"] {{
-      background:#2196F3 !important;
+      background: #2196F3 !important;
   }}
 
   button[key="clear_btn"] {{
-      background:#f44336 !important;
+      background: #f44336 !important;
   }}
 
   #compact-form {{
-      max-width:900px;
-      margin:0 auto;
+      max-width: 56.25rem;
+      margin: 0 auto;
   }}
 
   html, body, #root, .stApp, section.main, .block-container, [data-testid="stAppViewContainer"] {{
@@ -308,18 +313,6 @@ css(
       min-height: 100vh !important;
       background: #e0e4ec !important;
   }}
-</style>
-"""
-)
-
-# ⬆️ move ONLY the inner right controls column up (relative to the DI–θ plot)
-css(
-    """
-<style>
-/* parent column  →  inner columns; last inner column is the controls */
-[data-testid="column"] [data-testid="column"]:last-child {
-    margin-top: -150px !important;   /* make more negative if you want higher */
-}
 </style>
 """
 )
@@ -1271,3 +1264,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
+
+
+
