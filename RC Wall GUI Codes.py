@@ -763,7 +763,8 @@ with right:
     with col_controls:
 
         # MOVE ONLY THIS BLOCK UP
-        st.markdown("<div style='margin-top:-140px'>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top:-140px'>", unsafe_allow_html=True)
+
 
         # model select
         available = set(model_registry.keys())
@@ -1231,6 +1232,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
