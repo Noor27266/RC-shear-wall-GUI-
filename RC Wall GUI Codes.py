@@ -177,7 +177,7 @@ css(
 
 /* DI–θ Altair iframe vertical position */
 div[data-testid="stIFrame"] {
-    margin-top: -260px !important;
+    margin-top: -400px !important;
 }
 </style>
 """
@@ -1443,3 +1443,4 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
