@@ -312,18 +312,7 @@ css(
       background: #e0e4ec !important;
   }}
 
-  [data-baseweb="popover"], [data-baseweb="tooltip"],
-  [data-baseweb="popover"] > div, [data-baseweb="tooltip"] > div {{
-      background:#000 !important; color:#fff !important; border-radius:8px !important;
-      padding:6px 10px !important; font-size:{max(14, FS_SELECT)}px !important; font-weight:500 !important;
-  }}
-  [data-baseweb="popover"] *, [data-baseweb="tooltip"] * {{ color:#fff !important; }}
-
-  label[for="model_select_compact"] {{ font-size:{FS_LABEL}px !important; font-weight:bold !important; }}
-  #action-row {{ display:flex; align-items:center; gap:10px; }}
-</style>
-"""
-)
+ 
 
 # =============================================================================
 # 🏷️ STEP 6: DYNAMIC HEADER & LOGO POSITIONING
@@ -1249,5 +1238,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
