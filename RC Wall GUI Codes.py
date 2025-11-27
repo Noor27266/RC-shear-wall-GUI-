@@ -1439,7 +1439,7 @@ else:
     # === This controls the vertical spacing between logo/buttons and DI–θ plot ===
     with _slot.container():
         st.markdown(
-            "<div id='di_theta_chart_wrapper' style='margin-top:-40px;'>",
+            "<div id='di_theta_chart_wrapper' style='margin-top:-500px;'>",
             unsafe_allow_html=True,
         )
 
@@ -1472,3 +1472,4 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
