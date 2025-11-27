@@ -153,14 +153,6 @@ section.main {
     max-height: none !important;
     height: auto !important;
 }
-
-.block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    max-height: none !important;
-    overflow: visible !important;
-    min-height: 100vh !important;
-}
 </style>
 """,
     unsafe_allow_html=True,
@@ -218,7 +210,12 @@ div[data-testid="stIFrame"] {
 css(
     f"""
 <style>
-  .block-container {{ padding-top: 0.5rem !important; }}
+  .block-container {{
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      max-height: none !important;
+      overflow: visible !important;
+  }}
   h1 {{ font-size:{FS_TITLE}px !important; margin:0 rem 0 !important; }}
 
   .section-header {{
@@ -289,10 +286,6 @@ css(
   button[key="reset_btn"] {{ background:#2196F3 !important; }}
   button[key="clear_btn"] {{ background:#f44336 !important; }}
 
-  .prediction-result {{
-    font-size:{FS_BADGE}px !important; font-weight:700; color:#2e86ab;
-    background:#f1f3f4; padding:.6rem; border-radius:6px; text-align:center; margin-top:.6rem;
-  }}
   .recent-box {{
     font-size:{FS_RECENT}px !important; background:#f8f9fa; padding:.5rem; margin:.25rem 0;
     border-radius:5px; border-left:4px solid #4CAF50; font-weight:600; display:inline-block;
@@ -582,6 +575,10 @@ for name, ok, *_ in health:
         model_registry["MLP"] = ann_mlp_model
     elif name == "Random Forest" and rf_model is not None:
         model_registry["Random Forest"] = rf_model
+
+# global model ordering + label mapping (used in UI + prediction)
+MODEL_ORDER = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
+LABEL_TO_KEY = {"RF": "Random Forest"}
 
 # =============================================================================
 # 🔍 TEMP DEBUG: SEE WHICH MODELS LOADED (YOU CAN DELETE THIS LATER)
@@ -1012,14 +1009,12 @@ with right:
     col1_r, col2_r = st.columns([3, 1])
     with col2_r:
         available = set(model_registry.keys())
-        order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
-        ordered_keys = [m for m in order if m in available] or ["(no models loaded)"]
+        ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
-        _label_to_key = {"RF": "Random Forest"}
         model_choice_label = st.selectbox(
             "Model Selection", display_labels, key="model_select_compact"
         )
-        model_choice = _label_to_key.get(model_choice_label, model_choice_label)
+        model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -1381,12 +1376,9 @@ def render_di_chart(
 # ⚡ STEP 11: PREDICTION EXECUTION & REAL-TIME VISUALIZATION
 # =============================================================================
 
-_order = ["CatBoost", "XGBoost", "LightGBM", "MLP", "Random Forest", "PS"]
-_label_to_key = {"RF": "Random Forest"}
-
 
 def _pick_default_model():
-    for m in _order:
+    for m in MODEL_ORDER:
         if m in model_registry:
             return m
     return None
@@ -1398,7 +1390,7 @@ if "model_choice" not in locals():
         "model_select"
     )
     if _label is not None:
-        model_choice = _label_to_key.get(_label, _label)
+        model_choice = LABEL_TO_KEY.get(_label, _label)
     else:
         model_choice = _pick_default_model()
 
@@ -1467,7 +1459,7 @@ else:
         model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
     )
 
-    # ---- SINGLE place where DI–θ chart is rendered ----
+    # ---- SINGLE place where DI–θ chart is rendered (no wrappers, no extra margins) ----
     with chart_slot.container():
         render_di_chart(
             st.session_state.results_df,
