@@ -415,7 +415,7 @@ except Exception:
 
 LOGO_SIZE = 45
 LOGO_TOP = 35
-LOGO_POSITION = 200
+LOGO_POSITION = 150
 
 st.markdown(
     f"""
@@ -1311,6 +1311,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
