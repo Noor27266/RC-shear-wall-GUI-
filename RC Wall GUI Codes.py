@@ -828,7 +828,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(40px, -230px);   /* (X , Y) */
+    transform: translate(40px, -150px);   /* (X , Y) */
     /* X = right/left, Y = up/down */
 }
 </style>
@@ -1037,7 +1037,7 @@ def render_di_chart(
     TITLE_PAD = 10
     LABEL_PAD = 6
     base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
-    x_ticks = np.linspace(0.0, theta_max, 5).round(2)
+    scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),  # This also uses THETA_MAX
 
     axes_layer = (
         alt.Chart(base_axes_df)
@@ -1252,6 +1252,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
