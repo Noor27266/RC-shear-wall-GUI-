@@ -769,6 +769,27 @@ with right:
 
         # Buttons
         submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+            # Buttons
+    submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+    
+    # === ADD THIS RIGHT AFTER THE BUTTON DEFINITION ===
+    if submit and model_choice in model_registry:
+        xdf = _make_input_df(
+            lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl, 
+            axial, b0, db, s_db, AR, M_Vlw, theta
+        )
+        
+        try:
+            pred = predict_di(model_choice, None, xdf)
+            row = xdf.copy()
+            row["Predicted_DI"] = pred
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
+            st.rerun()  # Force refresh to show updated results
+        except Exception as e:
+            st.error(f"Prediction failed for {model_choice}: {e}")
+    # === END OF ADDED CODE ===
 
         if st.button("Reset", key="reset_btn", use_container_width=True):
             st.rerun()
@@ -1163,39 +1184,7 @@ if "model_choice" not in locals():
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
-    # ---------- Prediction on submit (single DI point) ----------
-    if "submit" in locals() and submit:
-        xdf = _make_input_df(
-            lw,
-            hw,
-            tw,
-            fc,
-            fyt,
-            fysh,
-            fyl,
-            fybl,
-            rt,
-            rsh,
-            rl,
-            rbl,
-            axial,
-            b0,
-            db,
-            s_db,
-            AR,
-            M_Vlw,
-            theta,
-        )
-
-        try:
-            pred = predict_di(model_choice, None, xdf)
-            row = xdf.copy()
-            row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat(
-                [st.session_state.results_df, row], ignore_index=True
-            )
-        except Exception as e:
-            st.error(f"Prediction failed for {model_choice}: {e}")
+   
 
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
@@ -1259,6 +1248,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
