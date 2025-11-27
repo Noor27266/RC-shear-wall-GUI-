@@ -755,47 +755,30 @@ with right:
     # =============================================================================
     with col_controls:
 
-    # Model selection
-    available = set(model_registry.keys())
-    ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
-    display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+        # Model selection
+        available = set(model_registry.keys())
+        ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
+        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
 
-    model_choice_label = st.selectbox(
-        "Model Selection",
-        display_labels,
-        key="model_select_compact",
-    )
-    model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
-
-    # --------- CALCULATE BUTTON (sets flag for STEP 11) ---------
-    if st.button("Calculate", key="calc_btn", use_container_width=True):
-        st.session_state.do_predict = True
-
-    # --------- OTHER BUTTONS (unchanged) ---------
-    if st.button("Reset", key="reset_btn", use_container_width=True):
-        st.rerun()
-
-    if st.button("Clear All", key="clear_btn", use_container_width=True):
-        st.session_state.results_df = pd.DataFrame()
-
-    # Latest DI + CSV download
-    if not st.session_state.results_df.empty:
-        latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-        st.markdown(
-            f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
-            unsafe_allow_html=True,
+        model_choice_label = st.selectbox(
+            "Model Selection",
+            display_labels,
+            key="model_select_compact",
         )
+        model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        csv = st.session_state.results_df.to_csv(index=False)
-        st.download_button(
-            "📂 Download as CSV",
-            data=csv,
-            file_name="di_predictions.csv",
-            mime="text/csv",
-            use_container_width=True,
-            key="dl_csv_main",
-        )
+        # --------- CALCULATE BUTTON (used directly in STEP 11) ---------
+        calc_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
 
+        # --------- OTHER BUTTONS (unchanged) ---------
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            st.rerun()
+
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
+            st.session_state.results_df = pd.DataFrame()
+
+        # Placeholder where STEP 11 will draw the latest DI + CSV button
+        di_slot = st.empty()
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -1269,6 +1252,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
