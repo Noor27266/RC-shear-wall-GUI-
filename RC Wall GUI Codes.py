@@ -800,6 +800,7 @@ HERO_X, HERO_Y, HERO_W = 100, 35, 400   # logo position
 CHART_W = 400
 
 with right:
+
     # --- logo ---
     st.markdown(
         f"""
@@ -816,20 +817,21 @@ with right:
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
 
-    # ---------------- LEFT: slot for DI–θ chart ----------------
+
+    # =============================================================================
+    # ⭐ SUB-STEP 9.2 — DI–θ PLOT (LEFT SIDE)
+    # =============================================================================
     with col_plot:
-        # this is where STEP 11 will render the Altair plot
+        # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
-    # ---------------- RIGHT: Model Selection + buttons ---------
-    with col_controls:
-        # 🔼 move the entire controls block up (change -60 to -40 / -80 if you want)
-        st.markdown(
-            "<div style='position:relative; top:-60px;'>",
-            unsafe_allow_html=True,
-        )
 
-        # Model selection (same as your working version)
+    # =============================================================================
+    # ⭐ SUB-STEP 9.1 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+    # =============================================================================
+    with col_controls:
+
+        # Model selection
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
@@ -868,8 +870,6 @@ with right:
                 key="dl_csv_main",
             )
 
-        # close the wrapper div
-        st.markdown("</div>", unsafe_allow_html=True)
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -894,6 +894,7 @@ with right:
     """,
         unsafe_allow_html=True,
     )
+
 
 
 
@@ -1321,6 +1322,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
