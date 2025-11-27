@@ -338,9 +338,9 @@ try:
 except Exception:
     _b64 = ""
 
-LOGO_SIZE = 65
-LOGO_TOP = 25
-LOGO_POSITION = 60
+LOGO_SIZE = 60
+LOGO_TOP = 20
+LOGO_POSITION = 10
 
 st.markdown(
     f"""
@@ -722,7 +722,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 100, 400   # logo position
+HERO_X, HERO_Y, HERO_W = 100, 35, 400   # logo position
 CHART_W = 400
 
 with right:
@@ -747,14 +747,8 @@ with right:
     # ⭐ SUB-STEP 7.1 — DI–θ PLOT (LEFT SIDE)
     # =============================================================================
     with col_plot:
-        # vertical spacer to move plot down a bit
-        st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True)
-
-        # inner columns to move chart slightly to the RIGHT
-        spacer_left, chart_col, spacer_right = st.columns([2, 4, 1])
-
-        with chart_col:
-            chart_slot = st.empty()   # will be filled in STEP 8
+        # slot where STEP 11 will render the DI–θ plot
+        chart_slot = st.empty()
 
     # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
@@ -800,9 +794,9 @@ with right:
                 key="dl_csv_main",
             )
 
-# styling for the blue DI label (unchanged)
-st.markdown(
-    f"""
+    # styling for the blue DI label (unchanged)
+    st.markdown(
+        f"""
     <style>
     .prediction-with-color {{
         color: #2e86ab !important;
@@ -821,9 +815,8 @@ st.markdown(
     }}
     </style>
     """,
-    unsafe_allow_html=True,
-)
-
+        unsafe_allow_html=True,
+    )
 
 css("""
 <style>
@@ -835,7 +828,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(40px, -50px);   /* (X , Y) */
+    transform: translate(40px, -150px);   /* (X , Y) */
     /* X = right/left, Y = up/down */
 }
 </style>
@@ -869,9 +862,25 @@ _TRAIN_NAME_MAP = {
 }
 
 _TRAIN_COL_ORDER = [
-    "lw", "hw", "tw", "fc", "fyt", "fysh", "fyl", "fybl",
-    "pt", "psh", "pl", "pbl", "P/(Agfc)", "b0", "db",
-    "s/db", "AR", "M/Vlw", "θ",
+    "lw",
+    "hw",
+    "tw",
+    "fc",
+    "fyt",
+    "fysh",
+    "fyl",
+    "fybl",
+    "pt",
+    "psh",
+    "pl",
+    "pbl",
+    "P/(Agfc)",
+    "b0",
+    "db",
+    "s/db",
+    "AR",
+    "M/Vlw",
+    "θ",
 ]
 
 
@@ -895,60 +904,131 @@ def predict_di(choice, _unused_array, input_df):
         prediction = float(model_registry["Random Forest"].predict(X)[0])
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
-        yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        try:
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        except Exception:
+            model_registry["PS"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
-        yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        try:
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        except Exception:
+            model_registry["MLP"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
 
-    return max(0.035, min(prediction, 1.5))
-
+    prediction = max(0.035, min(prediction, 1.5))
+    return prediction
 
 
 def _make_input_df(
-    lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-    rt, rsh, rl, rbl,
-    axial, b0, db, s_db, AR, M_Vlw, theta_val,
+    lw,
+    hw,
+    tw,
+    fc,
+    fyt,
+    fysh,
+    fyl,
+    fybl,
+    rt,
+    rsh,
+    rl,
+    rbl,
+    axial,
+    b0,
+    db,
+    s_db,
+    AR,
+    M_Vlw,
+    theta_val,
 ):
     cols = [
-        "l_w", "h_w", "t_w", "f′c", "fyt", "fysh", "fyl", "fybl",
-        "ρt", "ρsh", "ρl", "ρbl", "P/(Agf′c)",
-        "b0", "db", "s/db", "AR", "M/Vlw", "θ",
+        "l_w",
+        "h_w",
+        "t_w",
+        "f′c",
+        "fyt",
+        "fysh",
+        "fyl",
+        "fybl",
+        "ρt",
+        "ρsh",
+        "ρl",
+        "ρbl",
+        "P/(Agf′c)",
+        "b0",
+        "db",
+        "s/db",
+        "AR",
+        "M/Vlw",
+        "θ",
     ]
-    arr = [[
-        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-        rt, rsh, rl, rbl, axial, b0, db, s_db,
-        AR, M_Vlw, theta_val
-    ]]
-
-    return pd.DataFrame(arr, columns=cols)
-
+    x = np.array(
+        [
+            [
+                lw,
+                hw,
+                tw,
+                fc,
+                fyt,
+                fysh,
+                fyl,
+                fybl,
+                rt,
+                rsh,
+                rl,
+                rbl,
+                axial,
+                b0,
+                db,
+                s_db,
+                AR,
+                M_Vlw,
+                theta_val,
+            ]
+        ],
+        dtype=np.float32,
+    )
+    return pd.DataFrame(x, columns=cols)
 
 
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     if model_choice not in model_registry:
         return pd.DataFrame(columns=["θ", "Predicted_DI"])
-
-    actual_theta = base_df.iloc[0]["θ"]
+    
+    # Get the actual theta value from your input form
+    actual_theta = base_df.iloc[0]["θ"]  # This gets the theta you entered
+    
+    # Only generate curve up to the actual theta value you entered
     thetas = np.round(np.arange(0.0, actual_theta + 1e-9, step), 2)
-
+    
     rows = []
     for th in thetas:
         df = base_df.copy()
         df.loc[:, "θ"] = float(th)
         di = predict_di(model_choice, None, df)
+        di = max(0.035, min(di, 1.5))
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
-
+    
     return pd.DataFrame(rows)
 
 
-
-def render_di_chart(curve_df, theta_max=THETA_MAX, di_max=1.5, size=460):
+def render_di_chart(
+    curve_df: pd.DataFrame,
+    theta_max: float = THETA_MAX,
+    di_max: float = 1.5,
+    size: int = 460,
+):
     import altair as alt
-
-    actual_theta_max = curve_df["θ"].max() if not curve_df.empty else theta_max
-
+    
+    # Get the actual max theta from the data, not from THETA_MAX
+    if not curve_df.empty:
+        actual_theta_max = curve_df["θ"].max()
+    else:
+        actual_theta_max = theta_max
+    
     selection = alt.selection_point(
         name="select",
         fields=["θ", "Predicted_DI"],
@@ -957,79 +1037,180 @@ def render_di_chart(curve_df, theta_max=THETA_MAX, di_max=1.5, size=460):
         empty=False,
         clear="mouseout",
     )
-
-    base_axes_df = pd.DataFrame({"θ": [0, actual_theta_max], "Predicted_DI": [0, 0]})
-    x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
+    AXIS_LABEL_FS = 14
+    AXIS_TITLE_FS = 16
+    TICK_SIZE = 6
+    TITLE_PAD = 10
+    LABEL_PAD = 6
+    base_axes_df = pd.DataFrame({"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]})
+    x_ticks = np.linspace(0.0, actual_theta_max, 5).round(2)
 
     axes_layer = (
         alt.Chart(base_axes_df)
         .mark_line(opacity=0)
         .encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0, actual_theta_max], clamp=True),
-                axis=alt.Axis(values=list(x_ticks))),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0, di_max], clamp=True),
-                axis=alt.Axis(values=[0, 0.2, 0.5, 1.0, 1.5])),
+            x=alt.X(
+                "θ:Q",
+                title="Drift Ratio (θ)",
+                scale=alt.Scale(domain=[0, actual_theta_max], nice=False, clamp=True),
+                axis=alt.Axis(
+                    values=list(x_ticks),
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                    labelPadding=LABEL_PAD,
+                    titlePadding=TITLE_PAD,
+                    tickSize=TICK_SIZE,
+                    labelLimit=1000,
+                    labelFlush=True,
+                    labelFlushOffset=0,
+                ),
+            ),
+            y=alt.Y(
+                "Predicted_DI:Q",
+                title="Damage Index (DI)",
+                scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+                axis=alt.Axis(
+                    values=[0.0, 0.2, 0.5, 1.0, 1.5],
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                    labelPadding=LABEL_PAD,
+                    titlePadding=TITLE_PAD,
+                    tickSize=TICK_SIZE,
+                    labelLimit=1000,
+                    labelFlush=True,
+                    labelFlushOffset=0,
+                ),
+            ),
         )
         .properties(width=size, height=size)
     )
 
+    curve = (
+        curve_df
+        if (curve_df is not None and not curve_df.empty)
+        else pd.DataFrame({"θ": [], "Predicted_DI": []})
+    )
     line_layer = (
-        alt.Chart(curve_df)
+        alt.Chart(curve)
         .mark_line(strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
+        .properties(width=size, height=size)
     )
 
+    k = 3
+    if not curve.empty:
+        curve_points = curve.iloc[::k].copy()
+        # Add the final point (endpoint) to ensure it's always shown
+        final_point = curve.iloc[[-1]].copy()
+        curve_points = pd.concat([curve_points, final_point]).drop_duplicates()
+    else:
+        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
+
     points_layer = (
-        alt.Chart(curve_df)
+        alt.Chart(curve_points)
         .mark_circle(size=60, opacity=0.7)
         .encode(
             x="θ:Q",
             y="Predicted_DI:Q",
-            tooltip=["θ", "Predicted_DI"],
+            color=alt.condition(
+                alt.datum.θ == actual_theta_max,
+                alt.value("blue"),  # Color for the final point
+                alt.value("steelblue")  # Color for other points
+            ),
+            size=alt.condition(
+                alt.datum.θ == actual_theta_max,
+                alt.value(100),  # Larger size for the final point
+                alt.value(60)    # Normal size for other points
+            ),
+            tooltip=[
+                alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
+                alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
+            ],
         )
         .add_params(selection)
     )
 
     rules_layer = (
-        alt.Chart(curve_df)
+        alt.Chart(curve)
         .mark_rule(color="red", strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
         .transform_filter(selection)
     )
 
     text_layer = (
-        alt.Chart(curve_df)
-        .mark_text(dx=8, dy=-8, fontSize=14, fontWeight="bold", color="red")
+        alt.Chart(curve)
+        .mark_text(
+            align="left", dx=8, dy=-8, fontSize=14, fontWeight="bold", color="red"
+        )
         .encode(
             x="θ:Q",
             y="Predicted_DI:Q",
-            text="Predicted_DI:Q",
+            text=alt.Text("Predicted_DI:Q", format=".4f"),
         )
         .transform_filter(selection)
     )
 
-    chart = alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
+    chart = (
+        alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
+        .configure_view(strokeWidth=0)
+        .configure_axis(domain=True, ticks=True)
+        .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
+    )
 
-    st.altair_chart(chart, use_container_width=False)
+    chart_html = chart.to_html()
+    chart_html = chart_html.replace(
+        "</style>",
+        "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
+        "{ font-size: 14px !important; font-weight: bold !important; "
+        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
+    )
+    st.components.v1.html(chart_html, height=size + 100)
 
 
+def _pick_default_model():
+    for m in MODEL_ORDER:
+        if m in model_registry:
+            return m
+    return None
 
-# =============================================================================
+
+# ---- determine model choice (if not set by UI yet) ----
+if "model_choice" not in locals():
+    _label = st.session_state.get("model_select_compact") or st.session_state.get(
+        "model_select"
+    )
+    if _label is not None:
+        model_choice = LABEL_TO_KEY.get(_label, _label)
+    else:
+        model_choice = _pick_default_model()
+
 # ---- main DI–θ execution ----
-# =============================================================================
 if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
-
 else:
-
-    # ---- Prediction on submit ----
+    # ---------- Prediction on submit (single DI point) ----------
+    # FIX: Check the button state directly without session state modification
     if st.session_state.get("calc_btn_main", False):
         xdf = _make_input_df(
-            lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-            rt, rsh, rl, rbl,
-            axial, b0, db, s_db, AR, M_Vlw, theta
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            theta,
         )
 
         try:
@@ -1039,47 +1220,37 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
+            # Force immediate refresh to show results
             st.rerun()
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-    # ---- Generate θ–DI sweep curve ----
+    # ---------- Generate curve for θ sweep ----------
+    # ALWAYS use the current theta value from the form for plotting
     _base_xdf = _make_input_df(
-        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-        rt, rsh, rl, rbl, axial, b0, db, s_db,
-        AR, M_Vlw, theta
+        lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl,
+        axial, b0, db, s_db, AR, M_Vlw, theta
     )
 
-    _curve_df = _sweep_curve_df(model_choice, _base_xdf, step=0.1)
+    _curve_df = _sweep_curve_df(
+        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
+    )
 
-    # ---- Adjust chart position ----
-    DI_CHART_OFFSET = 130   # move chart DOWN ↓
-    PADDING_LEFT = 40       # move chart RIGHT →
+    # ---- vertical offset for DI–θ plot ----
+    DI_CHART_OFFSET = -250  # px; adjusted to move plot down
 
     with chart_slot.container():
-    st.markdown(
-        f"""
-        <div style="
-            margin-top:{DI_CHART_OFFSET}px;
-            width:{CHART_W}px;
-            margin-left:auto;     /* <<< move RIGHT */
-            margin-right:0;       /* <<< lock to right */
-        ">
-        """,
-        unsafe_allow_html=True,
-    )
-
-    render_di_chart(
-        _curve_df,
-        theta_max=THETA_MAX,
-        di_max=1.5,
-        size=CHART_W,
-    )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-
+        st.markdown(
+            f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
+            unsafe_allow_html=True,
+        )
+        render_di_chart(
+            _curve_df,
+            theta_max=THETA_MAX,
+            di_max=1.5,
+            size=CHART_W,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
@@ -1100,28 +1271,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
