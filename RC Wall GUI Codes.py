@@ -323,7 +323,75 @@ css(
 </style>
 """
 )
+/* Lock all elements in place regardless of zoom level */
+html, body, #root, .stApp, section.main, .block-container {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    transform-origin: 0 0 !important;
+}
 
+/* Prevent any scaling of UI elements */
+.stNumberInput, .stSelectbox, .stButton, .stMarkdown {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Fix font sizes - prevent browser zoom from affecting them */
+.stNumberInput label,
+.stSelectbox label,
+.stNumberInput input,
+.stSelectbox select,
+.stButton button,
+.section-header,
+.form-banner,
+.prediction-with-color {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    font-size: inherit !important;
+}
+
+/* Lock images and logos in place */
+.page-header__logo,
+img[alt="Logo"] {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    position: fixed !important;
+}
+
+/* Ensure the DI-θ chart maintains its position */
+.vega-embed, .vega-embed .chart-wrapper {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Prevent any layout shifting */
+[data-testid="column"],
+[data-testid="stHorizontalBlock"] {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Additional protection against browser zoom */
+@media screen and (max-width: 768px) {
+    html, body {
+        zoom: 1 !important;
+        transform: scale(1) !important;
+    }
+}
+
+/* Force all elements to maintain exact positioning */
+* {
+    box-sizing: border-box !important;
+}
+
+/* Specific protection for the controls section */
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
 
 /* =============================================================================
    🎨 SUB STEP 3.4: RESPONSIVE FIXED LAYOUT CONFIGURATION
@@ -1347,6 +1415,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
