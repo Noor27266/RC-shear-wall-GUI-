@@ -818,21 +818,7 @@ with right:
         unsafe_allow_html=True,
     )
 
-css("""
-<style>
-/* Move the whole controls stack:
-   - Up (translateY)
-   - Right (translateX)
-*/
-div[data-testid="stSelectbox"],
-div.stButton,
-div[data-testid="stDownloadButton"],
-.prediction-with-color {
-    transform: translate(40px, -150px);   /* (X , Y) */
-    /* X = right/left, Y = up/down */
-}
-</style>
-""")
+
 
 
 # =============================================================================
@@ -1271,6 +1257,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
