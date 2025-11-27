@@ -1022,7 +1022,13 @@ def render_di_chart(
     size: int = 460,
 ):
     import altair as alt
-
+    
+    # Get the actual max theta from the data, not from THETA_MAX
+    if not curve_df.empty:
+        actual_theta_max = curve_df["θ"].max()
+    else:
+        actual_theta_max = theta_max
+    
     selection = alt.selection_point(
         name="select",
         fields=["θ", "Predicted_DI"],
@@ -1036,8 +1042,8 @@ def render_di_chart(
     TICK_SIZE = 6
     TITLE_PAD = 10
     LABEL_PAD = 6
-    base_axes_df = pd.DataFrame({"θ": [0.0, theta_max], "Predicted_DI": [0.0, 0.0]})
-    scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),  # This also uses THETA_MAX
+    base_axes_df = pd.DataFrame({"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]})
+    x_ticks = np.linspace(0.0, actual_theta_max, 5).round(2)
 
     axes_layer = (
         alt.Chart(base_axes_df)
@@ -1046,7 +1052,7 @@ def render_di_chart(
             x=alt.X(
                 "θ:Q",
                 title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0, theta_max], nice=False, clamp=True),
+                scale=alt.Scale(domain=[0, actual_theta_max], nice=False, clamp=True),
                 axis=alt.Axis(
                     values=list(x_ticks),
                     labelFontSize=AXIS_LABEL_FS,
@@ -1252,6 +1258,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
