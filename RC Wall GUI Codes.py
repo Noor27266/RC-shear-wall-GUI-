@@ -767,9 +767,9 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # --------- CALCULATE BUTTON (only sets flag; STEP 11 does prediction) ---------
+        # --------- CALCULATE BUTTON (sets flag for STEP 11) ---------
         if st.button("Calculate", key="calc_btn", use_container_width=True):
-    st.session_state.do_predict = True
+            st.session_state.do_predict = True
 
         # --------- OTHER BUTTONS (unchanged) ---------
         if st.button("Reset", key="reset_btn", use_container_width=True):
@@ -820,8 +820,9 @@ with right:
         unsafe_allow_html=True,
     )
 
-# === keep your existing translate() CSS that moves them right & up ===
-css("""
+# === keep the translate() CSS to move controls right & up ===
+css(
+    """
 <style>
 div[data-testid="stSelectbox"],
 div.stButton,
@@ -830,7 +831,9 @@ div[data-testid="stDownloadButton"],
     transform: translate(40px, -230px);
 }
 </style>
-""")
+"""
+)
+
 
 
 
@@ -1165,7 +1168,6 @@ if (model_choice is None) or (model_choice not in model_registry):
 else:
     # ---------- Prediction on submit (single DI point) ----------
     if st.session_state.get("do_predict", False):
-
         xdf = _make_input_df(
             lw,
             hw,
@@ -1197,6 +1199,9 @@ else:
             )
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
+
+        # reset flag so it doesn’t run again on next rerun
+        st.session_state.do_predict = False
 
     # ---------- Generate curve for θ sweep ----------
     _base_xdf = _make_input_df(
@@ -1240,7 +1245,6 @@ else:
             size=CHART_W,
         )
         st.markdown("</div>", unsafe_allow_html=True)
-st.session_state.do_predict = False
 
 
 
@@ -1263,6 +1267,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
