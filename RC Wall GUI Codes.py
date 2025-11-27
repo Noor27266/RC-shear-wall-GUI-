@@ -817,15 +817,23 @@ with right:
     """,
         unsafe_allow_html=True,
     )
-
 css("""
 <style>
-/* Move the whole controls stack (right column) up */
-div[data-testid="stSelectbox"] {
-    margin-top: -200px !important;   /* make more negative = move higher */
+/* Move the whole controls stack up: 
+   - Model Selection box
+   - Calculate / Reset / Clear All buttons
+   - Predicted Damage Index label
+   - Download as CSV button
+*/
+div[data-testid="stSelectbox"],
+div.stButton,
+div[data-testid="stDownloadButton"],
+.prediction-with-color {
+    transform: translateY(-140px);   /* make more negative to move higher */
 }
 </style>
 """)
+
 
 
 # =============================================================================
@@ -1251,5 +1259,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
