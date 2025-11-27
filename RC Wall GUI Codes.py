@@ -203,69 +203,6 @@ LEFT_BG = "#e0e4ec"
 css(
     f"""
 <style>
-  /* ZOOM PROTECTION - LOCK EVERYTHING IN PLACE */
-  html, body {{
-      zoom: 1 !important;
-      transform: scale(1) !important;
-      transform-origin: 0 0 !important;
-      position: fixed !important;
-      width: 100% !important;
-      height: 100% !important;
-      overflow: auto !important;
-  }}
-  
-  .stApp {{
-      zoom: 1 !important;
-      transform: scale(1) !important;
-      transform-origin: 0 0 !important;
-      position: relative !important;
-  }}
-  
-  /* PREVENT TEXT RESIZING */
-  * {{
-      font-size: inherit !important;
-      line-height: inherit !important;
-  }}
-  
-  /* LOCK ALL CONTAINERS */
-  [data-testid="column"],
-  [data-testid="stHorizontalBlock"],
-  .block-container,
-  section.main {{
-      zoom: 1 !important;
-      transform: scale(1) !important;
-      position: relative !important;
-  }}
-  
-  /* SPECIFIC PROTECTION FOR TEXT ELEMENTS */
-  .section-header,
-  .form-banner,
-  .stNumberInput label,
-  .stSelectbox label,
-  .stMarkdown,
-  .stButton button {{
-      zoom: 1 !important;
-      transform: scale(1) !important;
-      font-size: inherit !important;
-  }}
-  
-  /* PROTECT THE CHINESE/ENGLISH HEADER AREA */
-  .page-header-outer,
-  .page-header,
-  .page-header__logo {{
-      zoom: 1 !important;
-      transform: scale(1) !important;
-      position: fixed !important;
-  }}
-  
-  /* DISABLE BROWSER ZOOM */
-  @media screen and (max-width: 768px) {{
-      html, body {{
-          zoom: 1 !important;
-          transform: scale(1) !important;
-      }}
-  }}
-
   .block-container {{
       padding-top: 0.5rem !important;
       padding-bottom: 0.5rem !important;
@@ -308,7 +245,7 @@ css(
 
   div[data-testid="stNumberInput"] input[type="number"],
   div[data-testid="stNumberInput"] input[type="text"] {{
-      font-size:{FS_INPUT}px !important;
+      font-size:{FS_INPUT}px !important;        /* <<< back to FS_INPUT */
       height:{INPUT_H}px !important;
       line-height:{INPUT_H - 8}px !important;
       font-weight:600 !important;
@@ -386,6 +323,8 @@ css(
 </style>
 """
 )
+
+
 # =============================================================================
 # 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
 # =============================================================================
@@ -889,7 +828,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(40px, -100px);   /* (X , Y) */
+    transform: translate(40px, -150px);   /* (X , Y) */
     /* X = right/left, Y = up/down */
 }
 </style>
@@ -1332,11 +1271,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
 
 
 
