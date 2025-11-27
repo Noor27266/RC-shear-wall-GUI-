@@ -397,14 +397,6 @@ css(
 """
 )
 
-css("""
-<style>
-/* Move the Model Selection + Buttons + DI result UP */
-div[data-testid="column"] > div:nth-child(3) {
-    margin-top: -450px !important;
-}
-</style>
-""")
 
  
 
@@ -841,6 +833,12 @@ with right:
     # =============================================================================
     with col_controls:
 
+        # 🔼 WRAPPER TO MOVE ALL CONTROLS UP
+        st.markdown(
+            "<div style='margin-top:-180px;'>",  # make more negative for higher
+            unsafe_allow_html=True,
+        )
+
         # Model selection
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
@@ -880,6 +878,9 @@ with right:
                 key="dl_csv_main",
             )
 
+        # close the wrapper div
+        st.markdown("</div>", unsafe_allow_html=True)
+
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -904,6 +905,7 @@ with right:
     """,
         unsafe_allow_html=True,
     )
+
 
 
 
@@ -1332,6 +1334,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
