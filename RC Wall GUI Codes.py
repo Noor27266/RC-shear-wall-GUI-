@@ -1008,7 +1008,7 @@ def render_di_chart(
     if curve_df is None or curve_df.empty:
         return
 
-    # domain for x from curve + highlight (in case)
+    # domain for x from curve + highlight (if present)
     if highlight_df is not None and not highlight_df.empty:
         actual_theta_max = max(curve_df["θ"].max(), highlight_df["θ"].max())
     else:
@@ -1091,14 +1091,11 @@ def render_di_chart(
             )
         )
 
+        # simple vertical rule spanning the plot at θ_pred (avoids JS error)
         rule_layer = (
             alt.Chart(highlight_df)
             .mark_rule(color="red", strokeWidth=2)
-            .encode(
-                x="θ:Q",
-                y=alt.value(0.0),
-                y2="Predicted_DI:Q",
-            )
+            .encode(x="θ:Q")
         )
 
         text_layer = (
@@ -1270,6 +1267,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
