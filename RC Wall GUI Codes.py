@@ -1033,23 +1033,22 @@ def render_di_chart(
             x=alt.X(
                 "θ:Q",
                 title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0, actual_theta_max], nice=False, clamp=True),
+                scale=alt.Scale(domain=[0, actual_theta_max], clamp=True),
                 axis=alt.Axis(
                     values=list(x_ticks),
+                    format=".2f",  # two decimals on x-axis
                     labelFontSize=AXIS_LABEL_FS,
                     titleFontSize=AXIS_TITLE_FS,
                     labelPadding=LABEL_PAD,
                     titlePadding=TITLE_PAD,
                     tickSize=TICK_SIZE,
                     labelLimit=1000,
-                    labelFlush=True,
-                    labelFlushOffset=0,
                 ),
             ),
             y=alt.Y(
                 "Predicted_DI:Q",
                 title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+                scale=alt.Scale(domain=[0, di_max], clamp=True),
                 axis=alt.Axis(
                     values=[0.0, 0.2, 0.5, 1.0, 1.5],
                     labelFontSize=AXIS_LABEL_FS,
@@ -1058,8 +1057,6 @@ def render_di_chart(
                     titlePadding=TITLE_PAD,
                     tickSize=TICK_SIZE,
                     labelLimit=1000,
-                    labelFlush=True,
-                    labelFlushOffset=0,
                 ),
             ),
         )
@@ -1076,7 +1073,7 @@ def render_di_chart(
 
     layers = [axes_layer, line_layer]
 
-    # optional highlight point + vertical red line + red DI label
+    # Highlight ONLY the last predicted point (no red vertical line)
     if highlight_df is not None and not highlight_df.empty:
         point_layer = (
             alt.Chart(highlight_df)
@@ -1089,13 +1086,6 @@ def render_di_chart(
                     alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
                 ],
             )
-        )
-
-        # simple vertical rule spanning the plot at θ_pred (avoids JS error)
-        rule_layer = (
-            alt.Chart(highlight_df)
-            .mark_rule(color="red", strokeWidth=2)
-            .encode(x="θ:Q")
         )
 
         text_layer = (
@@ -1115,7 +1105,7 @@ def render_di_chart(
             )
         )
 
-        layers.extend([point_layer, rule_layer, text_layer])
+        layers.extend([point_layer, text_layer])
 
     chart = (
         alt.layer(*layers)
@@ -1248,6 +1238,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1267,6 +1258,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
