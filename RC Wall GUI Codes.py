@@ -1172,8 +1172,7 @@ if (model_choice is None) or (model_choice not in model_registry):
     st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
     # ---------- Prediction on submit (single DI point) ----------
-    # FIX: Check the button state directly without session state modification
-    if st.session_state.get("calc_btn_main", False):
+    if submit:
         xdf = _make_input_df(
             lw,
             hw,
@@ -1208,32 +1207,34 @@ else:
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
-    # ---------- Generate curve for θ sweep ----------
-    # ALWAYS use the current theta value from the form for plotting
-    _base_xdf = _make_input_df(
-        lw, hw, tw, fc, fyt, fysh, fyl, fybl, rt, rsh, rl, rbl,
-        axial, b0, db, s_db, AR, M_Vlw, theta
-    )
-
-    _curve_df = _sweep_curve_df(
-        model_choice, _base_xdf, theta_max=THETA_MAX, step=0.1
-    )
-
-    # ---- vertical offset for DI–θ plot ----
-    DI_CHART_OFFSET = 120  # px; adjusted to move plot down
-
-    with chart_slot.container():
-        st.markdown(
-            f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
-            unsafe_allow_html=True,
+    # ---------- Show DI–θ plot ONLY after at least one prediction ----------
+    if not st.session_state.results_df.empty:
+        # use only the LAST prediction as a single point
+        last = st.session_state.results_df.iloc[-1]
+        _curve_df = pd.DataFrame(
+            {
+                "θ": [float(last["θ"])],
+                "Predicted_DI": [float(last["Predicted_DI"])],
+            }
         )
-        render_di_chart(
-            _curve_df,
-            theta_max=THETA_MAX,
-            di_max=1.5,
-            size=CHART_W,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
+
+        # ---- vertical offset for DI–θ plot ----
+        DI_CHART_OFFSET = 120  # px; adjusted to move plot down
+
+        with chart_slot.container():
+            st.markdown(
+                f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
+                unsafe_allow_html=True,
+            )
+            render_di_chart(
+                _curve_df,
+                theta_max=THETA_MAX,
+                di_max=1.5,
+                size=CHART_W,
+            )
+            st.markdown("</div>", unsafe_allow_html=True)
+    # if results_df is empty, no plot is shown (clean GUI on first open)
+
 
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
@@ -1254,6 +1255,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
