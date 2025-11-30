@@ -996,6 +996,18 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     return pd.DataFrame(rows)
 
 
+def _damage_state_label(di: float) -> str:
+    """Map DI value to qualitative damage state label."""
+    if di < 0.2:
+        return "Undamage"
+    elif di < 0.5:
+        return "Partial Damage"
+    elif di <= 1.0:
+        return "Severe Damage"
+    else:
+        return "Collapse"
+
+
 def render_di_chart(
     curve_df: pd.DataFrame,
     highlight_df: pd.DataFrame = None,
@@ -1073,7 +1085,7 @@ def render_di_chart(
 
     layers = [axes_layer, line_layer]
 
-    # Highlight ONLY the last predicted point (no red vertical line)
+    # Highlight ONLY the last predicted point + labels
     if highlight_df is not None and not highlight_df.empty:
         point_layer = (
             alt.Chart(highlight_df)
@@ -1084,11 +1096,13 @@ def render_di_chart(
                 tooltip=[
                     alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
                     alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
+                    alt.Tooltip("DamageState:N", title="Damage State"),
                 ],
             )
         )
 
-        text_layer = (
+        # numeric DI value
+        text_di_layer = (
             alt.Chart(highlight_df)
             .mark_text(
                 align="left",
@@ -1105,7 +1119,25 @@ def render_di_chart(
             )
         )
 
-        layers.extend([point_layer, text_layer])
+        # qualitative damage state label (just below the point)
+        text_state_layer = (
+            alt.Chart(highlight_df)
+            .mark_text(
+                align="left",
+                dx=8,
+                dy=10,  # slightly below the point
+                fontSize=13,
+                fontWeight="bold",
+                color="black",
+            )
+            .encode(
+                x="θ:Q",
+                y="Predicted_DI:Q",
+                text="DamageState:N",
+            )
+        )
+
+        layers.extend([point_layer, text_di_layer, text_state_layer])
 
     chart = (
         alt.layer(*layers)
@@ -1184,6 +1216,7 @@ else:
     if not st.session_state.results_df.empty:
         # last prediction = highlight point
         last = st.session_state.results_df.iloc[-1]
+        last_di = float(last["Predicted_DI"])
 
         # build base df using last θ for sweep
         base_xdf = _make_input_df(
@@ -1215,7 +1248,8 @@ else:
         highlight_df = pd.DataFrame(
             {
                 "θ": [float(last["θ"])],
-                "Predicted_DI": [float(last["Predicted_DI"])],
+                "Predicted_DI": [last_di],
+                "DamageState": [_damage_state_label(last_di)],
             }
         )
 
@@ -1258,6 +1292,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
