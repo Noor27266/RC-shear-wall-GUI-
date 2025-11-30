@@ -763,7 +763,7 @@ with right:
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
             st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index (DI): {latest_pred:.4f}</div>",
+                f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
                 unsafe_allow_html=True,
             )
 
@@ -1060,6 +1060,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
