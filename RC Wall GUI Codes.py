@@ -978,15 +978,13 @@ def _make_input_df(
 
 
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
+    """Generate DI–θ curve from θ = 0 to the actual θ in base_df."""
     if model_choice not in model_registry:
         return pd.DataFrame(columns=["θ", "Predicted_DI"])
-    
-    # Get the actual theta value from your input form
-    actual_theta = base_df.iloc[0]["θ"]  # This gets the theta you entered
-    
-    # Only generate curve up to the actual theta value you entered
+
+    actual_theta = float(base_df.iloc[0]["θ"])
     thetas = np.round(np.arange(0.0, actual_theta + 1e-9, step), 2)
-    
+
     rows = []
     for th in thetas:
         df = base_df.copy()
@@ -994,40 +992,40 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
         di = predict_di(model_choice, None, df)
         di = max(0.035, min(di, 1.5))
         rows.append({"θ": float(th), "Predicted_DI": float(di)})
-    
+
     return pd.DataFrame(rows)
 
 
 def render_di_chart(
     curve_df: pd.DataFrame,
+    highlight_df: pd.DataFrame = None,
     theta_max: float = THETA_MAX,
     di_max: float = 1.5,
     size: int = 460,
 ):
     import altair as alt
-    
-    # Get the actual max theta from the data, not from THETA_MAX
-    if not curve_df.empty:
-        actual_theta_max = curve_df["θ"].max()
+
+    if curve_df is None or curve_df.empty:
+        return
+
+    # domain for x from curve + highlight (in case)
+    if highlight_df is not None and not highlight_df.empty:
+        actual_theta_max = max(curve_df["θ"].max(), highlight_df["θ"].max())
     else:
-        actual_theta_max = theta_max
-    
-    selection = alt.selection_point(
-        name="select",
-        fields=["θ", "Predicted_DI"],
-        nearest=True,
-        on="mouseover",
-        empty=False,
-        clear="mouseout",
-    )
+        actual_theta_max = curve_df["θ"].max()
+
     AXIS_LABEL_FS = 14
     AXIS_TITLE_FS = 16
     TICK_SIZE = 6
     TITLE_PAD = 10
     LABEL_PAD = 6
-    base_axes_df = pd.DataFrame({"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]})
+
+    base_axes_df = pd.DataFrame(
+        {"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]}
+    )
     x_ticks = np.linspace(0.0, actual_theta_max, 5).round(2)
 
+    # invisible chart just to control axes
     axes_layer = (
         alt.Chart(base_axes_df)
         .mark_line(opacity=0)
@@ -1068,73 +1066,62 @@ def render_di_chart(
         .properties(width=size, height=size)
     )
 
-    curve = (
-        curve_df
-        if (curve_df is not None and not curve_df.empty)
-        else pd.DataFrame({"θ": [], "Predicted_DI": []})
-    )
+    # main curve (full line)
     line_layer = (
-        alt.Chart(curve)
+        alt.Chart(curve_df)
         .mark_line(strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
         .properties(width=size, height=size)
     )
 
-    k = 3
-    if not curve.empty:
-        curve_points = curve.iloc[::k].copy()
-        # Add the final point (endpoint) to ensure it's always shown
-        final_point = curve.iloc[[-1]].copy()
-        curve_points = pd.concat([curve_points, final_point]).drop_duplicates()
-    else:
-        curve_points = pd.DataFrame({"θ": [], "Predicted_DI": []})
+    layers = [axes_layer, line_layer]
 
-    points_layer = (
-        alt.Chart(curve_points)
-        .mark_circle(size=60, opacity=0.7)
-        .encode(
-            x="θ:Q",
-            y="Predicted_DI:Q",
-            color=alt.condition(
-                alt.datum.θ == actual_theta_max,
-                alt.value("blue"),  # Color for the final point
-                alt.value("steelblue")  # Color for other points
-            ),
-            size=alt.condition(
-                alt.datum.θ == actual_theta_max,
-                alt.value(100),  # Larger size for the final point
-                alt.value(60)    # Normal size for other points
-            ),
-            tooltip=[
-                alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
-                alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
-            ],
+    # optional highlight point + vertical red line + red DI label
+    if highlight_df is not None and not highlight_df.empty:
+        point_layer = (
+            alt.Chart(highlight_df)
+            .mark_circle(size=90, opacity=0.9, color="blue")
+            .encode(
+                x="θ:Q",
+                y="Predicted_DI:Q",
+                tooltip=[
+                    alt.Tooltip("θ:Q", title="Drift Ratio (θ)", format=".2f"),
+                    alt.Tooltip("Predicted_DI:Q", title="Predicted DI", format=".4f"),
+                ],
+            )
         )
-        .add_params(selection)
-    )
 
-    rules_layer = (
-        alt.Chart(curve)
-        .mark_rule(color="red", strokeWidth=2)
-        .encode(x="θ:Q", y="Predicted_DI:Q")
-        .transform_filter(selection)
-    )
+        rule_layer = (
+            alt.Chart(highlight_df)
+            .mark_rule(color="red", strokeWidth=2)
+            .encode(
+                x="θ:Q",
+                y=alt.value(0.0),
+                y2="Predicted_DI:Q",
+            )
+        )
 
-    text_layer = (
-        alt.Chart(curve)
-        .mark_text(
-            align="left", dx=8, dy=-8, fontSize=14, fontWeight="bold", color="red"
+        text_layer = (
+            alt.Chart(highlight_df)
+            .mark_text(
+                align="left",
+                dx=8,
+                dy=-8,
+                fontSize=14,
+                fontWeight="bold",
+                color="red",
+            )
+            .encode(
+                x="θ:Q",
+                y="Predicted_DI:Q",
+                text=alt.Text("Predicted_DI:Q", format=".4f"),
+            )
         )
-        .encode(
-            x="θ:Q",
-            y="Predicted_DI:Q",
-            text=alt.Text("Predicted_DI:Q", format=".4f"),
-        )
-        .transform_filter(selection)
-    )
+
+        layers.extend([point_layer, rule_layer, text_layer])
 
     chart = (
-        alt.layer(axes_layer, line_layer, points_layer, rules_layer, text_layer)
+        alt.layer(*layers)
         .configure_view(strokeWidth=0)
         .configure_axis(domain=True, ticks=True)
         .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
@@ -1202,24 +1189,50 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            # Force immediate refresh to show results
             st.rerun()
         except Exception as e:
             st.error(f"Prediction failed for {model_choice}: {e}")
 
     # ---------- Show DI–θ plot ONLY after at least one prediction ----------
     if not st.session_state.results_df.empty:
-        # use only the LAST prediction as a single point
+        # last prediction = highlight point
         last = st.session_state.results_df.iloc[-1]
-        _curve_df = pd.DataFrame(
+
+        # build base df using last θ for sweep
+        base_xdf = _make_input_df(
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            float(last["θ"]),
+        )
+
+        curve_df = _sweep_curve_df(
+            model_choice, base_xdf, theta_max=THETA_MAX, step=0.1
+        )
+
+        highlight_df = pd.DataFrame(
             {
                 "θ": [float(last["θ"])],
                 "Predicted_DI": [float(last["Predicted_DI"])],
             }
         )
 
-        # ---- vertical offset for DI–θ plot ----
-        DI_CHART_OFFSET = 120  # px; adjusted to move plot down
+        DI_CHART_OFFSET = 120  # px
 
         with chart_slot.container():
             st.markdown(
@@ -1227,13 +1240,15 @@ else:
                 unsafe_allow_html=True,
             )
             render_di_chart(
-                _curve_df,
+                curve_df,
+                highlight_df=highlight_df,
                 theta_max=THETA_MAX,
                 di_max=1.5,
                 size=CHART_W,
             )
             st.markdown("</div>", unsafe_allow_html=True)
-    # if results_df is empty, no plot is shown (clean GUI on first open)
+    # if results_df is empty, no plot is shown
+
 
 
 # =============================================================================
@@ -1255,6 +1270,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
