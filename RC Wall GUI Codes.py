@@ -936,7 +936,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
                 axis=alt.Axis(values=list(x_ticks), format=".2f",
                               labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
             ),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index",
+            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
                 scale=alt.Scale(domain=[0,di_max]),
                 axis=alt.Axis(values=[0,0.2,0.5,1.0,1.5],
                               labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
@@ -958,25 +958,32 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
 
+        # RED DI VALUE (now BELOW the point)
         di_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
-                align="left", dx=8, dy=-10,
-                fontSize=16, fontWeight="bold", color="red"
-            ).encode(
-                x="θ:Q", y="Predicted_DI:Q",
-                text=alt.Text("Predicted_DI:Q", format=".4f")
+                align="center",
+                dx=0,
+                dy=18,          # << moved below the blue point
+                fontSize=16,
+                fontWeight="bold",
+                color="red",
+            )
+            .encode(
+                x="θ:Q",
+                y="Predicted_DI:Q",
+                text=alt.Text("Predicted_DI:Q", format=".4f"),
             )
         )
 
-        # *** UPDATED DAMAGE STATE LABEL ***
+        # DAMAGE STATE LABEL (unchanged: above the point)
         state_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
                 align="center",
                 dx=0,
-                dy=-28,           # moved UP so it never touches the line
-                fontSize=22,      # larger text
+                dy=-28,
+                fontSize=22,
                 fontWeight="bold",
                 color="black",
             )
@@ -1041,6 +1048,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1060,6 +1068,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
