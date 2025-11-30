@@ -817,7 +817,6 @@ div[data-testid="stDownloadButton"],
 </style>
 """)
 
-
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
@@ -1119,14 +1118,14 @@ def render_di_chart(
             )
         )
 
-        # qualitative damage state label (just below the point)
+        # qualitative damage state label (inside plot, left of the point)
         text_state_layer = (
             alt.Chart(highlight_df)
             .mark_text(
-                align="left",
-                dx=8,
-                dy=10,  # slightly below the point
-                fontSize=13,
+                align="right",   # keep label inside plot
+                dx=-10,          # shift slightly left of the point
+                dy=12,           # slightly below the point
+                fontSize=16,     # bigger font size
                 fontWeight="bold",
                 color="black",
             )
@@ -1273,6 +1272,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1292,6 +1292,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
