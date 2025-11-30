@@ -958,13 +958,13 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
 
-        # RED DI VALUE (now BELOW the point)
+        # RED DI VALUE (below the point)
         di_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
                 align="center",
                 dx=0,
-                dy=18,          # << moved below the blue point
+                dy=18,          # below the blue point
                 fontSize=16,
                 fontWeight="bold",
                 color="red",
@@ -976,7 +976,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
-        # DAMAGE STATE LABEL (unchanged: above the point)
+        # DAMAGE STATE LABEL – centered horizontally in the plot, above the point
         state_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
@@ -988,7 +988,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
                 color="black",
             )
             .encode(
-                x="θ:Q",
+                x=alt.value(size / 2),   # << center of plot width
                 y="Predicted_DI:Q",
                 text="DamageState:N",
             )
@@ -1049,6 +1049,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1068,6 +1069,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
