@@ -661,7 +661,7 @@ with left:
         """
     <div style="background:transparent; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:none;">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
-            Predict Damage index (DI) for RC Shear Walls
+            Predict Damage index  for RC Shear Walls
         </div>
     """,
         unsafe_allow_html=True,
@@ -936,7 +936,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
                 axis=alt.Axis(values=list(x_ticks), format=".2f",
                               labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
             ),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
+            y=alt.Y("Predicted_DI:Q", title="Damage Index",
                 scale=alt.Scale(domain=[0,di_max]),
                 axis=alt.Axis(values=[0,0.2,0.5,1.0,1.5],
                               labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
@@ -1060,6 +1060,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
