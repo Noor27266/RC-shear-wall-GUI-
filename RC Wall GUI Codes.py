@@ -837,28 +837,47 @@ _TRAIN_NAME_MAP = {
     "P/(Agf′c)": "P/(Agfc)",
     "b0": "b0",
     "db": "db",
-    "s/db": "s/db",
+    "s/db": "s_db",
     "AR": "AR",
-    "M/Vlw": "M/Vlw",
+    "M/Vlw": "M_Vlw",
     "θ": "θ",
 }
 
 _TRAIN_COL_ORDER = [
-    "lw","hw","tw","fc","fyt","fysh","fyl","fybl",
-    "pt","psh","pl","pbl","P/(Agfc)","b0","db","s/db",
-    "AR","M/Vlw","θ",
+    "lw",
+    "hw",
+    "tw",
+    "fc",
+    "fyt",
+    "fysh",
+    "fyl",
+    "fybl",
+    "pt",
+    "psh",
+    "pl",
+    "pbl",
+    "P/(Agfc)",
+    "b0",
+    "db",
+    "s_db",
+    "AR",
+    "M_Vlw",
+    "θ",
 ]
 
-def _df_in_train_order(df): 
+
+def _df_in_train_order(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
 
 def predict_di(choice, _unused_array, input_df):
-    df_trees = _df_in_train_order(input_df).replace([np.inf,-np.inf],np.nan).fillna(0.0)
+    df_trees = _df_in_train_order(input_df)
+    df_trees = df_trees.replace([np.inf, -np.inf], np.nan).fillna(0.0)
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
-        prediction = float(model_registry["LightGBM"].predict(X)[0])
+        mdl = model_registry["LightGBM"]
+        prediction = float(mdl.predict(X)[0])
     if choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
     if choice == "CatBoost":
@@ -867,74 +886,165 @@ def predict_di(choice, _unused_array, input_df):
         prediction = float(model_registry["Random Forest"].predict(X)[0])
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
-        try: yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
-        except:
-            model_registry["PS"].compile(optimizer="adam",loss="mse")
-            yhat = model_registry["PS"].predict(Xn,verbose=0)[0][0]
+        try:
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        except Exception:
+            model_registry["PS"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
-        try: yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
-        except:
-            model_registry["MLP"].compile(optimizer="adam",loss="mse")
-            yhat = model_registry["MLP"].predict(Xn,verbose=0)[0][0]
+        try:
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        except Exception:
+            model_registry["MLP"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
 
-    return max(0.035, min(prediction, 1.5))
+    prediction = max(0.035, min(prediction, 1.5))
+    return prediction
 
 
-def _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta):
-    cols = ["l_w","h_w","t_w","f′c","fyt","fysh","fyl","fybl","ρt","ρsh","ρl","ρbl",
-            "P/(Agf′c)","b0","db","s/db","AR","M/Vlw","θ"]
-    vals = [lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta]
-    return pd.DataFrame([vals], columns=cols)
+def _make_input_df(
+    lw,
+    hw,
+    tw,
+    fc,
+    fyt,
+    fysh,
+    fyl,
+    fybl,
+    rt,
+    rsh,
+    rl,
+    rbl,
+    axial,
+    b0,
+    db,
+    s_db,
+    AR,
+    M_Vlw,
+    theta_val,
+):
+    cols = [
+        "l_w",
+        "h_w",
+        "t_w",
+        "f′c",
+        "fyt",
+        "fysh",
+        "fyl",
+        "fybl",
+        "ρt",
+        "ρsh",
+        "ρl",
+        "ρbl",
+        "P/(Agf′c)",
+        "b0",
+        "db",
+        "s_db",
+        "AR",
+        "M_Vlw",
+        "θ",
+    ]
+    x = np.array(
+        [
+            [
+                lw,
+                hw,
+                tw,
+                fc,
+                fyt,
+                fysh,
+                fyl,
+                fybl,
+                rt,
+                rsh,
+                rl,
+                rbl,
+                axial,
+                b0,
+                db,
+                s_db,
+                AR,
+                M_Vlw,
+                theta_val,
+            ]
+        ],
+        dtype=np.float32,
+    )
+    return pd.DataFrame(x, columns=cols)
 
 
-def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
+def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
+    """Generate DI–θ curve from θ = 0 to the actual θ in base_df."""
+    if model_choice not in model_registry:
+        return pd.DataFrame(columns=["θ", "Predicted_DI"])
+
     actual_theta = float(base_df.iloc[0]["θ"])
-    thetas = np.round(np.arange(0, actual_theta+1e-9, step), 2)
+    thetas = np.round(np.arange(0.0, actual_theta + 1e-9, step), 2)
 
-    rows=[]
+    rows = []
     for th in thetas:
         df = base_df.copy()
-        df["θ"] = th
+        df.loc[:, "θ"] = float(th)
         di = predict_di(model_choice, None, df)
-        rows.append({"θ":th, "Predicted_DI":di})
+        di = max(0.035, min(di, 1.5))
+        rows.append({"θ": float(th), "Predicted_DI": float(di)})
 
     return pd.DataFrame(rows)
 
 
-def _damage_state_label(di):
-    if di < 0.2: return "Undamage"
-    if di < 0.5: return "Partial Damage"
-    if di <= 1.0: return "Severe Damage"
-    return "Collapse"
+def _damage_state_label(di: float) -> str:
+    """Map DI value to qualitative damage state label."""
+    if di < 0.2:
+        return "Undamage"
+    elif di < 0.5:
+        return "Partial Damage"
+    elif di <= 1.0:
+        return "Severe Damage"
+    else:
+        return "Collapse"
 
 
-def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
+def render_di_chart(
+    curve_df: pd.DataFrame,
+    highlight_df: pd.DataFrame = None,
+    theta_max: float = THETA_MAX,
+    di_max: float = 1.5,
+    size: int = 460,
+):
     import altair as alt
 
-    if curve_df.empty: return
+    if curve_df is None or curve_df.empty:
+        return
 
-    # extend curve with last predicted point to REMOVE THE GAP
-    if highlight_df is not None:
+    # extend curve with last predicted point to REMOVE ANY GAP
+    if highlight_df is not None and not highlight_df.empty:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
 
     actual_theta_max = curve_df["θ"].max()
 
     AXIS_LABEL_FS = 14
     AXIS_TITLE_FS = 16
+    TICK_SIZE = 6
+    TITLE_PAD = 10
+    LABEL_PAD = 6
 
-    base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
-    x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
+    base_axes_df = pd.DataFrame(
+        {"θ": [0.0, actual_theta_max], "Predicted_DI": [0.0, 0.0]}
+    )
+    x_ticks = np.linspace(0.0, actual_theta_max, 5).round(2)
 
-    # ==== BACKGROUND BANDS (main plot) ====
-    bands_df = pd.DataFrame([
-        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)",  "label":"UD"},
-        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)","label":"PD"},
-        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)","label":"SD"},
-        {"y0":1.0, "y1":1.5,"color":"rgba(255,0,0,0.18)",   "label":"COL"},
-    ])
+    # ===== BACKGROUND BANDS =====
+    bands_df = pd.DataFrame(
+        [
+            {"y0": 0.0, "y1": 0.2, "color": "rgba(0,200,0,0.18)"},
+            {"y0": 0.2, "y1": 0.5, "color": "rgba(255,215,0,0.18)"},
+            {"y0": 0.5, "y1": 1.0, "color": "rgba(255,140,0,0.18)"},
+            {"y0": 1.0, "y1": 1.5, "color": "rgba(255,0,0,0.18)"},
+        ]
+    )
 
     band_layer = (
         alt.Chart(bands_df)
@@ -944,48 +1054,74 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             x2=alt.value(size),
             y="y0:Q",
             y2="y1:Q",
-            color=alt.Color("color:N", scale=None)
+            color=alt.Color("color:N", scale=None),
         )
         .properties(width=size, height=size)
     )
 
+    # invisible chart just to control axes
     axes_layer = (
-        alt.Chart(base_axes_df).mark_line(opacity=0)
+        alt.Chart(base_axes_df)
+        .mark_line(opacity=0)
         .encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0,actual_theta_max]),
-                axis=alt.Axis(values=list(x_ticks), format=".2f",
-                              labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
+            x=alt.X(
+                "θ:Q",
+                title="Drift Ratio (θ)",
+                scale=alt.Scale(domain=[0, actual_theta_max], clamp=True),
+                axis=alt.Axis(
+                    values=list(x_ticks),
+                    format=".2f",
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                    labelPadding=LABEL_PAD,
+                    titlePadding=TITLE_PAD,
+                    tickSize=TICK_SIZE,
+                    labelLimit=1000,
+                ),
             ),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0,di_max]),
-                axis=alt.Axis(values=[0,0.2,0.5,1.0,1.5],
-                              labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
-            )
-        ).properties(width=size, height=size)
+            y=alt.Y(
+                "Predicted_DI:Q",
+                title="Damage Index (DI)",
+                scale=alt.Scale(domain=[0, di_max], clamp=True),
+                axis=alt.Axis(
+                    values=[0.0, 0.2, 0.5, 1.0, 1.5],
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                    labelPadding=LABEL_PAD,
+                    titlePadding=TITLE_PAD,
+                    tickSize=TICK_SIZE,
+                    labelLimit=1000,
+                ),
+            ),
+        )
+        .properties(width=size, height=size)
     )
 
+    # main curve (full line)
     line_layer = (
-        alt.Chart(curve_df).mark_line(strokeWidth=2)
+        alt.Chart(curve_df)
+        .mark_line(strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
+        .properties(width=size, height=size)
     )
 
-    layers=[band_layer, axes_layer, line_layer]
+    layers = [band_layer, axes_layer, line_layer]
 
-    if highlight_df is not None:
+    # Highlight ONLY the last predicted point + labels
+    if highlight_df is not None and not highlight_df.empty:
         point_layer = (
             alt.Chart(highlight_df)
-            .mark_circle(size=110, color="blue")
+            .mark_circle(size=110, opacity=0.9, color="blue")
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
 
-        # RED DI VALUE (below the point)
-        di_text_layer = (
+        # numeric DI value (below point)
+        text_di_layer = (
             alt.Chart(highlight_df)
             .mark_text(
                 align="center",
                 dx=0,
-                dy=18,
+                dy=18,  # below the point
                 fontSize=16,
                 fontWeight="bold",
                 color="red",
@@ -997,8 +1133,8 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
-        # DAMAGE STATE LABEL – centered horizontally in the main plot
-        state_text_layer = (
+        # qualitative damage state label (centered horizontally in main plot)
+        text_state_layer = (
             alt.Chart(highlight_df)
             .mark_text(
                 align="center",
@@ -1009,58 +1145,64 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
                 color="black",
             )
             .encode(
-                x=alt.value(size/2),
+                x=alt.value(size / 2),
                 y="Predicted_DI:Q",
                 text="DamageState:N",
             )
         )
 
-        layers += [point_layer, di_text_layer, state_text_layer]
+        layers.extend([point_layer, text_di_layer, text_state_layer])
 
-    # main DI–θ chart
-    main_chart = alt.layer(*layers).configure_view(strokeWidth=0)
-
-    # ==== VERTICAL COLOUR BAR ON THE RIGHT ====
-    bar_width = 40
-
-    bar_rect = (
-        alt.Chart(bands_df)
-        .mark_rect(stroke='black', strokeWidth=0.8)
-        .encode(
-            x=alt.value(0),
-            x2=alt.value(bar_width),
-            y="y0:Q",
-            y2="y1:Q",
-            color=alt.Color("color:N", scale=None),
-        )
-        .properties(width=bar_width, height=size)
+    chart = (
+        alt.layer(*layers)
+        .configure_view(strokeWidth=0)
+        .configure_axis(domain=True, ticks=True)
+        .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
     )
 
-    # place UD / PD / SD / COL text inside bar
-    bar_text = (
-        alt.Chart(bands_df)
-        .mark_text(
-            angle=90,
-            fontSize=11,
-            fontWeight="bold",
-            color="black",
-        )
-        .encode(
-            x=alt.value(bar_width/2),
-            y=alt.Y("y0:Q",
-                    scale=alt.Scale(domain=[0,di_max]),
-                    ),
-            text="label:N",
-        )
-        .properties(width=bar_width, height=size)
+    chart_html = chart.to_html()
+    chart_html = chart_html.replace(
+        "</style>",
+        "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
+        "{ font-size: 14px !important; font-weight: bold !important; "
+        "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
     )
 
-    bar_chart = alt.layer(bar_rect, bar_text).configure_view(strokeWidth=1)
+    # ----- STREAMLIT LAYOUT: CHART + VERTICAL COLOR BAR -----
+    col_chart, col_bar = st.columns([10, 1])
 
-    # combine main plot + colour bar
-    full_chart = alt.hconcat(main_chart, bar_chart)
+    with col_chart:
+        st.components.v1.html(chart_html, height=size + 100)
 
-    st.components.v1.html(full_chart.to_html(), height=size+100)
+    with col_bar:
+        legend_html = f"""
+        <div style="
+            display:flex;
+            flex-direction:column;
+            align-items:stretch;
+            justify-content:stretch;
+            width:30px;
+            height:{size}px;
+            border:1px solid #444;
+            margin-left:4px;
+            font-family:'Times New Roman', serif;
+            font-weight:bold;
+        ">
+          <div style="flex:1;background:rgba(255,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">COL</span>
+          </div>
+          <div style="flex:1;background:rgba(255,140,0,0.18);display:flex;align-items:center;justify-content:center;">
+            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">SD</span>
+          </div>
+          <div style="flex:1;background:rgba(255,215,0,0.18);display:flex;align-items:center;justify-content:center;">
+            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">PD</span>
+          </div>
+          <div style="flex:1;background:rgba(0,200,0,0.18);display:flex;align-items:center;justify-content:center;">
+            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">UD</span>
+          </div>
+        </div>
+        """
+        st.markdown(legend_html, unsafe_allow_html=True)
 
 
 def _pick_default_model():
@@ -1070,44 +1212,113 @@ def _pick_default_model():
     return None
 
 
-# ---------------- MAIN EXECUTION ----------------
-
+# ---- determine model choice (if not set by UI yet) ----
 if "model_choice" not in locals():
-    lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
-    model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
+    _label = st.session_state.get("model_select_compact") or st.session_state.get(
+        "model_select"
+    )
+    if _label is not None:
+        model_choice = LABEL_TO_KEY.get(_label, _label)
+    else:
+        model_choice = _pick_default_model()
 
-if model_choice not in model_registry:
-    st.error("No trained model available.")
+# ---- main DI–θ execution ----
+if (model_choice is None) or (model_choice not in model_registry):
+    st.error("No trained model is available. Please check the Model Selection on the right.")
 else:
+    # ---------- Prediction on submit (single DI point) ----------
     if submit:
-        xdf = _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta)
+        xdf = _make_input_df(
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            theta,
+        )
 
         try:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy()
             row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
             st.rerun()
         except Exception as e:
-            st.error(str(e))
+            st.error(f"Prediction failed for {model_choice}: {e}")
 
+    # ---------- Show DI–θ plot ONLY after at least one prediction ----------
     if not st.session_state.results_df.empty:
+        # last prediction = highlight point
         last = st.session_state.results_df.iloc[-1]
         last_di = float(last["Predicted_DI"])
 
-        base = _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,float(last["θ"]))
-        curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
+        # build base df using last θ for sweep
+        base_xdf = _make_input_df(
+            lw,
+            hw,
+            tw,
+            fc,
+            fyt,
+            fysh,
+            fyl,
+            fybl,
+            rt,
+            rsh,
+            rl,
+            rbl,
+            axial,
+            b0,
+            db,
+            s_db,
+            AR,
+            M_Vlw,
+            float(last["θ"]),
+        )
 
-        highlight_df = pd.DataFrame({
-            "θ":[float(last["θ"])],
-            "Predicted_DI":[last_di],
-            "DamageState":[_damage_state_label(last_di)]
-        })
+        curve_df = _sweep_curve_df(
+            model_choice, base_xdf, theta_max=THETA_MAX, step=0.1
+        )
+
+        highlight_df = pd.DataFrame(
+            {
+                "θ": [float(last["θ"])],
+                "Predicted_DI": [last_di],
+                "DamageState": [_damage_state_label(last_di)],
+            }
+        )
+
+        DI_CHART_OFFSET = 120  # px
 
         with chart_slot.container():
-            st.markdown("<div style='margin-top:120px;'>", unsafe_allow_html=True)
-            render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
+            st.markdown(
+                f"<div style='margin-top:{DI_CHART_OFFSET}px;'>",
+                unsafe_allow_html=True,
+            )
+            render_di_chart(
+                curve_df,
+                highlight_df=highlight_df,
+                theta_max=THETA_MAX,
+                di_max=1.5,
+                size=CHART_W,
+            )
             st.markdown("</div>", unsafe_allow_html=True)
+    # if results_df is empty, no plot is shown
+
 
 
 
@@ -1132,6 +1343,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
