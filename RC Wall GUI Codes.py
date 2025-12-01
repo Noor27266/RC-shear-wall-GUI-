@@ -849,6 +849,7 @@ _TRAIN_COL_ORDER = [
     "AR","M/Vlw","θ",
 ]
 
+
 def _df_in_train_order(df):
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
@@ -913,6 +914,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
 
 
 def _damage_state_label(di):
+    # kept for future use; NOT displayed in the plot anymore
     if di < 0.2:
         return "Undamage"
     if di < 0.5:
@@ -928,7 +930,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     if curve_df.empty:
         return
 
-    # Make sure the line reaches the last point
+    # extend curve with last predicted point so the line reaches the point
     if highlight_df is not None:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
 
@@ -940,9 +942,9 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     base_axes_df = pd.DataFrame({"θ": [0, actual_theta_max], "Predicted_DI": [0, 0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
 
-    # ---------------------------------------------------------------------
-    # Horizontal background bands (0–0.2, 0.2–0.5, 0.5–1.0, 1.0–1.5)
-    # ---------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # Horizontal background bands (no separate colour bar)
+    # ------------------------------------------------------------------
     bands_df = pd.DataFrame([
         {"y0": 0.0, "y1": 0.2, "color": "rgba(0,200,0,0.18)"},     # UD
         {"y0": 0.2, "y1": 0.5, "color": "rgba(255,215,0,0.18)"},   # PD
@@ -963,7 +965,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         .properties(width=size, height=size)
     )
 
-    # --- UD / PD / SD / COL labels inside plot (no colour bar!) ---
+    # UD / PD / SD / COL text INSIDE the plot
     labels_df = pd.DataFrame({
         "y": [0.10, 0.35, 0.75, 1.25],
         "label": ["UD", "PD", "SD", "COL"],
@@ -973,7 +975,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         alt.Chart(labels_df)
         .mark_text(fontSize=18, fontWeight="bold", color="black")
         .encode(
-            x=alt.value(size - 60),   # fixed near right side of plot
+            x=alt.value(size - 55),   # near right side
             y="y:Q",
             text="label:N",
         )
@@ -1017,7 +1019,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
 
     layers = [band_layer, band_labels_layer, axes_layer, line_layer]
 
-    # Highlight last predicted point + red DI value (only)
+    # Highlight last predicted point + DI value only
     if highlight_df is not None:
         point_layer = (
             alt.Chart(highlight_df)
@@ -1030,7 +1032,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .mark_text(
                 align="center",
                 dx=0,
-                dy=18,      # below the point
+                dy=18,  # just below the point
                 fontSize=16,
                 fontWeight="bold",
                 color="red",
@@ -1087,7 +1089,8 @@ else:
 
         base = _make_input_df(
             lw, hw, tw, fc, fyt, fysh, fyl, fybl,
-            rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, float(last["θ"])
+            rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw,
+            float(last["θ"])
         )
         curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
 
@@ -1125,6 +1128,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
