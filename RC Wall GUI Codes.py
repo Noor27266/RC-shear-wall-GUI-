@@ -918,8 +918,10 @@ def _damage_state_label(di):
 def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
     import altair as alt
 
-    if curve_df.empty: return
+    if curve_df.empty:
+        return
 
+    # extend curve with last predicted point to remove the gap
     if highlight_df is not None:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
 
@@ -931,11 +933,12 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
 
+    # ---- background bands (UD, PD, SD, COL ranges) ----
     bands_df = pd.DataFrame([
-        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},
-        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},
-        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},
-        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},
+        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # UD
+        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},   # PD
+        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # SD
+        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # COL
     ])
 
     band_layer = (
@@ -951,29 +954,68 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         .properties(width=size, height=size)
     )
 
+    # ---- main axes with tight y-limit at 1.5 ----
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0)
         .encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0,actual_theta_max]),
-                axis=alt.Axis(values=list(x_ticks), format=".2f",
-                              labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
+            x=alt.X(
+                "θ:Q",
+                title="Drift Ratio (θ)",
+                scale=alt.Scale(domain=[0, actual_theta_max]),
+                axis=alt.Axis(
+                    values=list(x_ticks),
+                    format=".2f",
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                ),
             ),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0,di_max]),
-                axis=alt.Axis(values=[0,0.2,0.5,1.0,1.5],
-                              labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
-            )
-        ).properties(width=size, height=size)
+            y=alt.Y(
+                "Predicted_DI:Q",
+                title="Damage Index (DI)",
+                scale=alt.Scale(domain=[0, di_max], nice=False, clamp=True),
+                axis=alt.Axis(
+                    values=[0, 0.2, 0.5, 1.0, 1.5],
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                ),
+            ),
+        )
+        .properties(width=size, height=size)
     )
 
     line_layer = (
-        alt.Chart(curve_df).mark_line(strokeWidth=2)
+        alt.Chart(curve_df)
+        .mark_line(strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
     )
 
-    layers=[band_layer, axes_layer, line_layer]
+    layers = [band_layer, axes_layer, line_layer]
 
+    # ---- band labels: UD / PD / SD / COL ----
+    labels_df = pd.DataFrame([
+        {"θ": actual_theta_max * 0.80, "Predicted_DI": 0.10, "label": "UD"},
+        {"θ": actual_theta_max * 0.80, "Predicted_DI": 0.35, "label": "PD"},
+        {"θ": actual_theta_max * 0.20, "Predicted_DI": 0.75, "label": "SD"},
+        {"θ": actual_theta_max * 0.20, "Predicted_DI": 1.25, "label": "COL"},
+    ])
+
+    label_layer = (
+        alt.Chart(labels_df)
+        .mark_text(
+            fontSize=18,
+            fontWeight="bold",
+            color="black",
+        )
+        .encode(
+            x="θ:Q",
+            y="Predicted_DI:Q",
+            text="label:N",
+        )
+    )
+
+    layers.append(label_layer)
+
+    # ---- highlight last prediction point + DI value ----
     if highlight_df is not None:
         point_layer = (
             alt.Chart(highlight_df)
@@ -1021,13 +1063,18 @@ if model_choice not in model_registry:
     st.error("No trained model available.")
 else:
     if submit:
-        xdf = _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta)
+        xdf = _make_input_df(
+            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
+        )
 
         try:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy()
             row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
             st.rerun()
         except Exception as e:
             st.error(str(e))
@@ -1055,6 +1102,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1074,5 +1122,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
