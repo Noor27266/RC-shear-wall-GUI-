@@ -952,6 +952,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         {"y0": 1.0, "y1": 1.5, "color": "rgba(255,0,0,0.18)"},     # COL
     ])
 
+    # FIX: Use fill encoding with legend=None to prevent side color bar
     band_layer = (
         alt.Chart(bands_df)
         .mark_rect()
@@ -960,7 +961,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             x2=alt.value(size),
             y="y0:Q",
             y2="y1:Q",
-            color=alt.Color("color:N", scale=None),
+            fill=alt.Fill("color:N", scale=None, legend=None)  # Changed from color to fill
         )
         .properties(width=size, height=size)
     )
@@ -1046,6 +1047,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
 
         layers += [point_layer, di_text_layer]
 
+    # FIX: Build the chart
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
     st.components.v1.html(chart.to_html(), height=size + 100)
 
@@ -1128,6 +1130,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
