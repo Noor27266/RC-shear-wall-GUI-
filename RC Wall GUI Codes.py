@@ -1065,10 +1065,6 @@ else:
             render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
             st.markdown("</div>", unsafe_allow_html=True)
 
-
-
-
-
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1088,31 +1084,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
