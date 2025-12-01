@@ -865,19 +865,23 @@ def predict_di(choice, _unused_array, input_df):
         prediction = float(model_registry["CatBoost"].predict(X)[0])
     if choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
+
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
-        try: yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        try:
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         except:
-            model_registry["PS"].compile(optimizer="adam",loss="mse")
-            yhat = model_registry["PS"].predict(Xn,verbose=0)[0][0]
+            model_registry["PS"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
+
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
-        try: yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        try:
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         except:
-        model_registry["MLP"].compile(optimizer="adam",loss="mse")
-            yhat = model_registry["MLP"].predict(Xn,verbose=0)[0][0]
+            model_registry["MLP"].compile(optimizer="adam", loss="mse")
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
 
     return max(0.035, min(prediction, 1.5))
@@ -916,7 +920,6 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
 
     if curve_df.empty: return
 
-    # extend curve with last predicted point to REMOVE THE GAP
     if highlight_df is not None:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
 
@@ -928,12 +931,11 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
 
-    # ==== NEW BACKGROUND BANDS ====
     bands_df = pd.DataFrame([
-        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # green
-        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},   # yellow
-        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # orange
-        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # red
+        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},
+        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},
+        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},
+        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},
     ])
 
     band_layer = (
@@ -996,7 +998,6 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
-        # NOTE: damage-state text layer removed
         layers += [point_layer, di_text_layer]
 
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
@@ -1042,7 +1043,6 @@ else:
         )
         curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
 
-        # highlight point WITHOUT damage-state label
         highlight_df = pd.DataFrame({
             "θ": [float(last["θ"])],
             "Predicted_DI": [last_di],
@@ -1052,6 +1052,7 @@ else:
             st.markdown("<div style='margin-top:120px;'>", unsafe_allow_html=True)
             render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
             st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 # =============================================================================
@@ -1073,4 +1074,5 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
