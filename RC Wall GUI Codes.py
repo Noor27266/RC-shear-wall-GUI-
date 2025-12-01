@@ -1176,7 +1176,7 @@ def render_di_chart(
 
     with col_bar:
         # colour bar with segment heights matching 0–0.2, 0.2–0.5, 0.5–1.0, 1.0–1.5
-        legend_height = size - 40
+        legend_height = size - 60
         legend_html = f"""
         <div style="
             display:flex;
@@ -1187,7 +1187,7 @@ def render_di_chart(
             height:{legend_height}px;
             border:1px solid #444;
             margin-left:8px;
-            margin-top:40px;
+            margin-top:60px;
             font-family:'Times New Roman', serif;
             font-weight:bold;
         ">
@@ -1350,6 +1350,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
