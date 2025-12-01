@@ -1155,7 +1155,7 @@ def render_di_chart(
 
     main_chart = (
         alt.layer(*layers)
-        .configure_view(strokeWidth=0)
+        .configure_view(padding={"top": 0, "bottom": 0, "left": 0, "right": 0})
         .configure_axis(domain=True, ticks=True)
         .configure(padding={"left": 6, "right": 10, "top": 6, "bottom": 6})
     )
@@ -1176,7 +1176,7 @@ def render_di_chart(
         .encode(
             x=alt.value(0),
             x2=alt.value(40),
-            y=alt.Y("y0:Q"),   # will use shared y-scale
+            y=alt.Y("y0:Q", scale=alt.Scale(domain=[0, di_max]), axis=None),
             y2="y1:Q",
             color=alt.Color("color:N", scale=None),
         )
@@ -1188,7 +1188,7 @@ def render_di_chart(
         .mark_text(fontSize=12, fontWeight="bold")
         .encode(
             x=alt.value(20),
-            y="yc:Q",          # same shared y-scale
+            y=alt.Y("yc:Q", scale=alt.Scale(domain=[0, di_max]), axis=None),
             text="label:N",
         )
         .properties(width=40, height=size)
@@ -1196,12 +1196,12 @@ def render_di_chart(
 
     legend_chart = (
         alt.layer(legend_bands, legend_text)
-        .configure_view(strokeWidth=1)
+        .configure_view(padding={"top": 0, "bottom": 0, "left": 0, "right": 0})
     )
 
     combined = (
         alt.hconcat(main_chart, legend_chart, spacing=20)
-        .resolve_scale(y="shared")   # <<< THIS forces vertical alignment
+        .resolve_scale(y="shared")  # shared DI scale -> perfect vertical alignment
     )
 
     chart_html = combined.to_html()
@@ -1350,6 +1350,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
