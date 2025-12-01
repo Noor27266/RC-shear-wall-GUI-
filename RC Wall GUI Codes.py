@@ -1157,7 +1157,6 @@ def render_di_chart(
         alt.layer(*layers)
         .configure_view(strokeWidth=0)
         .configure_axis(domain=True, ticks=True)
-        # >>> increased right padding so last digit (e.g. 0.64) is fully visible
         .configure(padding={"left": 6, "right": 30, "top": 6, "bottom": 6})
     )
 
@@ -1176,7 +1175,7 @@ def render_di_chart(
         st.components.v1.html(chart_html, height=size + 100)
 
     with col_bar:
-        # shorten bar a bit and move it down a little to align with plot area
+        # colour bar with segment heights matching 0–0.2, 0.2–0.5, 0.5–1.0, 1.0–1.5
         legend_height = size - 40
         legend_html = f"""
         <div style="
@@ -1188,20 +1187,24 @@ def render_di_chart(
             height:{legend_height}px;
             border:1px solid #444;
             margin-left:8px;
-            margin-top:20px;
+            margin-top:40px;
             font-family:'Times New Roman', serif;
             font-weight:bold;
         ">
-          <div style="flex:1;background:rgba(255,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+          <!-- COL: 1.0–1.5 (0.5) -->
+          <div style="flex:5;background:rgba(255,0,0,0.18);display:flex;align-items:center;justify-content:center;">
             <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">COL</span>
           </div>
-          <div style="flex:1;background:rgba(255,140,0,0.18);display:flex;align-items:center;justify-content:center;">
+          <!-- SD: 0.5–1.0 (0.5) -->
+          <div style="flex:5;background:rgba(255,140,0,0.18);display:flex;align-items:center;justify-content:center;">
             <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">SD</span>
           </div>
-          <div style="flex:1;background:rgba(255,215,0,0.18);display:flex;align-items:center;justify-content:center;">
+          <!-- PD: 0.2–0.5 (0.3) -->
+          <div style="flex:3;background:rgba(255,215,0,0.18);display:flex;align-items:center;justify-content:center;">
             <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">PD</span>
           </div>
-          <div style="flex:1;background:rgba(0,200,0,0.18);display:flex;align-items:center;justify-content:center;">
+          <!-- UD: 0.0–0.2 (0.2) -->
+          <div style="flex:2;background:rgba(0,200,0,0.18);display:flex;align-items:center;justify-content:center;">
             <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">UD</span>
           </div>
         </div>
@@ -1347,6 +1350,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
