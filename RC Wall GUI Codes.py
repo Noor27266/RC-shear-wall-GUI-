@@ -928,12 +928,12 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
 
-    # ==== NEW BACKGROUND BANDS ====
+    # ==== BACKGROUND BANDS (main plot) ====
     bands_df = pd.DataFrame([
-        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # green
-        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},   # yellow
-        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # orange
-        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # red
+        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)",  "label":"UD"},
+        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)","label":"PD"},
+        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)","label":"SD"},
+        {"y0":1.0, "y1":1.5,"color":"rgba(255,0,0,0.18)",   "label":"COL"},
     ])
 
     band_layer = (
@@ -979,6 +979,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
 
+        # RED DI VALUE (below the point)
         di_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
@@ -996,6 +997,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
+        # DAMAGE STATE LABEL – centered horizontally in the main plot
         state_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
@@ -1015,8 +1017,50 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
 
         layers += [point_layer, di_text_layer, state_text_layer]
 
-    chart = alt.layer(*layers).configure_view(strokeWidth=0)
-    st.components.v1.html(chart.to_html(), height=size+100)
+    # main DI–θ chart
+    main_chart = alt.layer(*layers).configure_view(strokeWidth=0)
+
+    # ==== VERTICAL COLOUR BAR ON THE RIGHT ====
+    bar_width = 40
+
+    bar_rect = (
+        alt.Chart(bands_df)
+        .mark_rect(stroke='black', strokeWidth=0.8)
+        .encode(
+            x=alt.value(0),
+            x2=alt.value(bar_width),
+            y="y0:Q",
+            y2="y1:Q",
+            color=alt.Color("color:N", scale=None),
+        )
+        .properties(width=bar_width, height=size)
+    )
+
+    # place UD / PD / SD / COL text inside bar
+    bar_text = (
+        alt.Chart(bands_df)
+        .mark_text(
+            angle=90,
+            fontSize=11,
+            fontWeight="bold",
+            color="black",
+        )
+        .encode(
+            x=alt.value(bar_width/2),
+            y=alt.Y("y0:Q",
+                    scale=alt.Scale(domain=[0,di_max]),
+                    ),
+            text="label:N",
+        )
+        .properties(width=bar_width, height=size)
+    )
+
+    bar_chart = alt.layer(bar_rect, bar_text).configure_view(strokeWidth=1)
+
+    # combine main plot + colour bar
+    full_chart = alt.hconcat(main_chart, bar_chart)
+
+    st.components.v1.html(full_chart.to_html(), height=size+100)
 
 
 def _pick_default_model():
@@ -1088,6 +1132,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
