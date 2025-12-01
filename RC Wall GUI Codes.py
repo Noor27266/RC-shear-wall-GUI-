@@ -867,15 +867,17 @@ def predict_di(choice, _unused_array, input_df):
         prediction = float(model_registry["Random Forest"].predict(X)[0])
     if choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
-        try: yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
-        except:
+        try:
+            yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
+        except Exception:
             model_registry["PS"].compile(optimizer="adam",loss="mse")
             yhat = model_registry["PS"].predict(Xn,verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
     if choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
-        try: yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
-        except:
+        try:
+            yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
+        except Exception:
             model_registry["MLP"].compile(optimizer="adam",loss="mse")
             yhat = model_registry["MLP"].predict(Xn,verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
@@ -914,9 +916,10 @@ def _damage_state_label(di):
 def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
     import altair as alt
 
-    if curve_df.empty: return
+    if curve_df.empty:
+        return
 
-    # extend curve with last predicted point to REMOVE THE GAP
+    # extend curve with last predicted point so line meets the point
     if highlight_df is not None:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
 
@@ -928,12 +931,12 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
 
-    # ==== NEW BACKGROUND BANDS ====
+    # ----- coloured background bands (0–0.2, 0.2–0.5, 0.5–1.0, 1.0–1.5) -----
     bands_df = pd.DataFrame([
-        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # green
-        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},   # yellow
-        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # orange
-        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # red
+        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # UD (green)
+        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},   # PD (yellow)
+        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # SD (orange)
+        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # COL (red)
     ])
 
     band_layer = (
@@ -949,29 +952,63 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         .properties(width=size, height=size)
     )
 
+    # ----- UD / PD / SD / COL labels inside the plot (fixed, NOT big title) -----
+    labels_df = pd.DataFrame({
+        "y":[0.10, 0.35, 0.75, 1.25],
+        "label":["UD", "PD", "SD", "COL"],
+    })
+
+    bands_label_layer = (
+        alt.Chart(labels_df)
+        .mark_text(
+            fontSize=18,
+            fontWeight="bold",
+            color="black",
+        )
+        .encode(
+            x=alt.value(size - 60),   # near right side of plot
+            y="y:Q",
+            text="label:N",
+        )
+        .properties(width=size, height=size)
+    )
+
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0)
         .encode(
-            x=alt.X("θ:Q", title="Drift Ratio (θ)",
-                scale=alt.Scale(domain=[0,actual_theta_max]),
-                axis=alt.Axis(values=list(x_ticks), format=".2f",
-                              labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
+            x=alt.X(
+                "θ:Q",
+                title="Drift Ratio (θ)",
+                scale=alt.Scale(domain=[0, actual_theta_max]),
+                axis=alt.Axis(
+                    values=list(x_ticks),
+                    format=".2f",
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                ),
             ),
-            y=alt.Y("Predicted_DI:Q", title="Damage Index (DI)",
-                scale=alt.Scale(domain=[0,di_max]),
-                axis=alt.Axis(values=[0,0.2,0.5,1.0,1.5],
-                              labelFontSize=AXIS_LABEL_FS, titleFontSize=AXIS_TITLE_FS)
-            )
+            y=alt.Y(
+                "Predicted_DI:Q",
+                title="Damage Index (DI)",
+                scale=alt.Scale(domain=[0, di_max]),
+                axis=alt.Axis(
+                    values=[0, 0.2, 0.5, 1.0, 1.5],
+                    labelFontSize=AXIS_LABEL_FS,
+                    titleFontSize=AXIS_TITLE_FS,
+                ),
+            ),
         ).properties(width=size, height=size)
     )
 
     line_layer = (
-        alt.Chart(curve_df).mark_line(strokeWidth=2)
+        alt.Chart(curve_df)
+        .mark_line(strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
     )
 
-    layers=[band_layer, axes_layer, line_layer]
+    layers = [band_layer, bands_label_layer, axes_layer, line_layer]
 
+    # ----- highlight last predicted point + red DI value (no damage-state title) -----
     if highlight_df is not None:
         point_layer = (
             alt.Chart(highlight_df)
@@ -984,7 +1021,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .mark_text(
                 align="center",
                 dx=0,
-                dy=18,
+                dy=18,      # below the point
                 fontSize=16,
                 fontWeight="bold",
                 color="red",
@@ -996,27 +1033,10 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
-        state_text_layer = (
-            alt.Chart(highlight_df)
-            .mark_text(
-                align="center",
-                dx=0,
-                dy=-28,
-                fontSize=22,
-                fontWeight="bold",
-                color="black",
-            )
-            .encode(
-                x=alt.value(size/2),
-                y="Predicted_DI:Q",
-                text="DamageState:N",
-            )
-        )
-
-        layers += [point_layer, di_text_layer, state_text_layer]
+        layers += [point_layer, di_text_layer]
 
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
-    st.components.v1.html(chart.to_html(), height=size+100)
+    st.components.v1.html(chart.to_html(), height=size + 100)
 
 
 def _pick_default_model():
@@ -1036,13 +1056,18 @@ if model_choice not in model_registry:
     st.error("No trained model available.")
 else:
     if submit:
-        xdf = _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta)
+        xdf = _make_input_df(
+            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
+        )
 
         try:
             pred = predict_di(model_choice, None, xdf)
             row = xdf.copy()
             row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat([st.session_state.results_df, row], ignore_index=True)
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
             st.rerun()
         except Exception as e:
             st.error(str(e))
@@ -1051,13 +1076,17 @@ else:
         last = st.session_state.results_df.iloc[-1]
         last_di = float(last["Predicted_DI"])
 
-        base = _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,float(last["θ"]))
+        base = _make_input_df(
+            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,float(last["θ"])
+        )
         curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
 
+        # keep DamageState column even though we no longer draw big label
         highlight_df = pd.DataFrame({
             "θ":[float(last["θ"])],
             "Predicted_DI":[last_di],
-            "DamageState":[_damage_state_label(last_di)]
+            "DamageState":[_damage_state_label(last_di)],
         })
 
         with chart_slot.container():
@@ -1088,6 +1117,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
