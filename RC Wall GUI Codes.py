@@ -1157,7 +1157,8 @@ def render_di_chart(
         alt.layer(*layers)
         .configure_view(strokeWidth=0)
         .configure_axis(domain=True, ticks=True)
-        .configure(padding={"left": 6, "right": 6, "top": 6, "bottom": 6})
+        # >>> increased right padding so last digit (e.g. 0.64) is fully visible
+        .configure(padding={"left": 6, "right": 30, "top": 6, "bottom": 6})
     )
 
     chart_html = chart.to_html()
@@ -1175,6 +1176,8 @@ def render_di_chart(
         st.components.v1.html(chart_html, height=size + 100)
 
     with col_bar:
+        # shorten bar a bit and move it down a little to align with plot area
+        legend_height = size - 40
         legend_html = f"""
         <div style="
             display:flex;
@@ -1182,9 +1185,10 @@ def render_di_chart(
             align-items:stretch;
             justify-content:stretch;
             width:30px;
-            height:{size}px;
+            height:{legend_height}px;
             border:1px solid #444;
-            margin-left:4px;
+            margin-left:8px;
+            margin-top:20px;
             font-family:'Times New Roman', serif;
             font-weight:bold;
         ">
@@ -1343,6 +1347,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
