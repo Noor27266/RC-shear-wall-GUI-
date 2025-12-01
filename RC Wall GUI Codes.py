@@ -876,7 +876,7 @@ def predict_di(choice, _unused_array, input_df):
         Xn = ann_mlp_proc.transform_X(X)
         try: yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         except:
-            model_registry["MLP"].compile(optimizer="adam",loss="mse")
+        model_registry["MLP"].compile(optimizer="adam",loss="mse")
             yhat = model_registry["MLP"].predict(Xn,verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
 
@@ -996,24 +996,8 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
-        state_text_layer = (
-            alt.Chart(highlight_df)
-            .mark_text(
-                align="center",
-                dx=0,
-                dy=-28,
-                fontSize=22,
-                fontWeight="bold",
-                color="black",
-            )
-            .encode(
-                x=alt.value(size/2),
-                y="Predicted_DI:Q",
-                text="DamageState:N",
-            )
-        )
-
-        layers += [point_layer, di_text_layer, state_text_layer]
+        # NOTE: damage-state text layer removed
+        layers += [point_layer, di_text_layer]
 
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
     st.components.v1.html(chart.to_html(), height=size+100)
@@ -1051,19 +1035,24 @@ else:
         last = st.session_state.results_df.iloc[-1]
         last_di = float(last["Predicted_DI"])
 
-        base = _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,float(last["θ"]))
+        base = _make_input_df(
+            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,
+            float(last["θ"])
+        )
         curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
 
+        # highlight point WITHOUT damage-state label
         highlight_df = pd.DataFrame({
-            "θ":[float(last["θ"])],
-            "Predicted_DI":[last_di],
-            "DamageState":[_damage_state_label(last_di)]
+            "θ": [float(last["θ"])],
+            "Predicted_DI": [last_di],
         })
 
         with chart_slot.container():
             st.markdown("<div style='margin-top:120px;'>", unsafe_allow_html=True)
             render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
             st.markdown("</div>", unsafe_allow_html=True)
+
 
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
@@ -1084,3 +1073,4 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
