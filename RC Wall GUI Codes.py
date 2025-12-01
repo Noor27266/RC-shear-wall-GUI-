@@ -1019,7 +1019,7 @@ def render_di_chart(
     if curve_df is None or curve_df.empty:
         return
 
-    # extend curve with last predicted point to REMOVE ANY GAP
+    # include last point in curve so line reaches it
     if highlight_df is not None and not highlight_df.empty:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
 
@@ -1052,7 +1052,7 @@ def render_di_chart(
         .encode(
             x=alt.value(0),
             x2=alt.value(size),
-            y="y0:Q",
+            y=alt.Y("y0:Q", scale=alt.Scale(domain=[0, di_max])),
             y2="y1:Q",
             color=alt.Color("color:N", scale=None),
         )
@@ -1160,7 +1160,7 @@ def render_di_chart(
         .configure(padding={"left": 6, "right": 10, "top": 6, "bottom": 6})
     )
 
-    # ===== VERTICAL COLOUR BAR (ALTAIR, SHARING SAME Y SCALE) =====
+    # ===== VERTICAL COLOUR BAR (ALTAIR) – SHARED Y-SCALE =====
     legend_df = pd.DataFrame(
         [
             {"y0": 0.0, "y1": 0.2, "yc": 0.1, "label": "UD", "color": "rgba(0,200,0,0.18)"},
@@ -1174,29 +1174,24 @@ def render_di_chart(
         alt.Chart(legend_df)
         .mark_rect(stroke="black", strokeWidth=1)
         .encode(
-            y=alt.Y(
-                "y0:Q",
-                scale=alt.Scale(domain=[0, di_max]),
-                axis=None,
-            ),
+            x=alt.value(0),
+            x2=alt.value(40),
+            y=alt.Y("y0:Q"),   # will use shared y-scale
             y2="y1:Q",
             color=alt.Color("color:N", scale=None),
         )
-        .properties(width=45, height=size)
+        .properties(width=40, height=size)
     )
 
     legend_text = (
         alt.Chart(legend_df)
-        .mark_text(
-            fontSize=12,
-            fontWeight="bold",
-        )
+        .mark_text(fontSize=12, fontWeight="bold")
         .encode(
-            y=alt.Y("yc:Q", scale=alt.Scale(domain=[0, di_max]), axis=None),
-            x=alt.value(22),
+            x=alt.value(20),
+            y="yc:Q",          # same shared y-scale
             text="label:N",
         )
-        .properties(width=45, height=size)
+        .properties(width=40, height=size)
     )
 
     legend_chart = (
@@ -1204,7 +1199,10 @@ def render_di_chart(
         .configure_view(strokeWidth=1)
     )
 
-    combined = alt.hconcat(main_chart, legend_chart, spacing=20)
+    combined = (
+        alt.hconcat(main_chart, legend_chart, spacing=20)
+        .resolve_scale(y="shared")   # <<< THIS forces vertical alignment
+    )
 
     chart_html = combined.to_html()
     chart_html = chart_html.replace(
@@ -1275,11 +1273,9 @@ else:
 
     # ---------- Show DI–θ plot ONLY after at least one prediction ----------
     if not st.session_state.results_df.empty:
-        # last prediction = highlight point
         last = st.session_state.results_df.iloc[-1]
         last_di = float(last["Predicted_DI"])
 
-        # build base df using last θ for sweep
         base_xdf = _make_input_df(
             lw,
             hw,
@@ -1354,6 +1350,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
