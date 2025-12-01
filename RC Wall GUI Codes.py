@@ -928,6 +928,27 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
 
+    # ==== NEW BACKGROUND BANDS ====
+    bands_df = pd.DataFrame([
+        {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # green
+        {"y0":0.2, "y1":0.5, "color":"rgba(255,215,0,0.18)"},   # yellow
+        {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # orange
+        {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # red
+    ])
+
+    band_layer = (
+        alt.Chart(bands_df)
+        .mark_rect()
+        .encode(
+            x=alt.value(0),
+            x2=alt.value(size),
+            y="y0:Q",
+            y2="y1:Q",
+            color=alt.Color("color:N", scale=None)
+        )
+        .properties(width=size, height=size)
+    )
+
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0)
         .encode(
@@ -949,7 +970,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         .encode(x="θ:Q", y="Predicted_DI:Q")
     )
 
-    layers=[axes_layer, line_layer]
+    layers=[band_layer, axes_layer, line_layer]
 
     if highlight_df is not None:
         point_layer = (
@@ -958,13 +979,12 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
 
-        # RED DI VALUE (below the point)
         di_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
                 align="center",
                 dx=0,
-                dy=18,          # below the blue point
+                dy=18,
                 fontSize=16,
                 fontWeight="bold",
                 color="red",
@@ -976,7 +996,6 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             )
         )
 
-        # DAMAGE STATE LABEL – centered horizontally in the plot, above the point
         state_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
@@ -988,7 +1007,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
                 color="black",
             )
             .encode(
-                x=alt.value(size / 2),   # << center of plot width
+                x=alt.value(size/2),
                 y="Predicted_DI:Q",
                 text="DamageState:N",
             )
@@ -1069,6 +1088,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
