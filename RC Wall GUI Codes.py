@@ -995,18 +995,6 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.1):
     return pd.DataFrame(rows)
 
 
-def _damage_state_label(di: float) -> str:
-    """Map DI value to qualitative damage state label."""
-    if di < 0.2:
-        return "Undamage"
-    elif di < 0.5:
-        return "Partial Damage"
-    elif di <= 1.0:
-        return "Severe Damage"
-    else:
-        return "Collapse"
-
-
 def render_di_chart(
     curve_df: pd.DataFrame,
     highlight_df: pd.DataFrame = None,
@@ -1107,7 +1095,34 @@ def render_di_chart(
 
     layers = [band_layer, axes_layer, line_layer]
 
-    # Highlight ONLY the last predicted point + labels
+    # ---- STATIC ZONE LABELS (UD, PD, SD, COL) INSIDE THE PLOT ----
+    zone_labels_df = pd.DataFrame(
+        [
+            {"y": 0.1, "label": "UD"},
+            {"y": 0.35, "label": "PD"},
+            {"y": 0.75, "label": "SD"},
+            {"y": 1.25, "label": "COL"},
+        ]
+    )
+
+    zone_text_layer = (
+        alt.Chart(zone_labels_df)
+        .mark_text(
+            fontSize=16,
+            fontWeight="bold",
+            color="black",
+        )
+        .encode(
+            x=alt.value(size * 0.80),  # near right side, inside plot
+            y=alt.Y("y:Q", scale=alt.Scale(domain=[0, di_max])),
+            text="label:N",
+        )
+        .properties(width=size, height=size)
+    )
+
+    layers.append(zone_text_layer)
+
+    # ---- Highlight ONLY the last predicted point + numeric DI value ----
     if highlight_df is not None and not highlight_df.empty:
         point_layer = (
             alt.Chart(highlight_df)
@@ -1133,25 +1148,7 @@ def render_di_chart(
             )
         )
 
-        # qualitative damage state label (centered horizontally in main plot)
-        text_state_layer = (
-            alt.Chart(highlight_df)
-            .mark_text(
-                align="center",
-                dx=0,
-                dy=-28,
-                fontSize=22,
-                fontWeight="bold",
-                color="black",
-            )
-            .encode(
-                x=alt.value(size / 2),
-                y="Predicted_DI:Q",
-                text="DamageState:N",
-            )
-        )
-
-        layers.extend([point_layer, text_di_layer, text_state_layer])
+        layers.extend([point_layer, text_di_layer])
 
     main_chart = (
         alt.layer(*layers)
@@ -1160,51 +1157,7 @@ def render_di_chart(
         .configure(padding={"left": 6, "right": 10, "top": 6, "bottom": 6})
     )
 
-    # ===== VERTICAL COLOUR BAR (ALTAIR) – SHARED Y-SCALE =====
-    legend_df = pd.DataFrame(
-        [
-            {"y0": 0.0, "y1": 0.2, "yc": 0.1, "label": "UD", "color": "rgba(0,200,0,0.18)"},
-            {"y0": 0.2, "y1": 0.5, "yc": 0.35, "label": "PD", "color": "rgba(255,215,0,0.18)"},
-            {"y0": 0.5, "y1": 1.0, "yc": 0.75, "label": "SD", "color": "rgba(255,140,0,0.18)"},
-            {"y0": 1.0, "y1": 1.5, "yc": 1.25, "label": "COL", "color": "rgba(255,0,0,0.18)"},
-        ]
-    )
-
-    legend_bands = (
-        alt.Chart(legend_df)
-        .mark_rect(stroke="black", strokeWidth=1)
-        .encode(
-            x=alt.value(0),
-            x2=alt.value(40),
-            y=alt.Y("y0:Q", scale=alt.Scale(domain=[0, di_max]), axis=None),
-            y2="y1:Q",
-            color=alt.Color("color:N", scale=None),
-        )
-        .properties(width=40, height=size)
-    )
-
-    legend_text = (
-        alt.Chart(legend_df)
-        .mark_text(fontSize=12, fontWeight="bold")
-        .encode(
-            x=alt.value(20),
-            y=alt.Y("yc:Q", scale=alt.Scale(domain=[0, di_max]), axis=None),
-            text="label:N",
-        )
-        .properties(width=40, height=size)
-    )
-
-    legend_chart = (
-        alt.layer(legend_bands, legend_text)
-        .configure_view(padding={"top": 0, "bottom": 0, "left": 0, "right": 0})
-    )
-
-    combined = (
-        alt.hconcat(main_chart, legend_chart, spacing=20)
-        .resolve_scale(y="shared")  # shared DI scale -> perfect vertical alignment
-    )
-
-    chart_html = combined.to_html()
+    chart_html = main_chart.to_html()
     chart_html = chart_html.replace(
         "</style>",
         "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
@@ -1306,7 +1259,6 @@ else:
             {
                 "θ": [float(last["θ"])],
                 "Predicted_DI": [last_di],
-                "DamageState": [_damage_state_label(last_di)],
             }
         )
 
@@ -1331,6 +1283,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1350,6 +1303,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
