@@ -1036,7 +1036,7 @@ def render_di_chart(
     )
     x_ticks = np.linspace(0.0, actual_theta_max, 5).round(2)
 
-    # ===== BACKGROUND BANDS =====
+    # ===== BACKGROUND BANDS IN MAIN PLOT =====
     bands_df = pd.DataFrame(
         [
             {"y0": 0.0, "y1": 0.2, "color": "rgba(0,200,0,0.18)"},
@@ -1153,14 +1153,60 @@ def render_di_chart(
 
         layers.extend([point_layer, text_di_layer, text_state_layer])
 
-    chart = (
+    main_chart = (
         alt.layer(*layers)
         .configure_view(strokeWidth=0)
         .configure_axis(domain=True, ticks=True)
-        .configure(padding={"left": 6, "right": 30, "top": 6, "bottom": 6})
+        .configure(padding={"left": 6, "right": 10, "top": 6, "bottom": 6})
     )
 
-    chart_html = chart.to_html()
+    # ===== VERTICAL COLOUR BAR (ALTAIR, SHARING SAME Y SCALE) =====
+    legend_df = pd.DataFrame(
+        [
+            {"y0": 0.0, "y1": 0.2, "yc": 0.1, "label": "UD", "color": "rgba(0,200,0,0.18)"},
+            {"y0": 0.2, "y1": 0.5, "yc": 0.35, "label": "PD", "color": "rgba(255,215,0,0.18)"},
+            {"y0": 0.5, "y1": 1.0, "yc": 0.75, "label": "SD", "color": "rgba(255,140,0,0.18)"},
+            {"y0": 1.0, "y1": 1.5, "yc": 1.25, "label": "COL", "color": "rgba(255,0,0,0.18)"},
+        ]
+    )
+
+    legend_bands = (
+        alt.Chart(legend_df)
+        .mark_rect(stroke="black", strokeWidth=1)
+        .encode(
+            y=alt.Y(
+                "y0:Q",
+                scale=alt.Scale(domain=[0, di_max]),
+                axis=None,
+            ),
+            y2="y1:Q",
+            color=alt.Color("color:N", scale=None),
+        )
+        .properties(width=45, height=size)
+    )
+
+    legend_text = (
+        alt.Chart(legend_df)
+        .mark_text(
+            fontSize=12,
+            fontWeight="bold",
+        )
+        .encode(
+            y=alt.Y("yc:Q", scale=alt.Scale(domain=[0, di_max]), axis=None),
+            x=alt.value(22),
+            text="label:N",
+        )
+        .properties(width=45, height=size)
+    )
+
+    legend_chart = (
+        alt.layer(legend_bands, legend_text)
+        .configure_view(strokeWidth=1)
+    )
+
+    combined = alt.hconcat(main_chart, legend_chart, spacing=20)
+
+    chart_html = combined.to_html()
     chart_html = chart_html.replace(
         "</style>",
         "</style><style>.vega-embed .vega-tooltip, .vega-embed .vega-tooltip * "
@@ -1168,48 +1214,7 @@ def render_di_chart(
         "background: #000 !important; color: #fff !important; padding: 12px !important; }</style>",
     )
 
-    # ----- STREAMLIT LAYOUT: CHART + VERTICAL COLOR BAR -----
-    col_chart, col_bar = st.columns([10, 1])
-
-    with col_chart:
-        st.components.v1.html(chart_html, height=size + 100)
-
-    with col_bar:
-        # colour bar with segment heights matching 0–0.2, 0.2–0.5, 0.5–1.0, 1.0–1.5
-        legend_height = size - 60
-        legend_html = f"""
-        <div style="
-            display:flex;
-            flex-direction:column;
-            align-items:stretch;
-            justify-content:stretch;
-            width:30px;
-            height:{legend_height}px;
-            border:1px solid #444;
-            margin-left:8px;
-            margin-top:60px;
-            font-family:'Times New Roman', serif;
-            font-weight:bold;
-        ">
-          <!-- COL: 1.0–1.5 (0.5) -->
-          <div style="flex:5;background:rgba(255,0,0,0.18);display:flex;align-items:center;justify-content:center;">
-            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">COL</span>
-          </div>
-          <!-- SD: 0.5–1.0 (0.5) -->
-          <div style="flex:5;background:rgba(255,140,0,0.18);display:flex;align-items:center;justify-content:center;">
-            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">SD</span>
-          </div>
-          <!-- PD: 0.2–0.5 (0.3) -->
-          <div style="flex:3;background:rgba(255,215,0,0.18);display:flex;align-items:center;justify-content:center;">
-            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">PD</span>
-          </div>
-          <!-- UD: 0.0–0.2 (0.2) -->
-          <div style="flex:2;background:rgba(0,200,0,0.18);display:flex;align-items:center;justify-content:center;">
-            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;">UD</span>
-          </div>
-        </div>
-        """
-        st.markdown(legend_html, unsafe_allow_html=True)
+    st.components.v1.html(chart_html, height=size + 100)
 
 
 def _pick_default_model():
@@ -1330,7 +1335,6 @@ else:
 
 
 
-
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1350,6 +1354,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
