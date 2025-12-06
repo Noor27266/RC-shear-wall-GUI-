@@ -705,23 +705,32 @@ with left:
 # =============================================================================
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 100, 100, 160   # logo position
-CHART_W = 400
+# Fixed-height box for schematic so DI–θ plot position does not change
+SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
+SCHEM_IMG_H    = 240   # actual schematic image height (increase/decrease as you like)
+SCHEM_OFFSET_X = 40    # move schematic right (+) / left (-)
+SCHEM_OFFSET_Y = 10    # move schematic down (+) / up (-)
+
+CHART_W = 400          # width used later for DI–θ chart
 
 with right:
 
-    # --- logo ---
+    # --- schematic in fixed-height box ---
     st.markdown(
         f"""
-        <div style="position:relative; left:{int(HERO_X)}px; top:{int(HERO_Y)}px; text-align:left;">
-            <img src='data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}' width='{int(HERO_W)}'/>
+        <div style="position:relative; height:{SCHEM_BOX_H}px; margin-bottom:0;">
+            <img src="data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}"
+                 style="
+                    position:absolute;
+                    left:{SCHEM_OFFSET_X}px;
+                    top:{SCHEM_OFFSET_Y}px;
+                    height:{SCHEM_IMG_H}px;
+                    width:auto;
+                 " />
         </div>
         """,
         unsafe_allow_html=True,
     )
-
-    # small spacer between logo and row
-    st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
@@ -776,6 +785,7 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
+
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -1122,6 +1132,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
