@@ -707,7 +707,7 @@ with left:
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
 SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
-SCHEM_IMG_H    = 240   # actual schematic image height (increase/decrease as you like)
+SCHEM_IMG_H    = 260   # actual schematic image height (increase/decrease as you like)
 SCHEM_OFFSET_X = 40    # move schematic right (+) / left (-)
 SCHEM_OFFSET_Y = 80    # move schematic down (+) / up (-)
 
@@ -1132,6 +1132,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
