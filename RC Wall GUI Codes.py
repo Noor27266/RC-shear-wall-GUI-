@@ -709,7 +709,7 @@ with left:
 SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
 SCHEM_IMG_H    = 260   # actual schematic image height (increase/decrease as you like)
 SCHEM_OFFSET_X = 40    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = 80    # move schematic down (+) / up (-)
+SCHEM_OFFSET_Y = 150    # move schematic down (+) / up (-)
 
 CHART_W = 400          # width used later for DI–θ chart
 
@@ -1132,6 +1132,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
