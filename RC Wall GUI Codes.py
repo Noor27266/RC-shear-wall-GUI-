@@ -706,14 +706,12 @@ with left:
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
-SCHEM_IMG_H    = 300   # schematic image height (bigger figure)
-SCHEM_OFFSET_Y = 30    # move schematic down (+) / up (-)
+SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
+SCHEM_IMG_H    = 260   # actual schematic image height (increase/decrease as you like)
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
+SCHEM_OFFSET_Y = 150    # move schematic down (+) / up (-)
 
-# box height must be >= OFFSET_Y + IMG_H (+ a little padding)
-SCHEM_BOX_H    = SCHEM_OFFSET_Y + SCHEM_IMG_H + 10   # keeps gap above plot small
-
-CHART_W = 400          # width used later for DI–θ chart (unchanged)
+CHART_W = 400          # width used later for DI–θ chart
 
 with right:
 
@@ -787,6 +785,7 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
+
 
 
 
@@ -1135,6 +1134,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
