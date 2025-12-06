@@ -915,7 +915,7 @@ def _damage_state_label(di):
     return "Collapse"
 
 
-def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
+def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=200):
     import altair as alt
 
     if curve_df.empty:
@@ -1122,6 +1122,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
