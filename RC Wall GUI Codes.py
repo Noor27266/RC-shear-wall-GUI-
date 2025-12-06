@@ -1043,7 +1043,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         layers += [point_layer, di_text_layer]
 
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
-    st.components.v1.html(chart.to_html(), height=size+100)
+    st.components.v1.html(chart.to_html(), height=size+60)
 
 
 def _pick_default_model():
@@ -1122,6 +1122,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
