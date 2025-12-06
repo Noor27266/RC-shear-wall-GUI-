@@ -705,7 +705,7 @@ with left:
 # =============================================================================
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
-HERO_X, HERO_Y, HERO_W = 80, 100, 260   # logo position
+HERO_X, HERO_Y, HERO_W = 80, 20, 260   # logo position
 CHART_W = 500
 
 with right:
@@ -1122,6 +1122,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
