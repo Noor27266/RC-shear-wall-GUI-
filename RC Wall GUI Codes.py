@@ -642,19 +642,20 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
+
 # =============================================================================
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
-SCHEM_BOX_H    = 400   # INCREASED to match chart height
-SCHEM_IMG_H    = 450   # actual schematic image height
-SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = -20   # Adjusted for better alignment
+SCHEM_BOX_H    = 300   # Keep original
+SCHEM_IMG_H    = 450   # Keep original
+SCHEM_OFFSET_X = 80    # Keep original
+SCHEM_OFFSET_Y = -40   # Keep original
 
-# SECOND SCHEMATIC - MAKE SAME HEIGHT AS CHART
-SCHEM2_IMG_H   = 480   # Make it taller to match chart height
-SCHEM2_OFFSET_X = 500  # position for second schematic
-SCHEM2_OFFSET_Y = -20  # Same Y offset as first schematic
+# SECOND SCHEMATIC - Adjust height only, NOT position
+SCHEM2_IMG_H   = 480   # Make taller to match chart
+SCHEM2_OFFSET_X = 500  # Keep original
+SCHEM2_OFFSET_Y = -40  # Keep original Y position
 
 CHART_W = 350          # width used later for DI–θ chart
 
@@ -673,7 +674,7 @@ with right:
                     height:{SCHEM_IMG_H}px;
                     width:auto;
                  " />
-            <!-- Second schematic - SAME HEIGHT AS CHART -->
+            <!-- Second schematic - TALLER but same position -->
             <img src="data:image/png;base64,{b64(BASE_DIR / "RC shear wall schematic2.png")}"
                  style="
                     position:absolute;
@@ -698,11 +699,11 @@ with right:
         chart_slot = st.empty()
            
     # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - SIMPLE & WORKING
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - ORIGINAL POSITION
     # =============================================================================
     with col_controls:
         
-        # Model selection
+        # Model selection - KEEP ORIGINAL POSITION
         available = set(model_registry.keys())
         ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
         display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
@@ -717,43 +718,36 @@ with right:
         # Store model choice
         st.session_state["model_choice"] = model_choice
         
-        # Button container
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-        
+        # NO EXTRA MARGINS - Keep original spacing
         # --- Calculate button ---
-        if st.button("Calculate", key="calc_btn_main", use_container_width=True):
-            # Set flag for STEP 8
-            st.session_state["do_calculation"] = True
-            # Don't rerun here - let STEP 8 handle it
-        
-        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+        calculate_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
         
         # --- Reset button ---
-        if st.button("Reset", key="reset_btn_main", use_container_width=True):
-            # Clear flags and rerun to reset inputs
+        reset_clicked = st.button("Reset", key="reset_btn", use_container_width=True)
+        
+        # --- Clear All button ---
+        clear_clicked = st.button("Clear All", key="clear_btn", use_container_width=True)
+        
+        # Handle button clicks
+        if reset_clicked:
+            # Clear any calculation flag
             if "do_calculation" in st.session_state:
                 del st.session_state["do_calculation"]
             st.rerun()
-        
-        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
-        
-        # --- Clear All button ---
-        if st.button("Clear All", key="clear_btn_main", use_container_width=True):
-            # Clear results
+            
+        if clear_clicked:
             st.session_state.results_df = pd.DataFrame()
-            # Clear calculation flag
             if "do_calculation" in st.session_state:
                 del st.session_state["do_calculation"]
-            # Success message
             st.success("All predictions cleared!")
-            # No rerun needed - results are already cleared
-        
-        # REMOVED: The Predicted Damage Index label
+            st.rerun()
+            
+        if calculate_clicked:
+            st.session_state["do_calculation"] = True
+            # Don't rerun here - let STEP 8 handle it
         
         # Download CSV button only if we have results
         if not st.session_state.results_df.empty:
-            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-            
             csv = st.session_state.results_df.to_csv(index=False)
             st.download_button(
                 "📂 Download as CSV",
@@ -761,12 +755,13 @@ with right:
                 file_name="di_predictions.csv",
                 mime="text/csv",
                 use_container_width=True,
-                key="dl_csv_main",
+                key="dl_csv",
             )
 
+# KEEP ORIGINAL CSS - DON'T CHANGE POSITIONS
 css("""
 <style>
-/* Adjust positioning for right panel elements */
+/* Keep original positioning */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"] {
@@ -782,8 +777,10 @@ div[data-testid="column"]:nth-child(2) {
 }
 </style>
 """)
+
+
 # =============================================================================
-# ⚡ STEP 8: DI–θ PREDICTION & PLOT (UPDATED - NO PREDICTION LABEL)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (ONLY CHANGE CHART HEIGHT TO 480)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -869,7 +866,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
     
     return pd.DataFrame(rows)
 
-def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=480):  # Increased size to 480
+def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=480):  # CHANGED TO 480
     import altair as alt
     
     if curve_df.empty:
@@ -1088,6 +1085,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
