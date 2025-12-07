@@ -714,7 +714,7 @@ SCHEM_OFFSET_Y = 100   # move schematic down (+) / up (-)
 SCHEM2_IMG_H   = 380   # SAME height for second schematic
 SCHEM2_OFFSET_X = 420  # Just 40px more than original 380 - slight move to the right
 
-CHART_W = 300          # width used later for DI–θ chart
+CHART_W = 350          # width used later for DI–θ chart
 
 with right:
 
@@ -1156,6 +1156,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
