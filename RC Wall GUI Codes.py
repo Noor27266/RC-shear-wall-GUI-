@@ -752,8 +752,7 @@ with right:
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
-
-            # =============================================================================
+    # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
@@ -1079,7 +1078,10 @@ if "model_choice" not in locals():
 if model_choice not in model_registry:
     st.error("No trained model available.")
 else:
-    if submit:
+    # Get submit from session state to fix scope issue
+    submit_state = st.session_state.get(f"calc_btn_{st.session_state.get('calc_counter', 0)}_clicked", False)
+    
+    if submit or submit_state:
         xdf = _make_input_df(
             lw,hw,tw,fc,fyt,fysh,fyl,fybl,
             rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
@@ -1092,7 +1094,8 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            # ADD THIS ONE LINE - Increment counter to change button key next time
+            # Store button state and increment counter
+            st.session_state[f"calc_btn_{st.session_state.get('calc_counter', 0)}_clicked"] = True
             st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
             st.rerun()
         except Exception as e:
@@ -1120,7 +1123,6 @@ else:
             st.markdown("</div>", unsafe_allow_html=True)
 
 
-
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1140,6 +1142,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
