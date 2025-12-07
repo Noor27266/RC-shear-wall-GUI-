@@ -824,7 +824,6 @@ div[data-testid="stDownloadButton"],
 </style>
 """)
 
-
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
@@ -1063,21 +1062,21 @@ def _pick_default_model():
 
 # ---------------- MAIN EXECUTION ----------------
 
-if "model_choice" not in locals():
-    lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
-    model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
-
-if model_choice not in model_registry:
-    st.error("No trained model available.")
-else:
-    if submit:
+# FIRST: Handle button click immediately after it's defined in STEP 7.2
+if submit:
+    # Get the current model choice from session state
+    lbl = st.session_state.get("model_select_compact")
+    current_model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
+    
+    # Only proceed if we have a valid model
+    if current_model_choice and current_model_choice in model_registry:
         xdf = _make_input_df(
             lw,hw,tw,fc,fyt,fysh,fyl,fybl,
             rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
         )
 
         try:
-            pred = predict_di(model_choice, None, xdf)
+            pred = predict_di(current_model_choice, None, xdf)
             row = xdf.copy()
             row["Predicted_DI"] = pred
             st.session_state.results_df = pd.concat(
@@ -1086,7 +1085,19 @@ else:
             st.rerun()
         except Exception as e:
             st.error(str(e))
+    else:
+        st.error("Please select a valid model first.")
 
+# SECOND: Set model_choice variable for plotting (if not already set)
+if "model_choice" not in locals():
+    lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
+    model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
+
+# THIRD: Generate and display the plot if we have results
+if model_choice not in model_registry:
+    if not submit:  # Only show error if not in a button click context
+        st.error("No trained model available.")
+else:
     if not st.session_state.results_df.empty:
         last = st.session_state.results_df.iloc[-1]
         last_di = float(last["Predicted_DI"])
@@ -1130,6 +1141,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
