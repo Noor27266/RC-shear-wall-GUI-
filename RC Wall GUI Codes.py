@@ -142,8 +142,7 @@ html, body{
 header[data-testid="stHeader"]{ height:0 !important; padding:0 !important; background:transparent !important; }
 header[data-testid="stHeader"] *{ display:none !important; }
 
-/* Pull EVERYTHING up (controls, selectbox, buttons…) */
-div.stApp{ margin-top:-4.0rem !important; }
+
 
 /* Remove extra white space at top */
 section.main > div.block-container{
@@ -706,10 +705,10 @@ with left:
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
-SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
-SCHEM_IMG_H    = 360   # actual schematic image height
+SCHEM_BOX_H    = 200   # total vertical space reserved for schematic (keep this fixed)
+SCHEM_IMG_H    = 300   # actual schematic image height
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = 100   # move schematic down (+) / up (-)
+SCHEM_OFFSET_Y = 60   # move schematic down (+) / up (-)
 
 SCHEM2_IMG_H   = 380   # SAME height for second schematic
 SCHEM2_OFFSET_X = 420  # Just 40px more than original 380 - slight move to the right
@@ -1156,6 +1155,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
