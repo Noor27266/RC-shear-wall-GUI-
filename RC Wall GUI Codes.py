@@ -600,10 +600,10 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # LOGO AT TOP LEFT - Bigger, moved right and up
+    # LOGO CENTERED AT TOP - Bigger and moved up
     if _b64:
         st.markdown(f"""
-        <div style="text-align: left; margin-bottom: 5px; margin-left: 40px;">
+        <div style="text-align: center; margin-bottom: 5px;">
             <img src="data:image/png;base64,{_b64}" 
                  style="height: 80px; width: auto;" 
                  alt="Logo" />
@@ -1097,6 +1097,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
