@@ -692,12 +692,11 @@ with right:
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
-           # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+           
+    # =============================================================================
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - FIXED VERSION
     # =============================================================================
     with col_controls:
-        
-        # REMOVE THIS LINE: st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
         
         # Model selection
         available = set(model_registry.keys())
@@ -711,15 +710,49 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # Buttons - USE UNIQUE KEYS
-        submit = st.button("Calculate", key=f"calc_btn_{st.session_state.get('calc_counter', 0)}", use_container_width=True)
-
-        if st.button("Reset", key="reset_btn_main", use_container_width=True):
+        # Store model choice in session state for use in STEP 8
+        if "current_model" not in st.session_state:
+            st.session_state.current_model = model_choice
+        
+        # Button container with proper spacing
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+        
+        # Calculate button - with proper key
+        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+        
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+        
+        # Reset button - simpler implementation
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            # Just rerun to reset inputs to defaults
             st.rerun()
-
-        if st.button("Clear All", key="clear_btn_main", use_container_width=True):
+        
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+        
+        # Clear All button
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
-
+            st.success("All predictions cleared!")
+            st.rerun()
+        
+        # Store current inputs for comparison
+        current_inputs = {
+            "lw": lw, "hw": hw, "tw": tw, "fc": fc, "fyt": fyt, 
+            "fysh": fysh, "fyl": fyl, "fybl": fybl,
+            "rt": rt, "rsh": rsh, "rl": rl, "rbl": rbl, 
+            "axial": axial, "b0": b0, "db": db, "s_db": s_db,
+            "AR": AR, "M_Vlw": M_Vlw, "theta": theta
+        }
+        st.session_state["current_inputs"] = current_inputs
+        st.session_state["current_model"] = model_choice
+        
+        # Store submit state
+        if submit:
+            st.session_state["last_submit_time"] = pd.Timestamp.now()
+            st.session_state["should_calculate"] = True
+        else:
+            st.session_state["should_calculate"] = False
+        
         # Latest DI + CSV download
         if not st.session_state.results_df.empty:
             latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
@@ -727,6 +760,8 @@ with right:
                 f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
                 unsafe_allow_html=True,
             )
+            
+            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
             csv = st.session_state.results_df.to_csv(index=False)
             st.download_button(
@@ -737,12 +772,6 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
-
-        # ADD THESE 3 LINES RIGHT HERE (inside col_controls)
-        if submit:
-            st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
-            st.rerun()
-
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -790,7 +819,7 @@ div[data-testid="column"]:nth-child(2) {
 
 
 # =============================================================================
-# ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (FIXED)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -824,21 +853,19 @@ _TRAIN_COL_ORDER = [
 def _df_in_train_order(df): 
     return df.rename(columns=_TRAIN_NAME_MAP).reindex(columns=_TRAIN_COL_ORDER)
 
-
-def predict_di(choice, _unused_array, input_df):
+def predict_di(choice, input_df):
     df_trees = _df_in_train_order(input_df).replace([np.inf,-np.inf],np.nan).fillna(0.0)
     X = df_trees.values.astype(np.float32)
 
     if choice == "LightGBM":
         prediction = float(model_registry["LightGBM"].predict(X)[0])
-    if choice == "XGBoost":
+    elif choice == "XGBoost":
         prediction = float(model_registry["XGBoost"].predict(X)[0])
-    if choice == "CatBoost":
+    elif choice == "CatBoost":
         prediction = float(model_registry["CatBoost"].predict(X)[0])
-    if choice == "Random Forest":
+    elif choice == "Random Forest":
         prediction = float(model_registry["Random Forest"].predict(X)[0])
-
-    if choice == "PS":
+    elif choice == "PS":
         Xn = ann_ps_proc.transform_X(X)
         try:
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
@@ -846,8 +873,7 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["PS"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["PS"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_ps_proc.inverse_transform_y(yhat).item())
-
-    if choice == "MLP":
+    elif choice == "MLP":
         Xn = ann_mlp_proc.transform_X(X)
         try:
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
@@ -855,9 +881,10 @@ def predict_di(choice, _unused_array, input_df):
             model_registry["MLP"].compile(optimizer="adam", loss="mse")
             yhat = model_registry["MLP"].predict(Xn, verbose=0)[0][0]
         prediction = float(ann_mlp_proc.inverse_transform_y(yhat).item())
-
+    else:
+        prediction = 0.0
+    
     return max(0.035, min(prediction, 1.5))
-
 
 def _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta):
     cols = ["l_w","h_w","t_w","f′c","fyt","fysh","fyl","fybl","ρt","ρsh","ρl","ρbl",
@@ -865,20 +892,18 @@ def _make_input_df(lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,
     vals = [lw,hw,tw,fc,fyt,fysh,fyl,fybl,rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta]
     return pd.DataFrame([vals], columns=cols)
 
-
 def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
     actual_theta = float(base_df.iloc[0]["θ"])
     thetas = np.round(np.arange(0, actual_theta+1e-9, step), 2)
-
+    
     rows=[]
     for th in thetas:
         df = base_df.copy()
         df["θ"] = th
-        di = predict_di(model_choice, None, df)
+        di = predict_di(model_choice, df)
         rows.append({"θ":th, "Predicted_DI":di})
-
+    
     return pd.DataFrame(rows)
-
 
 def _damage_state_label(di):
     if di < 0.2: return "Undamage"
@@ -886,25 +911,24 @@ def _damage_state_label(di):
     if di <= 1.0: return "Severe Damage"
     return "Collapse"
 
-
 def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
     import altair as alt
-
+    
     if curve_df.empty:
         return
-
+    
     # extend curve with last predicted point to remove the gap
     if highlight_df is not None:
         curve_df = pd.concat([curve_df, highlight_df], ignore_index=True)
-
+    
     actual_theta_max = curve_df["θ"].max()
-
+    
     AXIS_LABEL_FS = 14
     AXIS_TITLE_FS = 16
-
+    
     base_axes_df = pd.DataFrame({"θ":[0, actual_theta_max], "Predicted_DI":[0,0]})
     x_ticks = np.linspace(0, actual_theta_max, 5).round(2)
-
+    
     # ---- background bands (UD, PD, SD, COL ranges) ----
     bands_df = pd.DataFrame([
         {"y0":0.0, "y1":0.2, "color":"rgba(0,200,0,0.18)"},     # UD
@@ -912,7 +936,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         {"y0":0.5, "y1":1.0, "color":"rgba(255,140,0,0.18)"},   # SD
         {"y0":1.0, "y1":1.5, "color":"rgba(255,0,0,0.18)"},     # COL
     ])
-
+    
     band_layer = (
         alt.Chart(bands_df)
         .mark_rect()
@@ -925,7 +949,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         )
         .properties(width=size, height=size)
     )
-
+    
     # ---- main axes with tight y-limit at 1.5 ----
     axes_layer = (
         alt.Chart(base_axes_df).mark_line(opacity=0)
@@ -954,15 +978,15 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         )
         .properties(width=size, height=size)
     )
-
+    
     line_layer = (
         alt.Chart(curve_df)
         .mark_line(strokeWidth=2)
         .encode(x="θ:Q", y="Predicted_DI:Q")
     )
-
+    
     layers = [band_layer, axes_layer, line_layer]
-
+    
     # ---- band labels: UD / PD / SD / COL ----
     labels_df = pd.DataFrame([
         {"θ": actual_theta_max * 0.80, "Predicted_DI": 0.10, "label": "UD"},
@@ -970,7 +994,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
         {"θ": actual_theta_max * 0.20, "Predicted_DI": 0.75, "label": "SD"},
         {"θ": actual_theta_max * 0.20, "Predicted_DI": 1.25, "label": "COL"},
     ])
-
+    
     label_layer = (
         alt.Chart(labels_df)
         .mark_text(
@@ -984,9 +1008,9 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             text="label:N",
         )
     )
-
+    
     layers.append(label_layer)
-
+    
     # ---- highlight last prediction point + DI value ----
     if highlight_df is not None:
         point_layer = (
@@ -994,7 +1018,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
             .mark_circle(size=110, color="blue")
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
-
+        
         di_text_layer = (
             alt.Chart(highlight_df)
             .mark_text(
@@ -1011,12 +1035,11 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
                 text=alt.Text("Predicted_DI:Q", format=".4f"),
             )
         )
-
+        
         layers += [point_layer, di_text_layer]
-
+    
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
     st.components.v1.html(chart.to_html(), height=size+100)
-
 
 def _pick_default_model():
     for m in MODEL_ORDER:
@@ -1024,63 +1047,96 @@ def _pick_default_model():
             return m
     return None
 
+# ---------------- MAIN PREDICTION LOGIC ----------------
 
-# ---------------- MAIN EXECUTION ----------------
-
-if "model_choice" not in locals():
+# Get model choice from session state or UI
+if "current_model" in st.session_state:
+    model_choice = st.session_state.current_model
+else:
     lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
     model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
 
-if model_choice not in model_registry:
-    st.error("No trained model available.")
-else:
-    # Submit is handled in STEP 7.2 - just update results here
-    # Get the input values (they're in global scope)
+# Check if Calculate button was clicked (from session state)
+should_calculate = st.session_state.get("should_calculate", False)
+
+# Process calculation if button was clicked and model is available
+if should_calculate and model_choice in model_registry:
+    # Create input dataframe
     xdf = _make_input_df(
-        lw,hw,tw,fc,fyt,fysh,fyl,fybl,
-        rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
+        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
+        rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw, theta
     )
     
-    # Always calculate and update when we have a model choice
+    # Make prediction
     try:
-        pred = predict_di(model_choice, None, xdf)
+        pred = predict_di(model_choice, xdf)
+        
+        # Add to results
         row = xdf.copy()
         row["Predicted_DI"] = pred
-        # Only add if not already in results
+        
+        # Check if this exact input already exists
         current_input = tuple(xdf.iloc[0].values)
         exists = False
-        for _, r in st.session_state.results_df.iterrows():
-            if tuple(r.drop('Predicted_DI', errors='ignore').values) == current_input:
-                exists = True
-                break
-        if not exists and pred > 0:
+        
+        if not st.session_state.results_df.empty:
+            for _, r in st.session_state.results_df.iterrows():
+                # Extract input values from the row
+                try:
+                    row_values = tuple(r.drop('Predicted_DI', errors='ignore').values)
+                    if len(row_values) == len(current_input):
+                        # Compare with tolerance for floating point values
+                        match = True
+                        for a, b in zip(row_values, current_input):
+                            if abs(float(a) - float(b)) > 0.001:
+                                match = False
+                                break
+                        if match:
+                            exists = True
+                            break
+                except:
+                    continue
+        
+        if not exists:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
+            
+            # Show success message
+            st.toast(f"Prediction added! DI: {pred:.4f}", icon="✅")
+        
+        # Clear the calculation flag
+        st.session_state["should_calculate"] = False
+        
     except Exception as e:
-        # Silent fail - just don't add to results
-        pass
+        st.error(f"Prediction error: {str(e)}")
+        st.session_state["should_calculate"] = False
 
-    if not st.session_state.results_df.empty:
-        last = st.session_state.results_df.iloc[-1]
-        last_di = float(last["Predicted_DI"])
-
-        base = _make_input_df(
-            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
-            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,
-            float(last["θ"])
-        )
-        curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
-
-        highlight_df = pd.DataFrame({
-            "θ": [float(last["θ"])],
-            "Predicted_DI": [last_di],
-        })
-
-        with chart_slot.container():
-            st.markdown("<div style='margin-top:150px;'>", unsafe_allow_html=True)
-            render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
-            st.markdown("</div>", unsafe_allow_html=True)
+# Display latest prediction and chart (if results exist)
+if not st.session_state.results_df.empty:
+    last = st.session_state.results_df.iloc[-1]
+    last_di = float(last["Predicted_DI"])
+    
+    # Generate and display chart
+    base = _make_input_df(
+        lw, hw, tw, fc, fyt, fysh, fyl, fybl,
+        rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw,
+        float(last["θ"])
+    )
+    curve = _sweep_curve_df(model_choice, base, THETA_MAX, 0.1)
+    
+    highlight_df = pd.DataFrame({
+        "θ": [float(last["θ"])],
+        "Predicted_DI": [last_di],
+    })
+    
+    with chart_slot.container():
+        st.markdown("<div style='margin-top:150px;'>", unsafe_allow_html=True)
+        render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
+        st.markdown("</div>", unsafe_allow_html=True)
+elif should_calculate and model_choice not in model_registry:
+    st.error("Selected model is not available. Please check model loading status.")
+    st.session_state["should_calculate"] = False
 
 
 # =============================================================================
@@ -1103,6 +1159,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
