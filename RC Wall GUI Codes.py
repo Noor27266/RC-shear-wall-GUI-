@@ -196,7 +196,7 @@ css(
     f"""
 <style>
   .block-container {{
-      padding-top: 0.5rem !important;
+      padding-top: 2.5rem !important;
       padding-bottom: 0.5rem !important;
       max-height: none !important;
       overflow: visible !important;
@@ -1155,6 +1155,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
