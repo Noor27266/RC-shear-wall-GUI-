@@ -694,7 +694,7 @@ with right:
         chart_slot = st.empty()
            
     # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - FIXED VERSION
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - SIMPLE FIX
     # =============================================================================
     with col_controls:
         
@@ -710,48 +710,48 @@ with right:
         )
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # Store model choice in session state for use in STEP 8
-        if "current_model" not in st.session_state:
-            st.session_state.current_model = model_choice
+        # Store model choice in session state
+        st.session_state["model_choice"] = model_choice
         
         # Button container with proper spacing
         st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         
-        # Calculate button - with proper key
-        submit = st.button("Calculate", key="calc_btn", use_container_width=True)
+        # SIMPLE BUTTONS - No complex logic
+        # Calculate button
+        calculate_clicked = st.button("Calculate", key="calc_btn_unique", use_container_width=True)
         
         st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         
-        # Reset button - simpler implementation
-        if st.button("Reset", key="reset_btn", use_container_width=True):
-            # Just rerun to reset inputs to defaults
-            st.rerun()
+        # Reset button
+        reset_clicked = st.button("Reset", key="reset_btn_unique", use_container_width=True)
         
         st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         
         # Clear All button
-        if st.button("Clear All", key="clear_btn", use_container_width=True):
+        clear_clicked = st.button("Clear All", key="clear_btn_unique", use_container_width=True)
+        
+        # Handle button clicks immediately
+        if reset_clicked:
+            # Force a rerun to reset inputs
+            st.rerun()
+            
+        if clear_clicked:
             st.session_state.results_df = pd.DataFrame()
             st.success("All predictions cleared!")
-            st.rerun()
-        
-        # Store current inputs for comparison
-        current_inputs = {
-            "lw": lw, "hw": hw, "tw": tw, "fc": fc, "fyt": fyt, 
-            "fysh": fysh, "fyl": fyl, "fybl": fybl,
-            "rt": rt, "rsh": rsh, "rl": rl, "rbl": rbl, 
-            "axial": axial, "b0": b0, "db": db, "s_db": s_db,
-            "AR": AR, "M_Vlw": M_Vlw, "theta": theta
-        }
-        st.session_state["current_inputs"] = current_inputs
-        st.session_state["current_model"] = model_choice
-        
-        # Store submit state
-        if submit:
-            st.session_state["last_submit_time"] = pd.Timestamp.now()
-            st.session_state["should_calculate"] = True
-        else:
-            st.session_state["should_calculate"] = False
+            # Don't rerun here - let the success message show
+            
+        # Store the calculate click in session state for STEP 8
+        if calculate_clicked:
+            st.session_state["last_calculate_click"] = True
+            # Store current inputs
+            current_inputs = {
+                "lw": lw, "hw": hw, "tw": tw, "fc": fc, "fyt": fyt, 
+                "fysh": fysh, "fyl": fyl, "fybl": fybl,
+                "rt": rt, "rsh": rsh, "rl": rl, "rbl": rbl, 
+                "axial": axial, "b0": b0, "db": db, "s_db": s_db,
+                "AR": AR, "M_Vlw": M_Vlw, "theta": theta
+            }
+            st.session_state["last_inputs"] = current_inputs
         
         # Latest DI + CSV download
         if not st.session_state.results_df.empty:
@@ -817,9 +817,8 @@ div[data-testid="column"]:nth-child(2) {
 </style>
 """)
 
-
 # =============================================================================
-# ⚡ STEP 8: DI–θ PREDICTION & PLOT (FIXED)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (SIMPLE WORKING VERSION)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -904,12 +903,6 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
         rows.append({"θ":th, "Predicted_DI":di})
     
     return pd.DataFrame(rows)
-
-def _damage_state_label(di):
-    if di < 0.2: return "Undamage"
-    if di < 0.5: return "Partial Damage"
-    if di <= 1.0: return "Severe Damage"
-    return "Collapse"
 
 def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
     import altair as alt
@@ -1041,26 +1034,24 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     chart = alt.layer(*layers).configure_view(strokeWidth=0)
     st.components.v1.html(chart.to_html(), height=size+100)
 
-def _pick_default_model():
+# =============================================================================
+# MAIN PREDICTION LOGIC - SIMPLE AND DIRECT
+# =============================================================================
+
+# Get model choice
+model_choice = st.session_state.get("model_choice", None)
+if not model_choice:
+    # Fallback to first available model
     for m in MODEL_ORDER:
         if m in model_registry:
-            return m
-    return None
+            model_choice = m
+            break
 
-# ---------------- MAIN PREDICTION LOGIC ----------------
+# Check if Calculate button was clicked
+calculate_clicked = st.session_state.get("last_calculate_click", False)
 
-# Get model choice from session state or UI
-if "current_model" in st.session_state:
-    model_choice = st.session_state.current_model
-else:
-    lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
-    model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
-
-# Check if Calculate button was clicked (from session state)
-should_calculate = st.session_state.get("should_calculate", False)
-
-# Process calculation if button was clicked and model is available
-if should_calculate and model_choice in model_registry:
+# Process calculation if button was clicked
+if calculate_clicked and model_choice and model_choice in model_registry:
     # Create input dataframe
     xdf = _make_input_df(
         lw, hw, tw, fc, fyt, fysh, fyl, fybl,
@@ -1075,44 +1066,36 @@ if should_calculate and model_choice in model_registry:
         row = xdf.copy()
         row["Predicted_DI"] = pred
         
-        # Check if this exact input already exists
-        current_input = tuple(xdf.iloc[0].values)
-        exists = False
-        
+        # Simple check: only add if results is empty or theta is different
+        add_row = True
         if not st.session_state.results_df.empty:
-            for _, r in st.session_state.results_df.iterrows():
-                # Extract input values from the row
-                try:
-                    row_values = tuple(r.drop('Predicted_DI', errors='ignore').values)
-                    if len(row_values) == len(current_input):
-                        # Compare with tolerance for floating point values
-                        match = True
-                        for a, b in zip(row_values, current_input):
-                            if abs(float(a) - float(b)) > 0.001:
-                                match = False
-                                break
-                        if match:
-                            exists = True
-                            break
-                except:
-                    continue
+            last_theta = float(st.session_state.results_df.iloc[-1]["θ"])
+            current_theta = float(row["θ"].iloc[0])
+            # Allow adding if theta is different (for same model/inputs)
+            if abs(last_theta - current_theta) < 0.001:
+                # Same theta, check if all inputs are the same
+                last_row = st.session_state.results_df.iloc[-1]
+                same_inputs = True
+                for col in xdf.columns:
+                    if abs(float(last_row[col]) - float(row[col].iloc[0])) > 0.001:
+                        same_inputs = False
+                        break
+                if same_inputs:
+                    add_row = False
         
-        if not exists:
+        if add_row:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
             
-            # Show success message
-            st.toast(f"Prediction added! DI: {pred:.4f}", icon="✅")
-        
-        # Clear the calculation flag
-        st.session_state["should_calculate"] = False
+        # Clear the calculate flag
+        st.session_state["last_calculate_click"] = False
         
     except Exception as e:
         st.error(f"Prediction error: {str(e)}")
-        st.session_state["should_calculate"] = False
+        st.session_state["last_calculate_click"] = False
 
-# Display latest prediction and chart (if results exist)
+# Always display chart if we have results
 if not st.session_state.results_df.empty:
     last = st.session_state.results_df.iloc[-1]
     last_di = float(last["Predicted_DI"])
@@ -1134,10 +1117,6 @@ if not st.session_state.results_df.empty:
         st.markdown("<div style='margin-top:150px;'>", unsafe_allow_html=True)
         render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
         st.markdown("</div>", unsafe_allow_html=True)
-elif should_calculate and model_choice not in model_registry:
-    st.error("Selected model is not available. Please check model loading status.")
-    st.session_state["should_calculate"] = False
-
 
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
@@ -1159,6 +1138,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
