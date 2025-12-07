@@ -1099,10 +1099,28 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# =============================================================================
+# 🎨 NEW CSS TO MOVE CONTROLS DOWN
+# =============================================================================
+css("""
+<style>
+/* Target the specific controls in the right column */
+div[data-testid="column"]:nth-child(2) div[data-testid="stSelectbox"],
+div[data-testid="column"]:nth-child(2) div.stButton,
+div[data-testid="column"]:nth-child(2) div[data-testid="stDownloadButton"],
+div[data-testid="column"]:nth-child(2) .prediction-with-color {
+    position: relative !important;
+    top: 20px !important;
+    left: 20px !important;
+    margin-bottom: 8px !important;
+}
 
-
-
-
+/* Move the entire right column content up */
+div[data-testid="column"]:nth-child(2) > div {
+    margin-top: -50px !important;
+}
+</style>
+""")
 
 
 
