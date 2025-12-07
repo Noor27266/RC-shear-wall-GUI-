@@ -694,7 +694,7 @@ with right:
         chart_slot = st.empty()
            
     # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - SIMPLE WORKING FIX
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - FINAL FIX
     # =============================================================================
     with col_controls:
         
@@ -716,42 +716,44 @@ with right:
         # Button container
         st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         
-        # SIMPLE BUTTONS THAT WORK
-        # Calculate button
-        if st.button("Calculate", key="calc_btn", use_container_width=True):
-            # Store that Calculate was clicked
-            st.session_state["calculate_clicked"] = True
-            # Force a rerun to process the calculation
+        # --- Calculate button ---
+        if st.button("Calculate", key="calc_btn_final", use_container_width=True):
+            # Set a flag to calculate in STEP 8
+            st.session_state["needs_calculation"] = True
             st.rerun()
         
         st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         
-        # Reset button - SIMPLE: just rerun to reset all inputs
-        if st.button("Reset", key="reset_btn", use_container_width=True):
-            # Clear the calculate flag
-            if "calculate_clicked" in st.session_state:
-                del st.session_state["calculate_clicked"]
-            # Force rerun to reset inputs to defaults
+        # --- Reset button ---
+        if st.button("Reset", key="reset_btn_final", use_container_width=True):
+            # Clear calculation flag
+            if "needs_calculation" in st.session_state:
+                del st.session_state["needs_calculation"]
+            # Reset will happen automatically due to rerun
             st.rerun()
         
         st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         
-        # Clear All button - SIMPLE: just clear results
-        if st.button("Clear All", key="clear_btn", use_container_width=True):
+        # --- Clear All button ---
+        if st.button("Clear All", key="clear_btn_final", use_container_width=True):
+            # Clear all results
             st.session_state.results_df = pd.DataFrame()
-            # Clear the calculate flag
-            if "calculate_clicked" in st.session_state:
-                del st.session_state["calculate_clicked"]
-            # Show success message
+            # Clear calculation flag
+            if "needs_calculation" in st.session_state:
+                del st.session_state["needs_calculation"]
+            # Show message and refresh
             st.success("All predictions cleared!")
-            # Force a rerun to update UI
             st.rerun()
         
-        # Latest DI + CSV download
+        # Get the LATEST prediction to display - use the same logic as the chart
+        latest_di = None
         if not st.session_state.results_df.empty:
-            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+            latest_di = float(st.session_state.results_df.iloc[-1]["Predicted_DI"])
+        
+        # Display the SAME DI value that the chart shows
+        if latest_di is not None:
             st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
+                f"<div class='prediction-with-color'>Predicted Damage Index : {latest_di:.4f}</div>",
                 unsafe_allow_html=True,
             )
             
@@ -765,6 +767,12 @@ with right:
                 mime="text/csv",
                 use_container_width=True,
                 key="dl_csv_main",
+            )
+        else:
+            # Show placeholder when no predictions
+            st.markdown(
+                f"<div class='prediction-with-color'>Predicted Damage Index : --</div>",
+                unsafe_allow_html=True,
             )
 
     # styling for the blue DI label (unchanged)
@@ -810,9 +818,8 @@ div[data-testid="column"]:nth-child(2) {
 }
 </style>
 """)
-
 # =============================================================================
-# ⚡ STEP 8: DI–θ PREDICTION & PLOT (SIMPLE WORKING FIX)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (FINAL WORKING VERSION)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -1029,7 +1036,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     st.components.v1.html(chart.to_html(), height=size+100)
 
 # =============================================================================
-# MAIN PREDICTION LOGIC - SIMPLE AND WORKING
+# MAIN PREDICTION LOGIC - FINAL WORKING VERSION
 # =============================================================================
 
 # Get model choice
@@ -1041,11 +1048,11 @@ if not model_choice:
             model_choice = m
             break
 
-# Check if Calculate button was clicked
-calculate_clicked = st.session_state.get("calculate_clicked", False)
+# Check if calculation is needed
+needs_calculation = st.session_state.get("needs_calculation", False)
 
-# Process calculation if button was clicked
-if calculate_clicked and model_choice and model_choice in model_registry:
+# Process calculation if needed
+if needs_calculation and model_choice and model_choice in model_registry:
     # Create input dataframe
     xdf = _make_input_df(
         lw, hw, tw, fc, fyt, fysh, fyl, fybl,
@@ -1060,24 +1067,27 @@ if calculate_clicked and model_choice and model_choice in model_registry:
         row = xdf.copy()
         row["Predicted_DI"] = pred
         
-        # Simple: always add the prediction
+        # Always add new prediction
         st.session_state.results_df = pd.concat(
             [st.session_state.results_df, row], ignore_index=True
         )
         
-        # Clear the calculate flag
-        st.session_state["calculate_clicked"] = False
+        # Clear the flag
+        st.session_state["needs_calculation"] = False
+        
+        # Force a small delay to ensure UI updates
+        st.rerun()
         
     except Exception as e:
         st.error(f"Prediction error: {str(e)}")
-        st.session_state["calculate_clicked"] = False
+        st.session_state["needs_calculation"] = False
 
 # Always display chart if we have results
 if not st.session_state.results_df.empty:
     last = st.session_state.results_df.iloc[-1]
     last_di = float(last["Predicted_DI"])
     
-    # Generate and display chart
+    # Generate and display chart - USE THE SAME DATA
     base = _make_input_df(
         lw, hw, tw, fc, fyt, fysh, fyl, fybl,
         rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw,
@@ -1094,7 +1104,6 @@ if not st.session_state.results_df.empty:
         st.markdown("<div style='margin-top:150px;'>", unsafe_allow_html=True)
         render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
         st.markdown("</div>", unsafe_allow_html=True)
-
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1115,6 +1124,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
