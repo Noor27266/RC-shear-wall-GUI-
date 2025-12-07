@@ -753,7 +753,7 @@ with right:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
-    # =============================================================================
+        # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
@@ -771,7 +771,7 @@ with right:
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
         # Buttons - USE UNIQUE KEYS
-        submit = st.button("Calculate", key="calc_btn_main", use_container_width=True)
+        submit = st.button("Calculate", key=f"calc_btn_{st.session_state.get('calc_counter', 0)}", use_container_width=True)
 
         if st.button("Reset", key="reset_btn_main", use_container_width=True):
             st.rerun()
@@ -796,8 +796,6 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
-
-
 
 
     # styling for the blue DI label (unchanged)
@@ -1094,7 +1092,9 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            st.experimental_rerun()  # ← CHANGED FROM st.rerun() TO st.experimental_rerun()
+            # Increment counter to change button key next time
+            st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
+            st.rerun()
         except Exception as e:
             st.error(str(e))
 
@@ -1140,6 +1140,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
