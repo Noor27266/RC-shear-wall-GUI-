@@ -837,6 +837,7 @@ div[data-testid="stDownloadButton"],
     position: relative !important;
     top: 200px !important;
     left: 20px !important;
+    margin-bottom: 15px !important;  /* Adds space between elements */
 }
 </style>
 """)
@@ -1155,6 +1156,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
