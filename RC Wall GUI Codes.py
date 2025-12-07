@@ -320,55 +320,6 @@ try:
 except Exception:
     _b64 = ""
 
-LOGO_SIZE = 70
-LOGO_TOP = 25
-LOGO_POSITION = 50
-
-st.markdown(
-    f"""
-<style>
-  .page-header-outer {{
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 0 !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-  }}
-
-  .page-header {{
-    display: flex !important;
-    justify-content: flex-end !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    height: 0 !important;
-    position: relative !important;
-  }}
-
-  .page-header__logo {{
-    height: {int(LOGO_SIZE)}px !important;
-    width: auto !important;
-    position: fixed !important;
-    top: {int(LOGO_TOP)}px !important;
-    right: {int(LOGO_POSITION)}px !important;
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-  }}
-
-  .main .block-container {{
-    padding-top: 40px !important;
-  }}
-</style>
-
-<div class="page-header-outer">
-  <div class="page-header">
-    {f'<img class="page-header__logo" alt="Logo" src="data:image/png;base64,{_b64}" />' if _b64 else ''}
-  </div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
 
 
 # =============================================================================
@@ -705,10 +656,10 @@ with left:
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
-SCHEM_BOX_H    = 200   # total vertical space reserved for schematic (keep this fixed)
-SCHEM_IMG_H    = 300   # actual schematic image height
+SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
+SCHEM_IMG_H    = 360   # actual schematic image height
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = 60   # move schematic down (+) / up (-)
+SCHEM_OFFSET_Y = 80   # move schematic down (+) / up (-)
 
 SCHEM2_IMG_H   = 380   # SAME height for second schematic
 SCHEM2_OFFSET_X = 420  # Just 40px more than original 380 - slight move to the right
@@ -1155,6 +1106,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
