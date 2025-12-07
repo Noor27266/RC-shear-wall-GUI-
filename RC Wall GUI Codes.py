@@ -741,77 +741,50 @@ with right:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
-    # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
-    # =============================================================================
-    with col_controls:
+ # =============================================================================
+# ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+# =============================================================================
+with col_controls:
 
-        # Model selection
-        available = set(model_registry.keys())
-        ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
-        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+    # Model selection
+    available = set(model_registry.keys())
+    ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
+    display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
 
-        model_choice_label = st.selectbox(
-            "Model Selection",
-            display_labels,
-            key="model_select_compact",
+    model_choice_label = st.selectbox(
+        "Model Selection",
+        display_labels,
+        key="model_select_compact",
+    )
+    model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
+
+    # Buttons - USE UNIQUE KEYS
+    # Only define the button here, process it LATER after inputs are defined
+    calculate_clicked = st.button("Calculate", key="calc_btn_main", use_container_width=True)
+
+    if st.button("Reset", key="reset_btn_main", use_container_width=True):
+        st.rerun()
+
+    if st.button("Clear All", key="clear_btn_main", use_container_width=True):
+        st.session_state.results_df = pd.DataFrame()
+
+    # Latest DI + CSV download
+    if not st.session_state.results_df.empty:
+        latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+        st.markdown(
+            f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
+            unsafe_allow_html=True,
         )
-        model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        # Buttons - USE UNIQUE KEYS
-        # FIX: Use session state to track button clicks
-        if st.button("Calculate", key="calc_btn_main", use_container_width=True):
-            st.session_state.calculate_triggered = True
-        
-        # Check if calculate was triggered
-        if st.session_state.get("calculate_triggered", False):
-            st.session_state.calculate_triggered = False
-            
-            # Get model choice
-            lbl = st.session_state.get("model_select_compact")
-            current_model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
-            
-            if current_model_choice and current_model_choice in model_registry:
-                xdf = _make_input_df(
-                    lw,hw,tw,fc,fyt,fysh,fyl,fybl,
-                    rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
-                )
-
-                try:
-                    pred = predict_di(current_model_choice, None, xdf)
-                    row = xdf.copy()
-                    row["Predicted_DI"] = pred
-                    st.session_state.results_df = pd.concat(
-                        [st.session_state.results_df, row], ignore_index=True
-                    )
-                except Exception as e:
-                    st.error(str(e))
-            else:
-                st.error("Please select a valid model first.")
-
-        if st.button("Reset", key="reset_btn_main", use_container_width=True):
-            st.rerun()
-
-        if st.button("Clear All", key="clear_btn_main", use_container_width=True):
-            st.session_state.results_df = pd.DataFrame()
-
-        # Latest DI + CSV download
-        if not st.session_state.results_df.empty:
-            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-            st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
-                unsafe_allow_html=True,
-            )
-
-            csv = st.session_state.results_df.to_csv(index=False)
-            st.download_button(
-                "📂 Download as CSV",
-                data=csv,
-                file_name="di_predictions.csv",
-                mime="text/csv",
-                use_container_width=True,
-                key="dl_csv_main",
-            )
+        csv = st.session_state.results_df.to_csv(index=False)
+        st.download_button(
+            "📂 Download as CSV",
+            data=csv,
+            file_name="di_predictions.csv",
+            mime="text/csv",
+            use_container_width=True,
+            key="dl_csv_main",
+        )
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -1136,6 +1109,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
