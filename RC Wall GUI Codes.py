@@ -300,6 +300,8 @@ css(
   [data-testid="column"]:first-child {{
       min-height: 100vh !important;
       background: #e0e4ec !important;
+      margin-top: 60px !important;  /* ADD THIS LINE - pushes left column down */
+      padding-top: 10px !important;  /* ADD THIS LINE - adds space at top */
   }}
 </style>
 """
@@ -308,7 +310,7 @@ css(
 
 
 # =============================================================================
-# 🏷️ STEP 4: DYNAMIC HEADER & LOGO POSITIONING
+# 🏷️ LOGO LOADING FOR LEFT PANEL
 # =============================================================================
 try:
     _logo_path = BASE_DIR / "TJU logo.png"
@@ -598,10 +600,16 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-
-    # 🔽 MOVE THE SCHEMATIC DOWN (adjust 60 → 80 → 100 as needed)
-    st.markdown("<div style='margin-top:-100px'></div>", unsafe_allow_html=True)
-
+    # 🔽 ADD LOGO AT TOP LEFT
+    if _b64:
+        st.markdown(f"""
+        <div style="text-align: left; margin-bottom: 20px;">
+            <img src="data:image/png;base64,{_b64}" 
+                 style="height: 60px; width: auto;" 
+                 alt="Logo" />
+        </div>
+        """, unsafe_allow_html=True)
+    
     st.markdown(
         "<div style='height: 0px; margin: 0; padding: 0;'>",
         unsafe_allow_html=True,
@@ -609,19 +617,19 @@ with left:
 
     st.markdown(
         """
-    <div style="background:transparent; border-radius:12px; padding:0px; margin:-20px 0 0 0; box-shadow:none;">
+    <div style="background:transparent; border-radius:12px; padding:0px; margin:0 0 0 0; box-shadow:none;">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
-            Predict Damage index  for RC Shear Walls
+            Predict Damage index for RC Shear Walls
         </div>
     """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div style='height: 1px;'></div>" * 3, unsafe_allow_html=True)
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
     st.markdown(
         """
-    <div style="margin: -80px 0 0 0; padding: 0;">
+    <div style="margin: 0 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
     """,
         unsafe_allow_html=True,
@@ -1106,6 +1114,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
