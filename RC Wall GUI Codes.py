@@ -770,13 +770,13 @@ with right:
 
 css("""
 <style>
-/* Adjust positioning for right panel elements - MOVE UP TO TOUCH PLOTS */
+/* Adjust positioning for right panel elements - BRING THEM DOWN A BIT */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
     position: relative !important;
-    top: -40px !important;  /* Changed from 200px to -40px (move up) */
+    top: 20px !important;  /* Changed from -40px to 20px (move down a bit) */
     left: 20px !important;
     margin-bottom: 8px !important;
 }
@@ -1098,6 +1098,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
