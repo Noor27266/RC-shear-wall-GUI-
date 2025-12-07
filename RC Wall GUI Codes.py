@@ -776,7 +776,7 @@ div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
     position: relative !important;
-    top: 120px !important;  /* Changed from 200px to 10px */
+    top: 130px !important;  /* Changed from 200px to 10px */
     left: 20px !important;
     margin-bottom: 8px !important;  /* Reduced from 15px to 8px for tighter spacing */
 }
@@ -1103,6 +1103,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
