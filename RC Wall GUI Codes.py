@@ -756,30 +756,28 @@ with right:
 # CHANGE ONLY THE CSS - REPLACE THE ENTIRE CSS SECTION AT THE END OF STEP 7.2
 css("""
 <style>
-/* Move controls down more and adjust height */
+/* Move controls down just a bit and add right spacing */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"] {
     position: relative !important;
-    top: 200px !important;  /* Increased from 160px to 200px to move further down */
-    left: 20px !important;
+    top: 150px !important;  /* Slightly more than original 140px */
+    left: 30px !important;  /* Move a bit more to the right */
     margin-bottom: 10px !important;
     height: auto !important;
+    margin-right: 20px !important;  /* Add space on right side */
 }
 
-/* Make the right column taller to match the two pictures */
+/* Adjust the chart container */
 div[data-testid="column"]:nth-child(2) {
-    margin-top: -40px !important;  /* Increased from -20px to -40px */
-    height: 650px !important;  /* Add fixed height to match pictures */
-    min-height: 650px !important;
-    display: flex !important;
-    flex-direction: column !important;
+    margin-top: -30px !important;  /* Slight adjustment */
+    padding-right: 20px !important;  /* Add padding on right */
 }
 
-/* Adjust the chart container to align with pictures */
-div[data-testid="column"]:nth-child(2) > div:first-child {
-    height: 650px !important;
-    min-height: 650px !important;
+/* Make sure controls container has proper spacing */
+div[data-testid="column"]:nth-child(2) > div:nth-child(2) {
+    padding-top: 10px !important;
+    padding-right: 20px !important;
 }
 </style>
 """)
@@ -1084,6 +1082,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
