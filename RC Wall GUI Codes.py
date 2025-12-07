@@ -712,7 +712,7 @@ SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
 SCHEM_OFFSET_Y = 100   # move schematic down (+) / up (-)
 
 SCHEM2_IMG_H   = 340   # height for second schematic
-SCHEM2_OFFSET_X = 380  # position second schematic to the right of first one
+SCHEM2_OFFSET_X = 500  # INCREASED FROM 380 TO 500 - moves second schematic further right
 
 CHART_W = 400          # width used later for DI–θ chart
 
@@ -735,7 +735,7 @@ with right:
             <img src="data:image/png;base64,{b64(BASE_DIR / "RC shear wall schematic2.png")}"
                  style="
                     position:absolute;
-                    left:{SCHEM2_OFFSET_X}px;
+                    left:{SCHEM2_OFFSET_X}px;  <!-- NOW 500px FROM LEFT -->
                     top:{SCHEM_OFFSET_Y}px;
                     height:{SCHEM2_IMG_H}px;
                     width:auto;
@@ -1143,6 +1143,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
