@@ -649,7 +649,7 @@ with left:
 SCHEM_BOX_H    = 300   # total vertical space reserved for schematic (keep this fixed)
 SCHEM_IMG_H    = 450   # actual schematic image height
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = 00   # move schematic down (+) / up (-)
+SCHEM_OFFSET_Y = -20   # move schematic down (+) / up (-)
 
 SCHEM2_IMG_H   = 470   # SAME height for second schematic
 SCHEM2_OFFSET_X = 420  # Just 40px more than original 380 - slight move to the right
@@ -1097,6 +1097,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
