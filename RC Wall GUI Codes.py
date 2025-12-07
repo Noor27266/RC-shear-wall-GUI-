@@ -707,12 +707,12 @@ with left:
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
 SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
-SCHEM_IMG_H    = 340   # actual schematic image height (increase/decrease as you like)
+SCHEM_IMG_H    = 340   # actual schematic image height
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
 SCHEM_OFFSET_Y = 100   # move schematic down (+) / up (-)
 
-SCHEM2_IMG_H   = 340   # height for second schematic
-SCHEM2_OFFSET_X = 380  # position second schematic to the right of first one
+SCHEM2_IMG_H   = 340   # SAME height for second schematic
+SCHEM2_OFFSET_X = 420  # Just 40px more than original 380 - slight move to the right
 
 CHART_W = 400          # width used later for DI–θ chart
 
@@ -744,7 +744,6 @@ with right:
         """,
         unsafe_allow_html=True,
     )
-
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
     # =============================================================================
@@ -1142,6 +1141,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
