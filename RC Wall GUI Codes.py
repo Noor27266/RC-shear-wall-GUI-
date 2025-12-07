@@ -147,7 +147,7 @@ header[data-testid="stHeader"] *{ display:none !important; }
 /* Remove extra white space at top */
 section.main > div.block-container{
     padding-top:0 !important;
-    margin-top:-2.0rem !important;
+    margin-top:-1.5rem !important;  /* Reduced from -2.0rem to -1.5rem */
 }
 
 /* Keep Altair responsive */
@@ -300,8 +300,8 @@ css(
   [data-testid="column"]:first-child {{
       min-height: 100vh !important;
       background: #e0e4ec !important;
-      margin-top: 30px !important;  /* ADD THIS LINE - pushes left column down */
-      padding-top: 10px !important;  /* ADD THIS LINE - adds space at top */
+      margin-top: 15px !important;  /* ADD THIS LINE - pushes left column down */
+      padding-top: 5px !important;  /* ADD THIS LINE - adds space at top */
   }}
 </style>
 """
@@ -600,10 +600,11 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # 🔽 ADD LOGO AT TOP LEFT
+       with left:
+    # 🔽 ADD LOGO AT TOP LEFT (moved up and right)
     if _b64:
         st.markdown(f"""
-        <div style="text-align: left; margin-bottom: 15px;">
+        <div style="text-align: left; margin-bottom: 10px; margin-left: 20px;">
             <img src="data:image/png;base64,{_b64}" 
                  style="height: 60px; width: auto;" 
                  alt="Logo" />
@@ -1113,6 +1114,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
