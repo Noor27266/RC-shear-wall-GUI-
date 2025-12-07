@@ -834,8 +834,9 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    margin-top: 10px !important;  /* Perfect small spacing */
-    margin-left: 20px !important;
+    position: relative !important;
+    top: 100px !important;
+    left: 20px !important;
 }
 </style>
 """)
@@ -1154,6 +1155,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
