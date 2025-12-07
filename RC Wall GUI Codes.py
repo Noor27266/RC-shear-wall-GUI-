@@ -770,20 +770,15 @@ with right:
 
 css("""
 <style>
-/* Adjust positioning for right panel elements */
+/* Adjust positioning for right panel elements - MOVE UP TO TOUCH PLOTS */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
     position: relative !important;
-    top: 10px !important;  /* Changed from 200px to 10px */
+    top: -40px !important;  /* Changed from 200px to -40px (move up) */
     left: 20px !important;
-    margin-bottom: 8px !important;  /* Reduced from 15px to 8px for tighter spacing */
-}
-
-/* Also adjust the chart container to move it up */
-div[data-testid="column"]:nth-child(2) {
-    margin-top: -20px !important;  /* Pull the entire right column up */
+    margin-bottom: 8px !important;
 }
 </style>
 """)
@@ -1078,7 +1073,7 @@ else:
         })
 
         with chart_slot.container():
-            st.markdown("<div style='margin-top:50px;'>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top:100px;'>", unsafe_allow_html=True)
             render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1103,6 +1098,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
