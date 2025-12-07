@@ -752,7 +752,7 @@ with right:
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
-        # =============================================================================
+           # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
@@ -771,10 +771,6 @@ with right:
 
         # Buttons - USE UNIQUE KEYS
         submit = st.button("Calculate", key=f"calc_btn_{st.session_state.get('calc_counter', 0)}", use_container_width=True)
-        
-        # Store submit state in session state
-        if submit:
-            st.session_state["submit_clicked"] = True
 
         if st.button("Reset", key="reset_btn_main", use_container_width=True):
             st.rerun()
@@ -799,6 +795,11 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
+
+        # ADD THESE 3 LINES RIGHT HERE (inside col_controls)
+        if submit:
+            st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
+            st.rerun()
 
 
     # styling for the blue DI label (unchanged)
@@ -1082,26 +1083,32 @@ if "model_choice" not in locals():
 if model_choice not in model_registry:
     st.error("No trained model available.")
 else:
-    # Check both submit variable AND session state
-    if submit or st.session_state.get("submit_clicked", False):
-        xdf = _make_input_df(
-            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
-            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
-        )
-
-        try:
-            pred = predict_di(model_choice, None, xdf)
-            row = xdf.copy()
-            row["Predicted_DI"] = pred
+    # Submit is handled in STEP 7.2 - just update results here
+    # Get the input values (they're in global scope)
+    xdf = _make_input_df(
+        lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+        rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
+    )
+    
+    # Always calculate and update when we have a model choice
+    try:
+        pred = predict_di(model_choice, None, xdf)
+        row = xdf.copy()
+        row["Predicted_DI"] = pred
+        # Only add if not already in results
+        current_input = tuple(xdf.iloc[0].values)
+        exists = False
+        for _, r in st.session_state.results_df.iterrows():
+            if tuple(r.drop('Predicted_DI', errors='ignore').values) == current_input:
+                exists = True
+                break
+        if not exists and pred > 0:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            # Increment counter and clear submit flag
-            st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
-            st.session_state["submit_clicked"] = False
-            st.rerun()
-        except Exception as e:
-            st.error(str(e))
+    except Exception as e:
+        # Silent fail - just don't add to results
+        pass
 
     if not st.session_state.results_df.empty:
         last = st.session_state.results_df.iloc[-1]
@@ -1144,6 +1151,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
