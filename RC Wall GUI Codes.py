@@ -600,7 +600,6 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-       with left:
     # 🔽 ADD LOGO AT TOP LEFT (moved up and right)
     if _b64:
         st.markdown(f"""
@@ -1114,6 +1113,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
