@@ -1094,7 +1094,7 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            st.rerun()
+        st.experimental_rerun()
         except Exception as e:
             st.error(str(e))
 
@@ -1141,6 +1141,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
