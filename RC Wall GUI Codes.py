@@ -835,7 +835,7 @@ div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
     position: relative !important;
-    top: 100px !important;
+    top: 200px !important;
     left: 20px !important;
 }
 </style>
@@ -1155,6 +1155,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
