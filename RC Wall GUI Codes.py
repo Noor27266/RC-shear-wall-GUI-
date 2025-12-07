@@ -753,22 +753,33 @@ with right:
                 key="dl_csv",
             )
 
-# CHANGE ONLY THE CSS TOP VALUE TO MOVE CONTROLS DOWN
+# CHANGE ONLY THE CSS - REPLACE THE ENTIRE CSS SECTION AT THE END OF STEP 7.2
 css("""
 <style>
-/* Move controls down by increasing top value */
+/* Move controls down more and adjust height */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"] {
     position: relative !important;
-    top: 160px !important;  /* Changed from 140px to 160px to move down */
+    top: 200px !important;  /* Increased from 160px to 200px to move further down */
     left: 20px !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 10px !important;
+    height: auto !important;
 }
 
-/* Also adjust the chart container to move it up */
+/* Make the right column taller to match the two pictures */
 div[data-testid="column"]:nth-child(2) {
-    margin-top: -20px !important;
+    margin-top: -40px !important;  /* Increased from -20px to -40px */
+    height: 650px !important;  /* Add fixed height to match pictures */
+    min-height: 650px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Adjust the chart container to align with pictures */
+div[data-testid="column"]:nth-child(2) > div:first-child {
+    height: 650px !important;
+    min-height: 650px !important;
 }
 </style>
 """)
@@ -1073,6 +1084,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
