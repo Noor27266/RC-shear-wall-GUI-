@@ -648,7 +648,7 @@ with left:
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
 SCHEM_BOX_H    = 300   # Keep original
-SCHEM_IMG_H    = 450   # Keep original
+SCHEM_IMG_H    = 480   # Keep original
 SCHEM_OFFSET_X = 80    # Keep original
 SCHEM_OFFSET_Y = -40   # Keep original
 
@@ -1073,6 +1073,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
