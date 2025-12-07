@@ -709,22 +709,35 @@ with left:
 SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
 SCHEM_IMG_H    = 340   # actual schematic image height (increase/decrease as you like)
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = 100    # move schematic down (+) / up (-)
+SCHEM_OFFSET_Y = 100   # move schematic down (+) / up (-)
+
+SCHEM2_IMG_H   = 340   # height for second schematic
+SCHEM2_OFFSET_X = 380  # position second schematic to the right of first one
 
 CHART_W = 400          # width used later for DI–θ chart
 
 with right:
 
-    # --- schematic in fixed-height box ---
+    # --- TWO schematics side by side in fixed-height box ---
     st.markdown(
         f"""
         <div style="position:relative; height:{SCHEM_BOX_H}px; margin-bottom:0;">
+            <!-- First schematic -->
             <img src="data:image/png;base64,{b64(BASE_DIR / "logo2-01.png")}"
                  style="
                     position:absolute;
                     left:{SCHEM_OFFSET_X}px;
                     top:{SCHEM_OFFSET_Y}px;
                     height:{SCHEM_IMG_H}px;
+                    width:auto;
+                 " />
+            <!-- Second schematic -->
+            <img src="data:image/png;base64,{b64(BASE_DIR / "RC shear wall schematic2.png")}"
+                 style="
+                    position:absolute;
+                    left:{SCHEM2_OFFSET_X}px;
+                    top:{SCHEM_OFFSET_Y}px;
+                    height:{SCHEM2_IMG_H}px;
                     width:auto;
                  " />
         </div>
@@ -1130,6 +1143,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
