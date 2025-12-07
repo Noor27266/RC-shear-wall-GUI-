@@ -770,15 +770,20 @@ with right:
 
 css("""
 <style>
-/* Adjust positioning for right panel elements - BRING THEM DOWN A BIT */
+/* Adjust positioning for right panel elements */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
     position: relative !important;
-    top: 20px !important;  /* Changed from -40px to 20px (move down a bit) */
+    top: 10px !important;  /* Changed from 200px to 10px */
     left: 20px !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 8px !important;  /* Reduced from 15px to 8px for tighter spacing */
+}
+
+/* Also adjust the chart container to move it up */
+div[data-testid="column"]:nth-child(2) {
+    margin-top: -20px !important;  /* Pull the entire right column up */
 }
 </style>
 """)
@@ -1121,6 +1126,7 @@ div[data-testid="column"]:nth-child(2) > div {
 }
 </style>
 """)
+
 
 
 
