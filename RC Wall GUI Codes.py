@@ -815,19 +815,15 @@ with right:
 
 css("""
 <style>
-/* Move the whole controls stack:
-   - Up (translateY)
-   - Right (translateX)
-*/
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(40px, -150px);   /* (X , Y) */
-    /* X = right/left, Y = up/down */
+    transform: translate(0px, 60px);   /* X = 0 (no left/right), Y > 0 = down */
 }
 </style>
 """)
+
 
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
@@ -1134,6 +1130,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
