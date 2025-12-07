@@ -753,7 +753,7 @@ with right:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
-        # =============================================================================
+            # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
@@ -1092,7 +1092,7 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            # Increment counter to change button key next time
+            # ADD THIS ONE LINE - Increment counter to change button key next time
             st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
             st.rerun()
         except Exception as e:
@@ -1140,6 +1140,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
