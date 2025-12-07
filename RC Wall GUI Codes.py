@@ -770,29 +770,25 @@ with right:
 
 css("""
 <style>
-/* Remove all previous positioning that breaks buttons */
+/* Adjust positioning for right panel elements */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    position: static !important;  /* Reset to normal flow */
-    top: auto !important;
-    left: auto !important;
-    margin-bottom: 8px !important;
-    margin-left: 20px !important;
+    position: relative !important;
+    top: 140px !important;  /* Changed from 200px to 10px */
+    left: 20px !important;
+    margin-bottom: 8px !important;  /* Reduced from 15px to 8px for tighter spacing */
 }
 
-/* Move the ENTIRE right column container down */
+/* Also adjust the chart container to move it up */
 div[data-testid="column"]:nth-child(2) {
-    margin-top: 120px !important;  /* Changed from -20px to 120px to move DOWN */
-}
-
-/* Move the controls within the right column */
-div[data-testid="column"]:nth-child(2) > div > div[data-testid="column"]:nth-child(2) {
-    margin-top: 20px !important;  /* Add more space inside */
+    margin-top: -20px !important;  /* Pull the entire right column up */
 }
 </style>
 """)
+
+
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
@@ -1082,7 +1078,7 @@ else:
         })
 
         with chart_slot.container():
-            st.markdown("<div style='margin-top:120px;'>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top:150px;'>", unsafe_allow_html=True)
             render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1107,8 +1103,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
 
 
 
