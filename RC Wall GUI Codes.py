@@ -147,7 +147,7 @@ header[data-testid="stHeader"] *{ display:none !important; }
 /* Remove extra white space at top */
 section.main > div.block-container{
     padding-top:0 !important;
-    margin-top:-1.5rem !important;  /* Reduced from -2.0rem to -1.5rem */
+    margin-top:-2.5rem !important;  /* Reduced from -2.0rem to -1.5rem */
 }
 
 /* Keep Altair responsive */
@@ -196,11 +196,11 @@ css(
     f"""
 <style>
   .block-container {{
-      padding-top: 2.5rem !important;
-      padding-bottom: 0.5rem !important;
-      max-height: none !important;
-      overflow: visible !important;
-  }}
+    padding-top: 1.5rem !important;  /* Reduced from 2.5rem to 1.5rem */
+    padding-bottom: 0.5rem !important;
+    max-height: none !important;
+    overflow: visible !important;
+}}
 
   h1 {{
       font-size:{FS_TITLE}px !important;
@@ -300,7 +300,7 @@ css(
   [data-testid="column"]:first-child {{
       min-height: 100vh !important;
       background: #e0e4ec !important;
-      margin-top: 10px !important;  /* ADD THIS LINE - pushes left column down */
+      margin-top: 0px !important;  /* ADD THIS LINE - pushes left column down */
       padding-top: 0px !important;  /* ADD THIS LINE - adds space at top */
   }}
 </style>
@@ -603,9 +603,9 @@ with left:
     # LOGO CENTERED AT TOP - Bigger and moved up
     if _b64:
         st.markdown(f"""
-        <div style="text-align: center; margin-bottom: 5px;">
+        <div style="text-align: center; margin-bottom: 2px;">
             <img src="data:image/png;base64,{_b64}" 
-                 style="height: 80px; width: auto;" 
+                 style="height: 90px; width: auto;" 
                  alt="Logo" />
         </div>
         """, unsafe_allow_html=True)
@@ -613,7 +613,7 @@ with left:
     st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
 
     st.markdown("""
-    <div style="background:transparent; border-radius:12px; padding:0px; margin:0 0 5px 0; box-shadow:none;">
+    <div style="background:transparent; border-radius:12px; padding:0px; margin:0 0 3px 0; box-shadow:none;">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:0;">
             Predict Damage index for RC Shear Walls
         </div>
@@ -1088,15 +1088,16 @@ st.markdown(
   color: #fff !important;
   text-align: center !important;
   border-radius: 10px !important;
-  padding: .35rem .65rem !important;  /* Reduced padding */
-  margin-top: 5px !important;  /* Reduced from 65px to 5px */
-  margin-bottom: 15px !important;  /* Added bottom margin */
+  padding: .25rem .55rem !important;  /* Reduced further */
+  margin-top: 2px !important;  /* Reduced from 5px to 2px */
+  margin-bottom: 10px !important;  /* Reduced from 15px to 10px */
   transform: translateY(0) !important;
 }
 </style>
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
