@@ -752,7 +752,7 @@ with right:
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
-    # =============================================================================
+        # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
@@ -771,6 +771,10 @@ with right:
 
         # Buttons - USE UNIQUE KEYS
         submit = st.button("Calculate", key=f"calc_btn_{st.session_state.get('calc_counter', 0)}", use_container_width=True)
+        
+        # Store submit state in session state
+        if submit:
+            st.session_state["submit_clicked"] = True
 
         if st.button("Reset", key="reset_btn_main", use_container_width=True):
             st.rerun()
@@ -1078,10 +1082,8 @@ if "model_choice" not in locals():
 if model_choice not in model_registry:
     st.error("No trained model available.")
 else:
-    # Get submit from session state to fix scope issue
-    submit_state = st.session_state.get(f"calc_btn_{st.session_state.get('calc_counter', 0)}_clicked", False)
-    
-    if submit or submit_state:
+    # Check both submit variable AND session state
+    if submit or st.session_state.get("submit_clicked", False):
         xdf = _make_input_df(
             lw,hw,tw,fc,fyt,fysh,fyl,fybl,
             rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
@@ -1094,9 +1096,9 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-            # Store button state and increment counter
-            st.session_state[f"calc_btn_{st.session_state.get('calc_counter', 0)}_clicked"] = True
+            # Increment counter and clear submit flag
             st.session_state["calc_counter"] = st.session_state.get("calc_counter", 0) + 1
+            st.session_state["submit_clicked"] = False
             st.rerun()
         except Exception as e:
             st.error(str(e))
@@ -1142,6 +1144,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
