@@ -300,8 +300,8 @@ css(
   [data-testid="column"]:first-child {{
       min-height: 100vh !important;
       background: #e0e4ec !important;
-      margin-top: 15px !important;  /* ADD THIS LINE - pushes left column down */
-      padding-top: 5px !important;  /* ADD THIS LINE - adds space at top */
+      margin-top: 10px !important;  /* ADD THIS LINE - pushes left column down */
+      padding-top: 0px !important;  /* ADD THIS LINE - adds space at top */
   }}
 </style>
 """
@@ -600,9 +600,7 @@ left, right = st.columns([1.5, 1], gap="large")
 # 📊 SUB STEP 6.2: LEFT PANEL CONTENT IMPLEMENTATION
 # =============================================================================
 with left:
-    # 🔽 ADD LOGO AT TOP LEFT (moved up and right)
-        # LOGO AT TOP LEFT - Bigger, moved right and up
-        # LOGO AT TOP LEFT - Bigger, moved right and up
+    # LOGO AT TOP LEFT - Bigger, moved right and up
     if _b64:
         st.markdown(f"""
         <div style="text-align: left; margin-bottom: 5px; margin-left: 40px;">
@@ -612,48 +610,32 @@ with left:
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown(
-        "<div style='height: 0px; margin: 0; padding: 0;'>",
-        unsafe_allow_html=True,
-    )
+    st.markdown("<div style='height: 0px; margin: 0; padding: 0;'>", unsafe_allow_html=True)
 
-    st.markdown(
-        """
+    st.markdown("""
     <div style="background:transparent; border-radius:12px; padding:0px; margin:0 0 5px 0; box-shadow:none;">
         <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:0;">
             Predict Damage index for RC Shear Walls
         </div>
-    """,
-        unsafe_allow_html=True,
-    )
+    """, unsafe_allow_html=True)
 
-    st.markdown(
-        """
+    st.markdown("""
     <div style="margin: 0 0 0 0; padding: 0;">
         <div class='form-banner'>Inputs Features</div>
-    """,
-        unsafe_allow_html=True,
-    )
+    """, unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns([1, 1, 1], gap="small")
 
     with c1:
-        st.markdown(
-            "<div class='section-header'>Geometry </div>", unsafe_allow_html=True
-        )
+        st.markdown("<div class='section-header'>Geometry </div>", unsafe_allow_html=True)
         lw, hw, tw, b0, db, AR, M_Vlw = [num(*row) for row in GEOM]
 
     with c2:
-        st.markdown(
-            "<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True
-        )
+        st.markdown("<div class='section-header'>Reinf. Ratios </div>", unsafe_allow_html=True)
         rt, rsh, rl, rbl, s_db, axial, theta = [num(*row) for row in REINF]
 
     with c3:
-        st.markdown(
-            "<div class='section-header'>Material Strengths</div>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("<div class='section-header'>Material Strengths</div>", unsafe_allow_html=True)
         fc, fyt, fysh = [num(*row) for row in MATS[:3]]
         fyl, fybl = [num(*row) for row in MATS[3:]]
 
@@ -1115,6 +1097,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
