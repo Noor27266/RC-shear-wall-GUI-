@@ -699,7 +699,7 @@ with right:
         chart_slot = st.empty()
            
     # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - ORIGINAL POSITION
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - FIXED BUTTONS
     # =============================================================================
     with col_controls:
         
@@ -718,33 +718,28 @@ with right:
         # Store model choice
         st.session_state["model_choice"] = model_choice
         
-        # NO EXTRA MARGINS - Keep original spacing
+        # FIX: Initialize do_calculation in session state if not exists
+        if "do_calculation" not in st.session_state:
+            st.session_state.do_calculation = False
+        
         # --- Calculate button ---
-        calculate_clicked = st.button("Calculate", key="calc_btn", use_container_width=True)
+        if st.button("Calculate", key="calc_btn", use_container_width=True):
+            st.session_state.do_calculation = True
+            # Force immediate rerun to process calculation
+            st.rerun()
         
         # --- Reset button ---
-        reset_clicked = st.button("Reset", key="reset_btn", use_container_width=True)
+        if st.button("Reset", key="reset_btn", use_container_width=True):
+            # Don't clear results_df, just reset inputs via rerun
+            st.session_state.do_calculation = False
+            st.rerun()
         
         # --- Clear All button ---
-        clear_clicked = st.button("Clear All", key="clear_btn", use_container_width=True)
-        
-        # Handle button clicks
-        if reset_clicked:
-            # Clear any calculation flag
-            if "do_calculation" in st.session_state:
-                del st.session_state["do_calculation"]
-            st.rerun()
-            
-        if clear_clicked:
+        if st.button("Clear All", key="clear_btn", use_container_width=True):
             st.session_state.results_df = pd.DataFrame()
-            if "do_calculation" in st.session_state:
-                del st.session_state["do_calculation"]
+            st.session_state.do_calculation = False
             st.success("All predictions cleared!")
             st.rerun()
-            
-        if calculate_clicked:
-            st.session_state["do_calculation"] = True
-            # Don't rerun here - let STEP 8 handle it
         
         # Download CSV button only if we have results
         if not st.session_state.results_df.empty:
@@ -758,15 +753,15 @@ with right:
                 key="dl_csv",
             )
 
-# KEEP ORIGINAL CSS - DON'T CHANGE POSITIONS
+# CHANGE ONLY THE CSS TOP VALUE TO MOVE CONTROLS DOWN
 css("""
 <style>
-/* Keep original positioning */
+/* Move controls down by increasing top value */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"] {
     position: relative !important;
-    top: 140px !important;
+    top: 160px !important;  /* Changed from 140px to 160px to move down */
     left: 20px !important;
     margin-bottom: 8px !important;
 }
@@ -778,9 +773,8 @@ div[data-testid="column"]:nth-child(2) {
 </style>
 """)
 
-
 # =============================================================================
-# ⚡ STEP 8: DI–θ PREDICTION & PLOT (ONLY CHANGE CHART HEIGHT TO 480)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (FIXED)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -866,7 +860,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
     
     return pd.DataFrame(rows)
 
-def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=480):  # CHANGED TO 480
+def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=480):
     import altair as alt
     
     if curve_df.empty:
@@ -997,7 +991,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     st.components.v1.html(chart.to_html(), height=size+100)
 
 # =============================================================================
-# MAIN PREDICTION LOGIC
+# MAIN PREDICTION LOGIC - SIMPLE AND WORKING
 # =============================================================================
 
 # Get model choice
@@ -1009,11 +1003,8 @@ if not model_choice:
             model_choice = m
             break
 
-# Check if calculation is needed
-do_calculation = st.session_state.get("do_calculation", False)
-
-# Process calculation if needed
-if do_calculation and model_choice and model_choice in model_registry:
+# Check if calculation is needed - SIMPLE CHECK
+if st.session_state.get("do_calculation", False) and model_choice and model_choice in model_registry:
     # Create input dataframe
     xdf = _make_input_df(
         lw, hw, tw, fc, fyt, fysh, fyl, fybl,
@@ -1034,14 +1025,11 @@ if do_calculation and model_choice and model_choice in model_registry:
         )
         
         # Clear the flag
-        st.session_state["do_calculation"] = False
-        
-        # Force update
-        st.rerun()
+        st.session_state.do_calculation = False
         
     except Exception as e:
         st.error(f"Prediction error: {str(e)}")
-        st.session_state["do_calculation"] = False
+        st.session_state.do_calculation = False
 
 # Always display chart if we have results
 if not st.session_state.results_df.empty:
@@ -1085,6 +1073,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
