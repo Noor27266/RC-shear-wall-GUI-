@@ -701,7 +701,6 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-
 # =============================================================================
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
@@ -760,7 +759,35 @@ with right:
         model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
         # Buttons - USE UNIQUE KEYS
-        submit = st.button("Calculate", key="calc_btn_main", use_container_width=True)
+        # FIX: Use session state to track button clicks
+        if st.button("Calculate", key="calc_btn_main", use_container_width=True):
+            st.session_state.calculate_triggered = True
+        
+        # Check if calculate was triggered
+        if st.session_state.get("calculate_triggered", False):
+            st.session_state.calculate_triggered = False
+            
+            # Get model choice
+            lbl = st.session_state.get("model_select_compact")
+            current_model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
+            
+            if current_model_choice and current_model_choice in model_registry:
+                xdf = _make_input_df(
+                    lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+                    rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
+                )
+
+                try:
+                    pred = predict_di(current_model_choice, None, xdf)
+                    row = xdf.copy()
+                    row["Predicted_DI"] = pred
+                    st.session_state.results_df = pd.concat(
+                        [st.session_state.results_df, row], ignore_index=True
+                    )
+                except Exception as e:
+                    st.error(str(e))
+            else:
+                st.error("Please select a valid model first.")
 
         if st.button("Reset", key="reset_btn_main", use_container_width=True):
             st.rerun()
@@ -785,9 +812,6 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
-
-
-
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -819,11 +843,10 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(60px, 210px);   /* X = 0 (no left/right), Y > 0 = down */
+    transform: translate(50px, 210px);   /* X = 0 (no left/right), Y > 0 = down */
 }
 </style>
 """)
-
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
@@ -1062,41 +1085,14 @@ def _pick_default_model():
 
 # ---------------- MAIN EXECUTION ----------------
 
-# FIRST: Handle button click immediately after it's defined in STEP 7.2
-if submit:
-    # Get the current model choice from session state
-    lbl = st.session_state.get("model_select_compact")
-    current_model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
-    
-    # Only proceed if we have a valid model
-    if current_model_choice and current_model_choice in model_registry:
-        xdf = _make_input_df(
-            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
-            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
-        )
-
-        try:
-            pred = predict_di(current_model_choice, None, xdf)
-            row = xdf.copy()
-            row["Predicted_DI"] = pred
-            st.session_state.results_df = pd.concat(
-                [st.session_state.results_df, row], ignore_index=True
-            )
-            st.rerun()
-        except Exception as e:
-            st.error(str(e))
-    else:
-        st.error("Please select a valid model first.")
-
-# SECOND: Set model_choice variable for plotting (if not already set)
+# Set model_choice variable for plotting
 if "model_choice" not in locals():
     lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
     model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
 
-# THIRD: Generate and display the plot if we have results
+# Generate and display the plot if we have results
 if model_choice not in model_registry:
-    if not submit:  # Only show error if not in a button click context
-        st.error("No trained model available.")
+    st.error("No trained model available.")
 else:
     if not st.session_state.results_df.empty:
         last = st.session_state.results_df.iloc[-1]
@@ -1121,7 +1117,6 @@ else:
 
 
 
-
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1141,6 +1136,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
