@@ -646,13 +646,15 @@ with left:
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
-SCHEM_BOX_H    = 300   # total vertical space reserved for schematic (keep this fixed)
+SCHEM_BOX_H    = 400   # INCREASED to match chart height
 SCHEM_IMG_H    = 450   # actual schematic image height
 SCHEM_OFFSET_X = 80    # move schematic right (+) / left (-)
-SCHEM_OFFSET_Y = -40   # move schematic down (+) / up (-)
+SCHEM_OFFSET_Y = -20   # Adjusted for better alignment
 
-SCHEM2_IMG_H   = 470   # SAME height for second schematic
-SCHEM2_OFFSET_X = 500  # Just 40px more than original 380 - slight move to the right
+# SECOND SCHEMATIC - MAKE SAME HEIGHT AS CHART
+SCHEM2_IMG_H   = 480   # Make it taller to match chart height
+SCHEM2_OFFSET_X = 500  # position for second schematic
+SCHEM2_OFFSET_Y = -20  # Same Y offset as first schematic
 
 CHART_W = 350          # width used later for DI–θ chart
 
@@ -671,12 +673,12 @@ with right:
                     height:{SCHEM_IMG_H}px;
                     width:auto;
                  " />
-            <!-- Second schematic -->
+            <!-- Second schematic - SAME HEIGHT AS CHART -->
             <img src="data:image/png;base64,{b64(BASE_DIR / "RC shear wall schematic2.png")}"
                  style="
                     position:absolute;
                     left:{SCHEM2_OFFSET_X}px;
-                    top:{SCHEM_OFFSET_Y}px;
+                    top:{SCHEM2_OFFSET_Y}px;
                     height:{SCHEM2_IMG_H}px;
                     width:auto;
                  " />
@@ -684,17 +686,19 @@ with right:
         """,
         unsafe_allow_html=True,
     )
+    
     # ---- ONE ROW: [ left = DI–θ plot | right = controls ] ----
     col_plot, col_controls = st.columns([3, 1])
+    
     # =============================================================================
     # ⭐ SUB-STEP 7.1 — DI–θ PLOT (LEFT SIDE)
     # =============================================================================
     with col_plot:
-        # slot where STEP 11 will render the DI–θ plot
+        # slot where STEP 8 will render the DI–θ plot
         chart_slot = st.empty()
            
     # =============================================================================
-    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - FINAL FIX
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE) - SIMPLE & WORKING
     # =============================================================================
     with col_controls:
         
@@ -714,51 +718,42 @@ with right:
         st.session_state["model_choice"] = model_choice
         
         # Button container
-        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
         
         # --- Calculate button ---
-        if st.button("Calculate", key="calc_btn_final", use_container_width=True):
-            # Set a flag to calculate in STEP 8
-            st.session_state["needs_calculation"] = True
-            st.rerun()
+        if st.button("Calculate", key="calc_btn_main", use_container_width=True):
+            # Set flag for STEP 8
+            st.session_state["do_calculation"] = True
+            # Don't rerun here - let STEP 8 handle it
         
-        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
         
         # --- Reset button ---
-        if st.button("Reset", key="reset_btn_final", use_container_width=True):
-            # Clear calculation flag
-            if "needs_calculation" in st.session_state:
-                del st.session_state["needs_calculation"]
-            # Reset will happen automatically due to rerun
+        if st.button("Reset", key="reset_btn_main", use_container_width=True):
+            # Clear flags and rerun to reset inputs
+            if "do_calculation" in st.session_state:
+                del st.session_state["do_calculation"]
             st.rerun()
         
-        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
         
         # --- Clear All button ---
-        if st.button("Clear All", key="clear_btn_final", use_container_width=True):
-            # Clear all results
+        if st.button("Clear All", key="clear_btn_main", use_container_width=True):
+            # Clear results
             st.session_state.results_df = pd.DataFrame()
             # Clear calculation flag
-            if "needs_calculation" in st.session_state:
-                del st.session_state["needs_calculation"]
-            # Show message and refresh
+            if "do_calculation" in st.session_state:
+                del st.session_state["do_calculation"]
+            # Success message
             st.success("All predictions cleared!")
-            st.rerun()
+            # No rerun needed - results are already cleared
         
-        # Get the LATEST prediction to display - use the same logic as the chart
-        latest_di = None
+        # REMOVED: The Predicted Damage Index label
+        
+        # Download CSV button only if we have results
         if not st.session_state.results_df.empty:
-            latest_di = float(st.session_state.results_df.iloc[-1]["Predicted_DI"])
-        
-        # Display the SAME DI value that the chart shows
-        if latest_di is not None:
-            st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index : {latest_di:.4f}</div>",
-                unsafe_allow_html=True,
-            )
+            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
             
-            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-
             csv = st.session_state.results_df.to_csv(index=False)
             st.download_button(
                 "📂 Download as CSV",
@@ -768,58 +763,27 @@ with right:
                 use_container_width=True,
                 key="dl_csv_main",
             )
-        else:
-            # Show placeholder when no predictions
-            st.markdown(
-                f"<div class='prediction-with-color'>Predicted Damage Index : --</div>",
-                unsafe_allow_html=True,
-            )
-
-    # styling for the blue DI label (unchanged)
-    st.markdown(
-        f"""
-    <style>
-    .prediction-with-color {{
-        color: #2e86ab !important;
-        font-weight: 700 !important;
-        font-size: {FS_BADGE}px !important;
-        background: #f1f3f4 !important;
-        padding: 10px 12px !important;
-        border-radius: 6px !important;
-        text-align: center !important;
-        margin: 0 !important;
-        height: 45px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 180px !important;
-    }}
-    </style>
-    """,
-        unsafe_allow_html=True,
-    )
 
 css("""
 <style>
 /* Adjust positioning for right panel elements */
 div[data-testid="stSelectbox"],
 div.stButton,
-div[data-testid="stDownloadButton"],
-.prediction-with-color {
+div[data-testid="stDownloadButton"] {
     position: relative !important;
-    top: 140px !important;  /* Changed from 200px to 10px */
+    top: 140px !important;
     left: 20px !important;
-    margin-bottom: 8px !important;  /* Reduced from 15px to 8px for tighter spacing */
+    margin-bottom: 8px !important;
 }
 
 /* Also adjust the chart container to move it up */
 div[data-testid="column"]:nth-child(2) {
-    margin-top: -20px !important;  /* Pull the entire right column up */
+    margin-top: -20px !important;
 }
 </style>
 """)
 # =============================================================================
-# ⚡ STEP 8: DI–θ PREDICTION & PLOT (FINAL WORKING VERSION)
+# ⚡ STEP 8: DI–θ PREDICTION & PLOT (UPDATED - NO PREDICTION LABEL)
 # =============================================================================
 
 _TRAIN_NAME_MAP = {
@@ -905,7 +869,7 @@ def _sweep_curve_df(model_choice, base_df, theta_max=THETA_MAX, step=0.10):
     
     return pd.DataFrame(rows)
 
-def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=460):
+def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5, size=480):  # Increased size to 480
     import altair as alt
     
     if curve_df.empty:
@@ -975,7 +939,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     
     line_layer = (
         alt.Chart(curve_df)
-        .mark_line(strokeWidth=2)
+        .mark_line(strokeWidth=2, color="blue")
         .encode(x="θ:Q", y="Predicted_DI:Q")
     )
     
@@ -1009,7 +973,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     if highlight_df is not None:
         point_layer = (
             alt.Chart(highlight_df)
-            .mark_circle(size=110, color="blue")
+            .mark_circle(size=110, color="red")
             .encode(x="θ:Q", y="Predicted_DI:Q")
         )
         
@@ -1036,7 +1000,7 @@ def render_di_chart(curve_df, highlight_df=None, theta_max=THETA_MAX, di_max=1.5
     st.components.v1.html(chart.to_html(), height=size+100)
 
 # =============================================================================
-# MAIN PREDICTION LOGIC - FINAL WORKING VERSION
+# MAIN PREDICTION LOGIC
 # =============================================================================
 
 # Get model choice
@@ -1049,10 +1013,10 @@ if not model_choice:
             break
 
 # Check if calculation is needed
-needs_calculation = st.session_state.get("needs_calculation", False)
+do_calculation = st.session_state.get("do_calculation", False)
 
 # Process calculation if needed
-if needs_calculation and model_choice and model_choice in model_registry:
+if do_calculation and model_choice and model_choice in model_registry:
     # Create input dataframe
     xdf = _make_input_df(
         lw, hw, tw, fc, fyt, fysh, fyl, fybl,
@@ -1067,27 +1031,27 @@ if needs_calculation and model_choice and model_choice in model_registry:
         row = xdf.copy()
         row["Predicted_DI"] = pred
         
-        # Always add new prediction
+        # Add new prediction
         st.session_state.results_df = pd.concat(
             [st.session_state.results_df, row], ignore_index=True
         )
         
         # Clear the flag
-        st.session_state["needs_calculation"] = False
+        st.session_state["do_calculation"] = False
         
-        # Force a small delay to ensure UI updates
+        # Force update
         st.rerun()
         
     except Exception as e:
         st.error(f"Prediction error: {str(e)}")
-        st.session_state["needs_calculation"] = False
+        st.session_state["do_calculation"] = False
 
 # Always display chart if we have results
 if not st.session_state.results_df.empty:
     last = st.session_state.results_df.iloc[-1]
     last_di = float(last["Predicted_DI"])
     
-    # Generate and display chart - USE THE SAME DATA
+    # Generate and display chart
     base = _make_input_df(
         lw, hw, tw, fc, fyt, fysh, fyl, fybl,
         rt, rsh, rl, rbl, axial, b0, db, s_db, AR, M_Vlw,
@@ -1124,6 +1088,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
