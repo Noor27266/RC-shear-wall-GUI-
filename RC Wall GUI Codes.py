@@ -601,11 +601,13 @@ left, right = st.columns([1.5, 1], gap="large")
 # =============================================================================
 with left:
     # 🔽 ADD LOGO AT TOP LEFT (moved up and right)
+        # LOGO AT TOP LEFT - Bigger, moved right and up
+        # LOGO AT TOP LEFT - Bigger, moved right and up
     if _b64:
         st.markdown(f"""
-        <div style="text-align: left; margin-bottom: 10px; margin-left: 20px;">
+        <div style="text-align: left; margin-bottom: 5px; margin-left: 40px;">
             <img src="data:image/png;base64,{_b64}" 
-                 style="height: 60px; width: auto;" 
+                 style="height: 80px; width: auto;" 
                  alt="Logo" />
         </div>
         """, unsafe_allow_html=True)
@@ -1113,6 +1115,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
