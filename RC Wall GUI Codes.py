@@ -1078,7 +1078,7 @@ else:
         })
 
         with chart_slot.container():
-            st.markdown("<div style='margin-top:150px;'>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top:80px;'>", unsafe_allow_html=True)
             render_di_chart(curve, highlight_df, THETA_MAX, 1.5, CHART_W)
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1103,6 +1103,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
