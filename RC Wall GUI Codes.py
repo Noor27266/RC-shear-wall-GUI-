@@ -752,13 +752,12 @@ with right:
     with col_plot:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
-         # =============================================================================
+           # =============================================================================
     # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
     # =============================================================================
     with col_controls:
         
-        # Add space above the controls
-        st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+        # REMOVE THIS LINE: st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
         
         # Model selection
         available = set(model_registry.keys())
@@ -835,7 +834,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    margin-top: 40px !important;
+    margin-top: 15px !important;  /* Perfect small spacing */
     margin-left: 20px !important;
 }
 </style>
@@ -1155,6 +1154,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
