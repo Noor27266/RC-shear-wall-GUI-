@@ -1094,7 +1094,7 @@ else:
             st.session_state.results_df = pd.concat(
                 [st.session_state.results_df, row], ignore_index=True
             )
-        st.experimental_rerun()
+            st.experimental_rerun()  # ← CHANGED FROM st.rerun() TO st.experimental_rerun()
         except Exception as e:
             st.error(str(e))
 
@@ -1121,7 +1121,6 @@ else:
 
 
 
-
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1141,6 +1140,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
