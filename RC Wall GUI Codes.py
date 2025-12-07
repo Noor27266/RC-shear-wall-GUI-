@@ -770,20 +770,22 @@ with right:
 
 css("""
 <style>
-/* Adjust positioning for right panel elements */
+/* Adjust the entire right column up */
+div[data-testid="column"]:nth-child(2) {
+    margin-top: -20px !important;
+}
+
+/* Move the controls container down properly without breaking button clicks */
+div[data-testid="column"]:nth-child(2) > div > div[data-testid="column"]:nth-child(2) > div {
+    transform: translateY(140px) translateX(20px) !important;
+}
+
+/* Keep the original styling but remove positioning that breaks clicks */
 div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    position: relative !important;
-    top: 140px !important;  /* Changed from 200px to 10px */
-    left: 20px !important;
-    margin-bottom: 8px !important;  /* Reduced from 15px to 8px for tighter spacing */
-}
-
-/* Also adjust the chart container to move it up */
-div[data-testid="column"]:nth-child(2) {
-    margin-top: -20px !important;  /* Pull the entire right column up */
+    margin-bottom: 8px !important;
 }
 </style>
 """)
@@ -1103,6 +1105,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
