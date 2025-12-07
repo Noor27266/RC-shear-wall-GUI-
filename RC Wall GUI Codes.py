@@ -819,7 +819,7 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(30px, 180px);   /* X = 0 (no left/right), Y > 0 = down */
+    transform: translate(30px, 170px);   /* X = 0 (no left/right), Y > 0 = down */
 }
 </style>
 """)
@@ -1130,6 +1130,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
