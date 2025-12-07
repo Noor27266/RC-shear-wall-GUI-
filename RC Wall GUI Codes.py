@@ -775,9 +775,9 @@ div[data-testid="column"]:nth-child(2) {
     margin-top: -20px !important;
 }
 
-/* Move the controls container down properly without breaking button clicks */
+/* Move the controls container DOWN properly without breaking button clicks */
 div[data-testid="column"]:nth-child(2) > div > div[data-testid="column"]:nth-child(2) > div {
-    transform: translateY(140px) translateX(20px) !important;
+    transform: translateY(-140px) translateX(20px) !important;  /* CHANGED: -140px instead of 140px */
 }
 
 /* Keep the original styling but remove positioning that breaks clicks */
@@ -789,7 +789,6 @@ div[data-testid="stDownloadButton"],
 }
 </style>
 """)
-
 
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
@@ -1105,6 +1104,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
