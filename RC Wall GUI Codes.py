@@ -701,13 +701,14 @@ with left:
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
+
 # =============================================================================
 # 🎮 STEP 7: RIGHT PANEL - CONTROLS & INTERACTION ELEMENTS
 # =============================================================================
 # Fixed-height box for schematic so DI–θ plot position does not change
 SCHEM_BOX_H    = 260   # total vertical space reserved for schematic (keep this fixed)
 SCHEM_IMG_H    = 340   # actual schematic image height (increase/decrease as you like)
-SCHEM_OFFSET_X = 50    # move schematic right (+) / left (-)
+SCHEM_OFFSET_X = 150    # move schematic right (+) / left (-)
 SCHEM_OFFSET_Y = 100    # move schematic down (+) / up (-)
 
 CHART_W = 400          # width used later for DI–θ chart
@@ -741,50 +742,52 @@ with right:
         # slot where STEP 11 will render the DI–θ plot
         chart_slot = st.empty()
 
- # =============================================================================
-# ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
-# =============================================================================
-with col_controls:
+    # =============================================================================
+    # ⭐ SUB-STEP 7.2 — MODEL SELECTION + BUTTONS (RIGHT SIDE)
+    # =============================================================================
+    with col_controls:
 
-    # Model selection
-    available = set(model_registry.keys())
-    ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
-    display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
+        # Model selection
+        available = set(model_registry.keys())
+        ordered_keys = [m for m in MODEL_ORDER if m in available] or ["(no models loaded)"]
+        display_labels = ["RF" if m == "Random Forest" else m for m in ordered_keys]
 
-    model_choice_label = st.selectbox(
-        "Model Selection",
-        display_labels,
-        key="model_select_compact",
-    )
-    model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
-
-    # Buttons - USE UNIQUE KEYS
-    # Only define the button here, process it LATER after inputs are defined
-    calculate_clicked = st.button("Calculate", key="calc_btn_main", use_container_width=True)
-
-    if st.button("Reset", key="reset_btn_main", use_container_width=True):
-        st.rerun()
-
-    if st.button("Clear All", key="clear_btn_main", use_container_width=True):
-        st.session_state.results_df = pd.DataFrame()
-
-    # Latest DI + CSV download
-    if not st.session_state.results_df.empty:
-        latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
-        st.markdown(
-            f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
-            unsafe_allow_html=True,
+        model_choice_label = st.selectbox(
+            "Model Selection",
+            display_labels,
+            key="model_select_compact",
         )
+        model_choice = LABEL_TO_KEY.get(model_choice_label, model_choice_label)
 
-        csv = st.session_state.results_df.to_csv(index=False)
-        st.download_button(
-            "📂 Download as CSV",
-            data=csv,
-            file_name="di_predictions.csv",
-            mime="text/csv",
-            use_container_width=True,
-            key="dl_csv_main",
-        )
+        # Buttons - USE UNIQUE KEYS
+        submit = st.button("Calculate", key="calc_btn_main", use_container_width=True)
+
+        if st.button("Reset", key="reset_btn_main", use_container_width=True):
+            st.rerun()
+
+        if st.button("Clear All", key="clear_btn_main", use_container_width=True):
+            st.session_state.results_df = pd.DataFrame()
+
+        # Latest DI + CSV download
+        if not st.session_state.results_df.empty:
+            latest_pred = st.session_state.results_df.iloc[-1]["Predicted_DI"]
+            st.markdown(
+                f"<div class='prediction-with-color'>Predicted Damage Index : {latest_pred:.4f}</div>",
+                unsafe_allow_html=True,
+            )
+
+            csv = st.session_state.results_df.to_csv(index=False)
+            st.download_button(
+                "📂 Download as CSV",
+                data=csv,
+                file_name="di_predictions.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="dl_csv_main",
+            )
+
+
+
 
     # styling for the blue DI label (unchanged)
     st.markdown(
@@ -816,10 +819,12 @@ div[data-testid="stSelectbox"],
 div.stButton,
 div[data-testid="stDownloadButton"],
 .prediction-with-color {
-    transform: translate(50px, 210px);   /* X = 0 (no left/right), Y > 0 = down */
+    transform: translate(60px, 210px);   /* X = 0 (no left/right), Y > 0 = down */
 }
 </style>
 """)
+
+
 # =============================================================================
 # ⚡ STEP 8: DI–θ PREDICTION & PLOT (ALL CODE HERE)
 # =============================================================================
@@ -1058,15 +1063,30 @@ def _pick_default_model():
 
 # ---------------- MAIN EXECUTION ----------------
 
-# Set model_choice variable for plotting
 if "model_choice" not in locals():
     lbl = st.session_state.get("model_select_compact") or st.session_state.get("model_select")
     model_choice = LABEL_TO_KEY.get(lbl, lbl) if lbl else _pick_default_model()
 
-# Generate and display the plot if we have results
 if model_choice not in model_registry:
     st.error("No trained model available.")
 else:
+    if submit:
+        xdf = _make_input_df(
+            lw,hw,tw,fc,fyt,fysh,fyl,fybl,
+            rt,rsh,rl,rbl,axial,b0,db,s_db,AR,M_Vlw,theta
+        )
+
+        try:
+            pred = predict_di(model_choice, None, xdf)
+            row = xdf.copy()
+            row["Predicted_DI"] = pred
+            st.session_state.results_df = pd.concat(
+                [st.session_state.results_df, row], ignore_index=True
+            )
+            st.rerun()
+        except Exception as e:
+            st.error(str(e))
+
     if not st.session_state.results_df.empty:
         last = st.session_state.results_df.iloc[-1]
         last_di = float(last["Predicted_DI"])
@@ -1090,6 +1110,7 @@ else:
 
 
 
+
 # =============================================================================
 # 🎨 STEP 9: FINAL UI POLISH & BANNER STYLING
 # =============================================================================
@@ -1109,55 +1130,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
