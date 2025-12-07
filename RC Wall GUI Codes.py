@@ -300,7 +300,7 @@ css(
   [data-testid="column"]:first-child {{
       min-height: 100vh !important;
       background: #e0e4ec !important;
-      margin-top: 60px !important;  /* ADD THIS LINE - pushes left column down */
+      margin-top: 30px !important;  /* ADD THIS LINE - pushes left column down */
       padding-top: 10px !important;  /* ADD THIS LINE - adds space at top */
   }}
 </style>
@@ -603,7 +603,7 @@ with left:
     # 🔽 ADD LOGO AT TOP LEFT
     if _b64:
         st.markdown(f"""
-        <div style="text-align: left; margin-bottom: 20px;">
+        <div style="text-align: left; margin-bottom: 15px;">
             <img src="data:image/png;base64,{_b64}" 
                  style="height: 60px; width: auto;" 
                  alt="Logo" />
@@ -617,15 +617,13 @@ with left:
 
     st.markdown(
         """
-    <div style="background:transparent; border-radius:12px; padding:0px; margin:0 0 0 0; box-shadow:none;">
-        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:2px;">
+    <div style="background:transparent; border-radius:12px; padding:0px; margin:0 0 5px 0; box-shadow:none;">
+        <div style="text-align:center; font-size:25px; font-weight:600; color:#333; margin:0; padding:0;">
             Predict Damage index for RC Shear Walls
         </div>
     """,
         unsafe_allow_html=True,
     )
-
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
     st.markdown(
         """
@@ -1106,14 +1104,16 @@ st.markdown(
   color: #fff !important;
   text-align: center !important;
   border-radius: 10px !important;
-  padding: .45rem .75rem !important;
-  margin-top: 65px !important;
+  padding: .35rem .65rem !important;  /* Reduced padding */
+  margin-top: 5px !important;  /* Reduced from 65px to 5px */
+  margin-bottom: 15px !important;  /* Added bottom margin */
   transform: translateY(0) !important;
 }
 </style>
 """,
     unsafe_allow_html=True,
 )
+
 
 
 
